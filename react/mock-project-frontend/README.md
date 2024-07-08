@@ -12,7 +12,7 @@ Currently, two official plugins are available:
 - Use ReactJS (18.3.1) with Vite
 - ­Additional Folder:
   + components: contain component folders
-  + pages:contain page folders
+  + pages: contain page folders
   + constants: contain Constant files
   + styles: contain css/scss file
   + hooks: contain custom hook files

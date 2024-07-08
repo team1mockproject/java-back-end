@@ -6,6 +6,7 @@ import Client from './pages/Client'
 import Login from './pages/login'
 import Signup from './pages/signup'
 import Manager from './pages/Manager'
+import { ResponsiveWrapper } from './components/client-context/ResponsiveContext'
 
 const router = createBrowserRouter([
   {
@@ -34,9 +35,12 @@ const router = createBrowserRouter([
 ])
 
 function App() {
-
   return (
-    <RouterProvider router={router} />
+    <ResponsiveWrapper>
+      <RouterProvider
+        router={router}
+      />
+    </ResponsiveWrapper>
   )
 }
 

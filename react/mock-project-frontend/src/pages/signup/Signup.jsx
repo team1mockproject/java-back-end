@@ -10,7 +10,7 @@ const Signup = () => {
         return Promise.resolve()
     }
     return (
-        <div>
+        <div className="m-8">
             <h2 className="text-center uppercase font-bold text-2xl text-[var(--color-primary)] mt-4">Register account</h2>
             <Row justify={"center"}>
                 <Col xs={24} md={12} lg={8}>
@@ -38,7 +38,7 @@ const Signup = () => {
                                 DatePicker: {
                                     colorPrimaryHover: 'var(--color-primary)',
                                     activeBorderColor: 'var(--color-primary)',
-                                    activeShadow: '0 0 0 2px rgba(34, 77, 49, 0.1)'
+                                    activeShadow: '0 0 0 2px rgba(34, 77, 49, 0.1)',
                                 },
                                 Radio: {
                                     colorPrimary: 'var(--color-primary)',

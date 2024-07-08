@@ -4,6 +4,7 @@ import './styles/global.css'
 import ClientHome from './pages/client-home/ClientHome'
 import Client from './pages/Client'
 import Login from './pages/login/Login'
+import Signup from './pages/signup/Signup'
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />
+  },
+  {
+    path: "/signup",
+    element: <Signup />
   }
 ])
 

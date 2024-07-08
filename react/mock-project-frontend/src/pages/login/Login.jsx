@@ -108,7 +108,10 @@ const Login = () => {
                     </ConfigProvider>
                 </Col>
             </Row>
-            <div className="text-center">{`Don't have an account? `}<Link className="text-[var(--color-primary)] font-medium underline hover:no-underline" to={''}>Sign up</Link></div>
+            <div className="text-center">
+                {`Don't have an account? `}
+                <Link to={"/signup"} className="text-[var(--color-primary)] font-medium underline hover:no-underline">Sign up</Link>
+            </div>
         </div >
     )
 }

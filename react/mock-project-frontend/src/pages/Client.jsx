@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom"
-import ClientHeader from "../components/client-header/ClientHeader"
+import ClientHeader from "../components/client-header"
 
 const Client = () => {
     return (

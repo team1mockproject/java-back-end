@@ -20,8 +20,8 @@ Currently, two official plugins are available:
   + utils: contain utility files
 - Additional Library and Framework: Ant Design (5.18.3), TailwindCSS (3.4.4), Axios (1.7.2), React Icons (5.2.1), React Router Dom (6.24.0)
 - Naming Convention:
-  + React components + CSS/SCSS files + Enumerations: PascalCase
-  + Variable names + Function names + Object properties: camelCase
+  + React components/JSX files + CSS/SCSS files + Enumerations: PascalCase
+  + Variable names + Function names + Object properties + JavaScript files: camelCase
   + CSS class names + Folder names: kebab-case
 + Constansts + Enumeration Properties + Global Variables: SCREAMING_SNAKE_CASE
   + Use more descriptive and specific names, avoid excessive abbreviations.

@@ -3,7 +3,7 @@ import Logo from "../../assets/logo-1.jfif"
 import { FaChevronDown, FaInfoCircle, FaUser } from "react-icons/fa"
 import { MdVpnKey } from "react-icons/md"
 import { useContext, useState } from "react"
-import ResponsiveContext from "../client-context"
+import ResponsiveContext from "../context/responsive-context"
 const ManagerHeader = (props) => {
     const { setIsShowSidebar } = props
     const [isHover, setIsHover] = useState(false)

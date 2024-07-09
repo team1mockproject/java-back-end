@@ -75,7 +75,7 @@ const ManagerSidebar = (props) => {
         >
             {isDesktop &&
                 <Menu
-                    className='w-[256px] h-screen'
+                    className='w-[256px] h-[calc(100vh-70px)]'
                     defaultSelectedKeys={'11'}
                     mode="inline"
                     items={items}
@@ -84,12 +84,12 @@ const ManagerSidebar = (props) => {
             }
             {isTablet &&
                 <>
-                    <div className={`absolute w-[256px] z-20 top-0 flex justify-end p-4 transition-all
+                    <div className={`absolute w-[256px] z-40 top-0 flex justify-end p-4 transition-all
                         ${isShowSidebar ? 'translate-x-0' : '-translate-x-64'}`}>
                         <FaXmark className='text-2xl text-red-500' onClick={() => { setIsShowSidebar(false) }} />
                     </div>
                     <Menu
-                        className={`w-[256px] h-screen absolute top-0 left-0 pt-[70px] transition-all
+                        className={`w-[256px] h-screen absolute z-30 top-0 left-0 pt-[70px] transition-all
                         ${isShowSidebar ? 'translate-x-0' : '-translate-x-64'}`}
                         defaultSelectedKeys={'11'}
                         mode="inline"
@@ -99,12 +99,12 @@ const ManagerSidebar = (props) => {
             }
             {isMobile &&
                 <>
-                    <div className={`absolute w-[256px] z-20 top-0 flex justify-end p-4 transition-all
+                    <div className={`absolute w-[256px] z-40 top-0 flex justify-end p-4 transition-all
                     ${isShowSidebar ? 'translate-x-0' : '-translate-x-64'}`}>
                         <FaXmark className='text-2xl text-red-500' onClick={() => { setIsShowSidebar(false) }} />
                     </div>
                     <Menu
-                        className={`w-[256px] h-screen absolute top-0 left-0 pt-[70px] transition-all
+                        className={`w-[256px] h-screen absolute z-30 top-0 left-0 pt-[70px] transition-all
                     ${isShowSidebar ? 'translate-x-0' : '-translate-x-64'}`}
                         defaultSelectedKeys={'11'}
                         mode="inline"

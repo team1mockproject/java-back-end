@@ -360,7 +360,7 @@ const ManagerBuyerList = () => {
     ]
 
     return (
-        <div className="w-full m-8">
+        <div className="w-full px-8 pt-8 pb-20 h-screen overflow-y-auto">
             {isDesktop &&
                 <>
                     <h2 className="text-center text-3xl font-medium uppercase mb-4">Buyer List</h2>

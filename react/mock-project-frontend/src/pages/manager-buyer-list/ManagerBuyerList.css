@@ -10,3 +10,7 @@
 .detail-info .ant-modal-footer button:first-child {
     display: none;
 }
+
+body {
+    overflow: hidden;
+}

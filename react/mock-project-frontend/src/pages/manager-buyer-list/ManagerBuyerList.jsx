@@ -456,7 +456,7 @@ const ManagerBuyerList = () => {
                     >
                         {/* Modal Component */}
                         <Modal
-                            className="detail-info"
+                            className="buyer-detail-info"
                             title='Buyer Information'
                             open={isModalOpen}
                             onCancel={() => setIsModalOpen(false)}
@@ -554,9 +554,6 @@ const ManagerBuyerList = () => {
                                 Select: {
                                     colorPrimary: 'var(--color-primary)',
                                     colorPrimaryHover: 'var(--color-primary)'
-                                },
-                                Table: {
-
                                 }
                             }
                         }}
@@ -655,7 +652,7 @@ const ManagerBuyerList = () => {
                     >
                         {/* Modal Component */}
                         <Modal
-                            className="detail-info"
+                            className="buyer-detail-info"
                             title='Buyer Information'
                             open={isModalOpen}
                             onCancel={() => setIsModalOpen(false)}
@@ -854,7 +851,7 @@ const ManagerBuyerList = () => {
                     >
                         {/* Modal Component */}
                         <Modal
-                            className="detail-info"
+                            className="buyer-detail-info"
                             title='Buyer Information'
                             open={isModalOpen}
                             onCancel={() => setIsModalOpen(false)}

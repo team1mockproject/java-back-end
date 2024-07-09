@@ -30,7 +30,17 @@ const ManagerSidebar = (props) => {
                 },
                 {
                     key: '15',
-                    label: <Link className='text-base'>Auction Asset</Link>,
+                    label: <span className='text-base'>Auction Asset</span>,
+                    children: [
+                        {
+                            key: '151',
+                            label: <Link className='text-base'>Auction</Link>
+                        },
+                        {
+                            key: '152',
+                            label: <Link className='text-base'>Asset</Link>
+                        }
+                    ]
                 },
                 {
                     key: '16',

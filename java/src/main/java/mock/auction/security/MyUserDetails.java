@@ -17,14 +17,14 @@ public class MyUserDetails extends User {
     private int id;
     public MyUserDetails(
             int id,
-            String username,
-            String password,
+            String userName,
+            String passWord,
             boolean enabled,
             boolean accountNonExpired,
             boolean credentialsNonExpired,
             boolean accountNonLocked,
             Collection<? extends GrantedAuthority> authorities) {
-        super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+        super(userName, passWord, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
         this.id = id;
     }
 
@@ -34,9 +34,9 @@ public class MyUserDetails extends User {
                 new SimpleGrantedAuthority(role)
         );
         return new MyUserDetails(
-                accountEntity.getAccount_id(),
+                accountEntity.getId(),
                 accountEntity.getEmail(),
-                accountEntity.getPassword(),
+                accountEntity.getPassWord(),
                 accountEntity.getStatus().equals("active")?true:false,
                 true,
                 true,

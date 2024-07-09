@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RoleDto {
-    private int role_id;
+    private int id;
     private String name;
 }

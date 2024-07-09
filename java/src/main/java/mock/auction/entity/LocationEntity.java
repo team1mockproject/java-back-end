@@ -15,11 +15,13 @@ import java.util.Collection;
 public class LocationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int location_id;
+    @Column(name = "location_id")
+    private int locationId;
     private String province;
     private String city;
     private String address;
-    private String zip_code;
+    @Column(name = "zip_code")
+    private String zipCode;
     @OneToMany(mappedBy="location")
     private Collection<AccountEntity> accountEntities;
 }

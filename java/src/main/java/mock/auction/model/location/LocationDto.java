@@ -6,9 +6,9 @@ import lombok.Setter;
 @Setter
 @Getter
 public class LocationDto {
-    private int location_id;
+    private int locationId;
     private String province;
     private String city;
     private String address;
-    private String zip_code;
+    private String zipCode;
 }

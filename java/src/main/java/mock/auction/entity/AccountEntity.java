@@ -15,11 +15,15 @@ import java.util.Collection;
 public class AccountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int account_id;
-    private boolean is_personal_or_agency;
+    @Column(name = "account_id")
+    private int id;
+    @Column(name = "is_personal_or_agency")
+    private boolean personalOrAgency;
     private String email;
-    private String password;
-    private String fullname;
+    @Column(name = "password")
+    private String passWord;
+    @Column(name="fullname")
+    private String fullName;
     private String phone;
     private char gender;
     private int age;
@@ -27,9 +31,11 @@ public class AccountEntity {
     @JoinColumn(name="location_id")
     private LocationEntity location;
     private String career;
-    private int count_spam;
+    @Column(name = "count_spam")
+    private int countSpam;
     private String status;
-    private boolean del_flag;
+    @Column(name = "del_flag")
+    private boolean delFlag;
     @ManyToMany
     @JoinTable(
             name = "RoleAccount",

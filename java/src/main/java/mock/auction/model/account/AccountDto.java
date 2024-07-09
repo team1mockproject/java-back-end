@@ -11,20 +11,20 @@ import java.util.Set;
 @Getter
 @Setter
 public class AccountDto {
-    private Integer account_id;
-    private boolean is_personal_or_agency;
+    private Integer id;
+    private boolean personalOrAgency;
     private String email;
-    private String password;
-    private String fullname;
+    private String passWord;
+    private String fullName;
     private String phone;
     private char gender;
     private int age;
-    private Integer location_id;
+    private Integer locationId;
     private LocationDto location;
     private String career;
-    private int count_spam;
+    private int countSpam;
     private String status;
-    private Boolean del_flag;
-    private List<Integer> role_ids;
+    private Boolean delFlag;
+    private List<Integer> roleIds;
     private Set<RoleDto> roles;
 }

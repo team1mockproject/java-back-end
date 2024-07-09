@@ -6,7 +6,6 @@ import mock.auction.entity.RoleEntity;
 import mock.auction.exception.ComponentException;
 import mock.auction.exception.ResourceConflictException;
 import mock.auction.model.account.AccountDto;
-import mock.auction.repository.AbstractRepository;
 import mock.auction.repository.AccountRepository;
 import mock.auction.repository.LocationRepository;
 import mock.auction.repository.RoleRepository;
@@ -48,7 +47,7 @@ public class AccountService extends AbstractService<AccountDto, AccountEntity>{
         if(accountId==null){
             return false;
         }else{
-            if(accountByEmail.get().getAccount_id() != accountId){
+            if(accountByEmail.get().getId() != accountId){
                 return false;
             }
         }
@@ -63,7 +62,7 @@ public class AccountService extends AbstractService<AccountDto, AccountEntity>{
         if(accountId==null){
             return false;
         }else{
-            if(accountByPhone.get().getAccount_id() != accountId){
+            if(accountByPhone.get().getId() != accountId){
                 return false;
             }
         }
@@ -78,7 +77,7 @@ public class AccountService extends AbstractService<AccountDto, AccountEntity>{
     @Override
     public AccountEntity transformDtoToEntity(AccountDto accountDto) {
         String email = accountDto.getEmail();
-        Integer accountId = accountDto.getAccount_id();
+        Integer accountId = accountDto.getId();
         String phone = accountDto.getPhone();
         //check email have to unique
         if (!isEmailUniqe(accountId,email)) {
@@ -91,20 +90,23 @@ public class AccountService extends AbstractService<AccountDto, AccountEntity>{
         }
 
         AccountEntity accountEntity = new AccountEntity();
-        accountEntity.setRoles(setRoles(accountDto.getRole_ids()));
+        accountEntity.setRoles(setRoles(accountDto.getRoleIds()));
+        //if id null => create account
         if(accountId == null){
             accountEntity = modelMapper.map(accountDto,AccountEntity.class);
-            String hashPassword = passwordEncoder.encode(accountDto.getPassword());
-            accountEntity.setPassword(hashPassword);
-        }else{
+            String hashPassword = passwordEncoder.encode(accountDto.getPassWord());
+            accountEntity.setPassWord(hashPassword);
+        }else{//update account
             accountEntity = accountRepository.findById(accountId).get();
             modelMapper.map(accountDto,accountEntity);
-            if (accountDto.getPassword()!=null){
-                String hashPassword = passwordEncoder.encode(accountDto.getPassword());
-                accountEntity.setPassword(hashPassword);
+            if (accountDto.getPassWord()!=null &&
+                    !passwordEncoder.matches(accountDto.getPassWord(),
+                            accountEntity.getPassWord())){
+                String hashPassword = passwordEncoder.encode(accountDto.getPassWord());
+                accountEntity.setPassWord(hashPassword);
             }
         }
-        LocationEntity location = locationRepository.findById(accountDto.getLocation_id())
+        LocationEntity location = locationRepository.findById(accountDto.getLocationId())
                 .orElseThrow(()->new ComponentException("ID location not found", HttpStatus.BAD_REQUEST));
         accountEntity.setLocation(location);
         return accountEntity;

@@ -6,7 +6,7 @@ import Client from './pages/Client'
 import Login from './pages/login'
 import Signup from './pages/signup'
 import Manager from './pages/Manager'
-import { ResponsiveWrapper } from './components/context/responsive-context/ResponsiveContext'
+import { ResponsiveWrapper } from './context/responsive-context/ResponsiveContext'
 
 const router = createBrowserRouter([
   {

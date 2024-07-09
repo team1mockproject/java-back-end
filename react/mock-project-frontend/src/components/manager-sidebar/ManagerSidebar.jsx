@@ -1,7 +1,7 @@
 import { ConfigProvider, Menu } from 'antd';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import ResponsiveContext from '../context/responsive-context';
+import ResponsiveContext from '../../context/responsive-context';
 import { FaXmark } from 'react-icons/fa6';
 const ManagerSidebar = (props) => {
     const { isShowSidebar, setIsShowSidebar } = props

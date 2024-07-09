@@ -7,12 +7,13 @@ import Login from './pages/login'
 import Signup from './pages/signup'
 import Manager from './pages/Manager'
 import { ResponsiveWrapper } from './context/responsive-context/ResponsiveContext'
+import ManagerBuyerList from './pages/manager-buyer-list'
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Client />,
-    errorElement: <div></div>,
+    errorElement: <div>Client Error</div>,
     children: [
       {
         index: true,
@@ -22,7 +23,14 @@ const router = createBrowserRouter([
   },
   {
     path: "/manager",
-    element: <Manager />
+    element: <Manager />,
+    errorElement: <div>Manager Error</div>,
+    children: [
+      {
+        index: true,
+        element: <ManagerBuyerList />
+      }
+    ]
   },
   {
     path: "/login",

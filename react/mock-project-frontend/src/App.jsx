@@ -8,6 +8,7 @@ import Signup from './pages/signup'
 import Manager from './pages/Manager'
 import { ResponsiveWrapper } from './context/responsive-context/ResponsiveContext'
 import ManagerBuyerList from './pages/manager-buyer-list'
+import ManagerSellerList from './pages/manager-seller-list'
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <ManagerBuyerList />
+      },
+      {
+        path: "seller",
+        element: <ManagerSellerList />
       }
     ]
   },

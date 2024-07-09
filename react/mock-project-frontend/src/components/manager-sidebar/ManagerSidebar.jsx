@@ -14,11 +14,11 @@ const ManagerSidebar = (props) => {
             children: [
                 {
                     key: '11',
-                    label: <Link className='text-base'>Buyer</Link>,
+                    label: <Link to={"/manager"} className='text-base'>Buyer</Link>,
                 },
                 {
                     key: '12',
-                    label: <Link className='text-base'>Seller</Link>,
+                    label: <Link to={"/manager/seller"} className='text-base'>Seller</Link>,
                 },
                 {
                     key: '13',

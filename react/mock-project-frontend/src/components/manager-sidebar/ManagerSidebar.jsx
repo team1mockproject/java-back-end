@@ -10,45 +10,45 @@ const ManagerSidebar = (props) => {
     const items = [
         {
             key: '1',
-            label: <span className='font-medium'>Management</span>,
+            label: <span className='font-medium text-base'>Management</span>,
             children: [
                 {
                     key: '11',
-                    label: <Link>Buyer</Link>,
+                    label: <Link className='text-base'>Buyer</Link>,
                 },
                 {
                     key: '12',
-                    label: <Link>Seller</Link>,
+                    label: <Link className='text-base'>Seller</Link>,
                 },
                 {
                     key: '13',
-                    label: <Link>Staff</Link>,
+                    label: <Link className='text-base'>Staff</Link>,
                 },
                 {
                     key: '14',
-                    label: <Link>Appraiser</Link>,
+                    label: <Link className='text-base'>Appraiser</Link>,
                 },
                 {
                     key: '15',
-                    label: <Link>Auction Asset</Link>,
+                    label: <Link className='text-base'>Auction Asset</Link>,
                 },
                 {
                     key: '16',
-                    label: <Link>Financial</Link>,
+                    label: <Link className='text-base'>Financial</Link>,
                 },
                 {
                     key: '17',
-                    label: <Link>Inventory</Link>,
+                    label: <Link className='text-base'>Inventory</Link>,
                 },
             ],
         },
         {
             key: '2',
-            label: <Link className='font-medium'>Advertising</Link>
+            label: <Link className='font-medium text-base'>Advertising</Link>
         },
         {
             key: '3',
-            label: <Link className='font-medium'>Report</Link>
+            label: <Link className='font-medium text-base'>Report</Link>
         },
     ];
 
@@ -58,7 +58,7 @@ const ManagerSidebar = (props) => {
                 components: {
                     Menu: {
                         itemSelectedColor: 'var(--color-primary)',
-                        itemSelectedBg: '#95aa9c'
+                        itemSelectedBg: '#95aa9c',
                     }
                 }
             }}

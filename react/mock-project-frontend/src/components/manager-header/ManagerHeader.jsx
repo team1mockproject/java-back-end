@@ -27,7 +27,7 @@ const ManagerHeader = (props) => {
                             <FaUser className="text-2xl mr-2" />
                             <span>Manager</span>
                             <FaChevronDown className="ml-1" />
-                            <ul className="group-hover:block hidden absolute text-black top-full right-0 w-[250px] p-1 bg-white shadow-[0_9px_28px_8px_rgba(0,0,0,0.05)] rounded-md">
+                            <ul className="group-hover:block hidden absolute z-10 text-black top-full right-0 w-[250px] p-1 bg-white shadow-[0_9px_28px_8px_rgba(0,0,0,0.05)] rounded-md">
                                 <li className="flex items-center pl-4 py-3 hover:bg-gray-100 cursor-pointer rounded-md">
                                     <FaInfoCircle className="text-lg mr-2" />
                                     Personal information
@@ -64,7 +64,7 @@ const ManagerHeader = (props) => {
                             <FaUser className="text-2xl mr-2" />
                             <span>Manager</span>
                             <FaChevronDown className="ml-1" />
-                            <ul className="group-hover:block hidden absolute text-black top-full right-0 w-[250px] p-1 bg-white shadow-[0_9px_28px_8px_rgba(0,0,0,0.05)] rounded-md">
+                            <ul className="group-hover:block hidden absolute z-10 text-black top-full right-0 w-[250px] p-1 bg-white shadow-[0_9px_28px_8px_rgba(0,0,0,0.05)] rounded-md">
                                 <li className="flex items-center pl-4 py-3 hover:bg-gray-100 cursor-pointer rounded-md">
                                     <FaInfoCircle className="text-lg mr-2" />
                                     Personal information
@@ -100,7 +100,7 @@ const ManagerHeader = (props) => {
                         <div className="group flex items-center relative cursor-pointer h-full">
                             <FaUser className="text-2xl mr-2" />
                             <FaChevronDown className="ml-1" />
-                            <ul className="group-hover:block hidden absolute text-black top-full right-0 w-[250px] p-1 bg-white shadow-[0_9px_28px_8px_rgba(0,0,0,0.05)] rounded-md">
+                            <ul className="group-hover:block hidden absolute z-10 text-black top-full right-0 w-[250px] p-1 bg-white shadow-[0_9px_28px_8px_rgba(0,0,0,0.05)] rounded-md">
                                 <li className="flex items-center pl-4 py-3 hover:bg-gray-100 cursor-pointer rounded-md">
                                     <FaInfoCircle className="text-lg mr-2" />
                                     Personal information

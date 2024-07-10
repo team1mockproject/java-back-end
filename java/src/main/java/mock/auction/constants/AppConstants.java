@@ -1,6 +1,9 @@
 package mock.auction.constants;
 
-public class AppConstants {
-    public static final String NAME_REFRESH_TOKEN_COOKIE = "refreshToken";
-    public static final String NAME_ACCESS_TOKEN_COOKIE = "accessToken";
+public interface AppConstants {
+    public  String NAME_REFRESH_TOKEN_COOKIE = "refreshToken";
+    public  String NAME_ACCESS_TOKEN_COOKIE = "accessToken";
+    String  DEFAULT_PAGE_NUMBER = "1";
+    String DEFAULT_PAGE_SIZE = "5";
+    String DEFAULT_SORT = "id,desc";
 }

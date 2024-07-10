@@ -42,7 +42,7 @@ public class SecurityConfig {
                 }))
                 .csrf(csrf->csrf.disable())
                 .addFilterBefore(jwtRequestFilter, BasicAuthenticationFilter.class)
-                .authorizeHttpRequests(authorize->authorize.requestMatchers("/api/authenticate/**","/api/account/register").permitAll())
+                .authorizeHttpRequests(authorize->authorize.requestMatchers("/api/authenticate/**","/api/account/**").permitAll())
                 .authorizeHttpRequests(authorize->authorize.anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults())

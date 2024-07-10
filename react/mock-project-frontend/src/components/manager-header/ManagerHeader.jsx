@@ -4,10 +4,17 @@ import { FaChevronDown, FaInfoCircle, FaUser } from "react-icons/fa"
 import { MdVpnKey } from "react-icons/md"
 import { useContext, useState } from "react"
 import ResponsiveContext from "../../context/responsive-context"
+import { useNavigate } from "react-router-dom"
 const ManagerHeader = (props) => {
     const { setIsShowSidebar } = props
     const [isHover, setIsHover] = useState(false)
     const { isMobile, isTablet, isDesktop } = useContext(ResponsiveContext)
+    const navigation = useNavigate()
+
+    const logout = () => {
+        localStorage.removeItem('sidebar_item')
+        navigation('/login')
+    }
     return (
         <ul className="h-[70px] bg-[var(--color-primary)] flex justify-between items-center px-4">
             {isDesktop &&
@@ -27,7 +34,7 @@ const ManagerHeader = (props) => {
                             <FaUser className="text-2xl mr-2" />
                             <span>Manager</span>
                             <FaChevronDown className="ml-1" />
-                            <ul className="group-hover:block hidden absolute text-black top-full right-0 w-[250px] p-1 bg-white shadow-[0_9px_28px_8px_rgba(0,0,0,0.05)] rounded-md">
+                            <ul className="group-hover:block hidden absolute z-10 text-black top-full right-0 w-[250px] p-1 bg-white shadow-[0_9px_28px_8px_rgba(0,0,0,0.05)] rounded-md">
                                 <li className="flex items-center pl-4 py-3 hover:bg-gray-100 cursor-pointer rounded-md">
                                     <FaInfoCircle className="text-lg mr-2" />
                                     Personal information
@@ -36,7 +43,9 @@ const ManagerHeader = (props) => {
                                     <MdVpnKey className="text-lg mr-2" />
                                     Change password
                                 </li>
-                                <li className="flex items-center pl-4 py-3 hover:bg-gray-100 cursor-pointer rounded-md">
+                                <li className="flex items-center pl-4 py-3 hover:bg-gray-100 cursor-pointer rounded-md"
+                                    onClick={() => { logout() }}
+                                >
                                     <IoLogOutOutline className="text-lg mr-2" />
                                     Logout
                                 </li>
@@ -64,7 +73,7 @@ const ManagerHeader = (props) => {
                             <FaUser className="text-2xl mr-2" />
                             <span>Manager</span>
                             <FaChevronDown className="ml-1" />
-                            <ul className="group-hover:block hidden absolute text-black top-full right-0 w-[250px] p-1 bg-white shadow-[0_9px_28px_8px_rgba(0,0,0,0.05)] rounded-md">
+                            <ul className="group-hover:block hidden absolute z-10 text-black top-full right-0 w-[250px] p-1 bg-white shadow-[0_9px_28px_8px_rgba(0,0,0,0.05)] rounded-md">
                                 <li className="flex items-center pl-4 py-3 hover:bg-gray-100 cursor-pointer rounded-md">
                                     <FaInfoCircle className="text-lg mr-2" />
                                     Personal information
@@ -73,7 +82,9 @@ const ManagerHeader = (props) => {
                                     <MdVpnKey className="text-lg mr-2" />
                                     Change password
                                 </li>
-                                <li className="flex items-center pl-4 py-3 hover:bg-gray-100 cursor-pointer rounded-md">
+                                <li className="flex items-center pl-4 py-3 hover:bg-gray-100 cursor-pointer rounded-md"
+                                    onClick={() => { logout() }}
+                                >
                                     <IoLogOutOutline className="text-lg mr-2" />
                                     Logout
                                 </li>
@@ -100,7 +111,7 @@ const ManagerHeader = (props) => {
                         <div className="group flex items-center relative cursor-pointer h-full">
                             <FaUser className="text-2xl mr-2" />
                             <FaChevronDown className="ml-1" />
-                            <ul className="group-hover:block hidden absolute text-black top-full right-0 w-[250px] p-1 bg-white shadow-[0_9px_28px_8px_rgba(0,0,0,0.05)] rounded-md">
+                            <ul className="group-hover:block hidden absolute z-10 text-black top-full right-0 w-[250px] p-1 bg-white shadow-[0_9px_28px_8px_rgba(0,0,0,0.05)] rounded-md">
                                 <li className="flex items-center pl-4 py-3 hover:bg-gray-100 cursor-pointer rounded-md">
                                     <FaInfoCircle className="text-lg mr-2" />
                                     Personal information
@@ -109,7 +120,11 @@ const ManagerHeader = (props) => {
                                     <MdVpnKey className="text-lg mr-2" />
                                     Change password
                                 </li>
-                                <li className="flex items-center pl-4 py-3 hover:bg-gray-100 cursor-pointer rounded-md">
+                                <li className="flex items-center pl-4 py-3 hover:bg-gray-100 cursor-pointer rounded-md"
+                                    onClick={() => {
+                                        logout()
+                                    }}
+                                >
                                     <IoLogOutOutline className="text-lg mr-2" />
                                     Logout
                                 </li>

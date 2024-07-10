@@ -264,9 +264,9 @@ const ManagerAppraiserList = () => {
     return (
         <>
             <div className={`absolute top-0 left-0 right-0 bottom-0 bg-black opacity-30 z-10 ${isAppraiserCreateOpen || isAppraiserUpdateOpen ? '' : 'hidden'}`}></div>
-            <div className="w-full px-8 pt-8 pb-20 h-screen overflow-y-auto">
+            <div className="w-full px-8 pt-8">
                 {isDesktop &&
-                    <>
+                    <div className="ml-[247px]">
                         <h2 className="text-center text-3xl font-medium uppercase mb-4">Appraiser List</h2>
                         <ConfigProvider
                             theme={{
@@ -525,7 +525,7 @@ const ManagerAppraiserList = () => {
                         >
                             <p className="text-base">Do you want to <span className={`${confirmStatus === 'Update' ? 'text-blue-500' : 'text-red-500'}`}>{confirmStatus.toLowerCase()}</span> this appriser?</p>
                         </Modal>
-                    </>
+                    </div>
                 }
                 {isTablet &&
                     <>

@@ -120,7 +120,7 @@ const ManagerSidebar = (props) => {
         >
             {isDesktop &&
                 <Menu
-                    className='w-[256px] h-[calc(100vh-70px)]'
+                    className='w-[256px] h-[calc(100vh-70px)] fixed'
                     selectedKeys={localStorage.getItem('sidebar_item')}
                     mode="inline"
                     items={items}

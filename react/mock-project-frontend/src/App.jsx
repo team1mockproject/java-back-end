@@ -9,6 +9,7 @@ import Manager from './pages/Manager'
 import { ResponsiveWrapper } from './context/responsive-context/ResponsiveContext'
 import ManagerBuyerList from './pages/manager-buyer-list'
 import ManagerSellerList from './pages/manager-seller-list'
+import ManagerAppraiserList from './pages/manager-appraiser-list'
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
       {
         path: "seller",
         element: <ManagerSellerList />
+      },
+      {
+        path: "appraiser",
+        element: <ManagerAppraiserList />
       }
     ]
   },

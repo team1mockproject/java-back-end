@@ -4,10 +4,17 @@ import { FaChevronDown, FaInfoCircle, FaUser } from "react-icons/fa"
 import { MdVpnKey } from "react-icons/md"
 import { useContext, useState } from "react"
 import ResponsiveContext from "../../context/responsive-context"
+import { useNavigate } from "react-router-dom"
 const ManagerHeader = (props) => {
     const { setIsShowSidebar } = props
     const [isHover, setIsHover] = useState(false)
     const { isMobile, isTablet, isDesktop } = useContext(ResponsiveContext)
+    const navigation = useNavigate()
+
+    const logout = () => {
+        localStorage.removeItem('sidebar_item')
+        navigation('/login')
+    }
     return (
         <ul className="h-[70px] bg-[var(--color-primary)] flex justify-between items-center px-4">
             {isDesktop &&
@@ -36,7 +43,9 @@ const ManagerHeader = (props) => {
                                     <MdVpnKey className="text-lg mr-2" />
                                     Change password
                                 </li>
-                                <li className="flex items-center pl-4 py-3 hover:bg-gray-100 cursor-pointer rounded-md">
+                                <li className="flex items-center pl-4 py-3 hover:bg-gray-100 cursor-pointer rounded-md"
+                                    onClick={() => { logout() }}
+                                >
                                     <IoLogOutOutline className="text-lg mr-2" />
                                     Logout
                                 </li>
@@ -73,7 +82,9 @@ const ManagerHeader = (props) => {
                                     <MdVpnKey className="text-lg mr-2" />
                                     Change password
                                 </li>
-                                <li className="flex items-center pl-4 py-3 hover:bg-gray-100 cursor-pointer rounded-md">
+                                <li className="flex items-center pl-4 py-3 hover:bg-gray-100 cursor-pointer rounded-md"
+                                    onClick={() => { logout() }}
+                                >
                                     <IoLogOutOutline className="text-lg mr-2" />
                                     Logout
                                 </li>
@@ -109,7 +120,11 @@ const ManagerHeader = (props) => {
                                     <MdVpnKey className="text-lg mr-2" />
                                     Change password
                                 </li>
-                                <li className="flex items-center pl-4 py-3 hover:bg-gray-100 cursor-pointer rounded-md">
+                                <li className="flex items-center pl-4 py-3 hover:bg-gray-100 cursor-pointer rounded-md"
+                                    onClick={() => {
+                                        logout()
+                                    }}
+                                >
                                     <IoLogOutOutline className="text-lg mr-2" />
                                     Logout
                                 </li>

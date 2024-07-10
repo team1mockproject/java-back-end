@@ -317,9 +317,9 @@ const ManagerSellerList = () => {
         },
     ]
     return (
-        <div className="w-full px-8 pt-8 pb-20 h-screen overflow-y-auto">
+        <div className="w-full px-8 pt-8">
             {isDesktop &&
-                <>
+                <div className=" ml-[247px]">
                     <h2 className="text-center text-3xl font-medium uppercase mb-4">Seller List</h2>
                     <ConfigProvider
                         theme={{
@@ -523,7 +523,7 @@ const ManagerSellerList = () => {
                     >
                         <p className="text-base">Do you want to <span className={`${confirmStatus === 'Verified' || confirmStatus === 'Unsuspend' ? 'text-blue-500' : 'text-red-500'} font-semibold`}>{confirmStatus === 'Verified' ? 'verify' : confirmStatus.toLowerCase()}</span> this account?</p>
                     </Modal>
-                </>
+                </div>
             }
             {isTablet &&
                 <>

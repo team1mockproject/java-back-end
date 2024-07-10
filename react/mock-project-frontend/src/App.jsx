@@ -10,6 +10,7 @@ import { ResponsiveWrapper } from './context/responsive-context/ResponsiveContex
 import ManagerBuyerList from './pages/manager-buyer-list'
 import ManagerSellerList from './pages/manager-seller-list'
 import ManagerAppraiserList from './pages/manager-appraiser-list'
+import ClientRegisterToAuction from "./pages/client-register-to-auction";
 
 const router = createBrowserRouter([
   {
@@ -19,9 +20,13 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <ClientHome />
-      }
-    ]
+        element: <ClientHome />,
+      },
+      {
+        path: "/register-to-auction",
+        element: <ClientRegisterToAuction />,
+      },
+    ],
   },
   {
     path: "/manager",
@@ -44,22 +49,20 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <Login />
+    element: <Login />,
   },
   {
     path: "/signup",
-    element: <Signup />
-  }
-])
+    element: <Signup />,
+  },
+]);
 
 function App() {
   return (
     <ResponsiveWrapper>
-      <RouterProvider
-        router={router}
-      />
+      <RouterProvider router={router} />
     </ResponsiveWrapper>
-  )
+  );
 }
 
-export default App
+export default App;

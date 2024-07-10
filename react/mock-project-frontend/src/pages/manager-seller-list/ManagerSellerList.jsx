@@ -5,7 +5,7 @@ import { useContext, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 import { ResponsiveContext } from "../../context/responsive-context/ResponsiveContext";
 const ManagerSellerList = () => {
-    const [sellerData, setsellerData] = useState({})
+    const [sellerData, setSellerData] = useState({})
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isConfirmOpen, setIsConfirmOpen] = useState(false)
     const [pageCurrent, setPageCurrent] = useState(1)
@@ -395,7 +395,7 @@ const ManagerSellerList = () => {
                             onRow={(record) => ({
                                 onClick: () => {
                                     setIsModalOpen(true)
-                                    setsellerData(record)
+                                    setSellerData(record)
                                 }
                             })}
                         />
@@ -598,7 +598,7 @@ const ManagerSellerList = () => {
                                             key={index}
                                             onClick={() => {
                                                 setIsModalOpen(true)
-                                                setsellerData(seller)
+                                                setSellerData(seller)
                                             }}
                                         >
                                             <td className="border-t border-gray-300 w-full flex">
@@ -830,7 +830,7 @@ const ManagerSellerList = () => {
                                             key={index}
                                             onClick={() => {
                                                 setIsModalOpen(true)
-                                                setsellerData(seller)
+                                                setSellerData(seller)
                                             }}
                                         >
                                             <td className="border-t border-gray-300 w-full flex">

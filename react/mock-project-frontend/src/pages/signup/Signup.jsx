@@ -184,10 +184,10 @@ const Signup = () => {
                                                 required: true,
                                                 message: 'Please enter your phone number!'
                                             },
-                                            // {
-                                            //     pattern: /^(\(\d{3}\)\s?|\d{3}[-.\s]?)?\d{3}[-.\s]?\d{4}$/,
-                                            //     message: 'Wrong US phone number format!'
-                                            // }
+                                            {
+                                                pattern: /^(\(\d{3}\)\s?|\d{3}[-.\s]?)?\d{3}[-.\s]?\d{4}$/,
+                                                message: 'Wrong US phone number format!'
+                                            }
                                         ]}
                                     >
                                         <Input placeholder="Phone" />

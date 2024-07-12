@@ -1,0 +1,22 @@
+package com.mockproject.auction.repository;
+
+
+import com.mockproject.auction.entity.AccountEntity;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface AccountRepository extends AbstractRepository<AccountEntity> {
+    Optional<AccountEntity> findByEmail(String email);
+    Optional<AccountEntity> findByPhone(String phone);
+    Optional<AccountEntity> findByFullNameContaining(String name);
+
+    List<AccountEntity> findByRoles_Name(String roleName);
+
+    List<AccountEntity> findByRoles_NameAndStatus(String roleName, String status);
+
+    List<AccountEntity> findByFullNameContainingIgnoreCase(String keyword);
+}
+

@@ -22,7 +22,12 @@ public class LocationEntity {
     private String address;
     @Column(name = "zip_code")
     private String zipCode;
-//    @OneToMany(mappedBy="location")
-//    private Collection<AccountEntity> accountEntities;
-
+    @OneToMany(mappedBy = "location")
+    private Collection<AccountEntity> accountEntities;
+    @OneToMany(mappedBy = "location")
+    private Collection<Warehouse> warehouses;
+    @OneToMany(mappedBy = "location")
+    private Collection<Assessor> assessors;
+    @OneToMany(mappedBy = "location")
+    private Collection<AuctionEvent> auctionEvents;
 }

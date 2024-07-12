@@ -11,17 +11,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/account/")
-public class AccountAPI extends BaseAPI<AccountDto,AccountEntity>{
+@RequestMapping("/api/authenticate/account")
+public class AccountAPI extends BaseAPI<AccountDto, AccountEntity> {
     private AccountService accountService;
-    public AccountAPI(AccountService accountService){
+
+    public AccountAPI(AccountService accountService) {
         super(accountService);
         this.accountService = accountService;
     }
 
     @Override
     @GetMapping
-    public ResponseEntity<ListResponse<AccountDto>> getAllResources(int page, int size, String sort, @Nullable String filter, @Nullable String search, boolean all) {
+    public ResponseEntity<ListResponse<AccountDto>> getAllResources(int page, int size, String sort,
+            @Nullable String filter, @Nullable String search, boolean all) {
         return ResponseEntity.ok(
                 accountService.findAll(page, size, sort, filter, search, all));
     }

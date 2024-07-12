@@ -23,11 +23,12 @@ import java.util.Collections;
 @EnableWebSecurity
 @AllArgsConstructor
 public class SecurityConfig {
-    private JwtRequestFilter jwtRequestFilter;
+    // private JwtRequestFilter jwtRequestFilter;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .cors(cors->cors.configurationSource(new CorsConfigurationSource() {
+        return http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(cors -> cors.configurationSource(new CorsConfigurationSource() {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration config = new CorsConfiguration();
@@ -40,10 +41,11 @@ public class SecurityConfig {
                         return config;
                     }
                 }))
-                .csrf(csrf->csrf.disable())
-                .addFilterBefore(jwtRequestFilter, BasicAuthenticationFilter.class)
-                .authorizeHttpRequests(authorize->authorize.requestMatchers("/api/authenticate/**","/api/account/**").permitAll())
-                .authorizeHttpRequests(authorize->authorize.anyRequest().authenticated())
+                .csrf(csrf -> csrf.disable())
+                // .addFilterBefore(jwtRequestFilter, BasicAuthenticationFilter.class)
+                .authorizeHttpRequests(
+                        authorize -> authorize.requestMatchers("/api/authenticate/**", "/api/account/**").permitAll())
+                .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults())
                 .build();

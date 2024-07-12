@@ -4,10 +4,10 @@ import jakarta.annotation.Nullable;
 import mock.auction.entity.AccountEntity;
 import mock.auction.model.BaseResponse;
 import mock.auction.model.ListResponse;
-import mock.auction.model.account.AccountAnnotation;
 import mock.auction.model.account.AccountDto;
 import mock.auction.service.impl.AccountService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,7 +30,7 @@ public class AccountAPI extends BaseAPI<AccountDto, AccountEntity> {
 
     @Override
     @PostMapping("/register")
-    public ResponseEntity<BaseResponse> create(AccountDto accountDto) {
+    public ResponseEntity<BaseResponse> create(AccountDto accountDto, BindingResult bindingResult) {
         return ResponseEntity.ok(accountService.save(accountDto));
     }
 }

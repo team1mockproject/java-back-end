@@ -1,6 +1,5 @@
 package mock.auction.service.impl;
 
-import mock.auction.constants.AppConstants;
 import mock.auction.constants.SearchFields;
 import mock.auction.entity.AccountEntity;
 import mock.auction.entity.LocationEntity;
@@ -30,10 +29,10 @@ public class AccountService extends AbstractService<AccountDto, AccountEntity> {
     private LocationRepository locationRepository;
 
     public AccountService(AccountRepository accountRepository,
-                          ModelMapper modelMapper,
-                          PasswordEncoder passwordEncoder,
-                          RoleRepository roleRepository,
-                          LocationRepository locationRepository) {
+            ModelMapper modelMapper,
+            PasswordEncoder passwordEncoder,
+            RoleRepository roleRepository,
+            LocationRepository locationRepository) {
         super(accountRepository, AccountDto.class, AccountEntity.class, modelMapper, SearchFields.ACCOUNT_FIELD_TYPES);
         this.accountRepository = accountRepository;
         this.modelMapper = modelMapper;

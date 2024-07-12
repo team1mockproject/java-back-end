@@ -10,7 +10,6 @@ import mock.auction.repository.AbstractRepository;
 import mock.auction.service.GenericService;
 import mock.auction.utils.SearchUtil;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +23,7 @@ import java.util.Map;
 
 @Service
 @AllArgsConstructor
-public abstract class AbstractService<TDto,TEntity> implements GenericService<TDto,TEntity> {
+public abstract class AbstractService<TDto, TEntity> implements GenericService<TDto, TEntity> {
     private AbstractRepository<TEntity> repository;
     private Class<TDto> dtoClass;
     private Class<TEntity> entityClass;
@@ -32,7 +31,8 @@ public abstract class AbstractService<TDto,TEntity> implements GenericService<TD
     private Map<String, String> searchFiledTypes;
 
     @Override
-    public ListResponse<TDto> findAll(int pageNumber, int size, String sort, String filter, String search, boolean all) {
+    public ListResponse<TDto> findAll(int pageNumber, int size, String sort, String filter, String search,
+            boolean all) {
         Specification<TEntity> sortable = RSQLJPASupport.toSort(sort);
         Specification<TEntity> filterable = RSQLJPASupport.toSpecification(filter);
         Specification<TEntity> searchable = SearchUtil.pars(search, searchFiledTypes);
@@ -40,32 +40,33 @@ public abstract class AbstractService<TDto,TEntity> implements GenericService<TD
         Page<TEntity> page = repository.findAll(sortable.and(filterable).and(searchable), pageable);
         List<TEntity> entities = page.getContent();
         List<TDto> entityResponses = new ArrayList<>();
-        for (TEntity entity : entities){
-            entityResponses.add(modelMapper.map(entity,dtoClass));
+        for (TEntity entity : entities) {
+            entityResponses.add(modelMapper.map(entity, dtoClass));
         }
         return ListResponse.of(entityResponses, page);
     }
 
     @Override
     public TDto findById(Integer id) {
-        TEntity entity = repository.findById(id).orElseThrow(()->new ResourceNotFoundException(entityClass.getName(), "id",id.toString()));
-        return modelMapper.map(entity,dtoClass);
+        TEntity entity = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(entityClass.getName(), "id", id.toString()));
+        return modelMapper.map(entity, dtoClass);
     }
 
     @Override
     public BaseResponse save(TDto dto) {
-        try{
+        try {
             TEntity entity = this.transformDtoToEntity(dto);
             this.repository.save(entity);
-            return new BaseResponse(200,"Success");
-        }catch (Exception e){
+            return new BaseResponse(200, "Success", entity);
+        } catch (Exception e) {
             throw new ComponentException(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @Override
     public TEntity transformDtoToEntity(TDto dto) {
-        return modelMapper.map(dto,entityClass);
+        return modelMapper.map(dto, entityClass);
     }
 
     @Override

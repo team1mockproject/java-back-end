@@ -16,7 +16,9 @@ public class CategoryAsset {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_asset_id")
     private Integer categoryAssetId;
+    @Column(length = 255)
     private String name;
+    @Column(columnDefinition = "varchar(max)")
     private String description;
     @OneToMany(mappedBy = "categoryAsset")
     private List<Asset> assets;

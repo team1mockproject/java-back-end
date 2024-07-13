@@ -31,6 +31,7 @@
 		<io.jsonwebtoken.version>0.12.3</io.jsonwebtoken.version>
 		<modelMapper.version>3.1.1</modelMapper.version>
 		<rsql-jpa-spring-boot-starter.version>6.0.20</rsql-jpa-spring-boot-starter.version>
+		<cloudinary.version>1.35.0</cloudinary.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -103,6 +104,11 @@
 			<groupId>io.github.perplexhub</groupId>
 			<artifactId>rsql-jpa-spring-boot-starter</artifactId>
 			<version>${rsql-jpa-spring-boot-starter.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.cloudinary</groupId>
+			<artifactId>cloudinary-http44</artifactId>
+			<version>${cloudinary.version}</version>
 		</dependency>
 	</dependencies>
 

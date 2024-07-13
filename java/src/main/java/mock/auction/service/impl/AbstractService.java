@@ -2,12 +2,14 @@ package mock.auction.service.impl;
 
 import io.github.perplexhub.rsql.RSQLJPASupport;
 import lombok.AllArgsConstructor;
+import mock.auction.constants.AppConstants;
 import mock.auction.exception.ComponentException;
 import mock.auction.exception.ResourceNotFoundException;
 import mock.auction.model.BaseResponse;
 import mock.auction.model.ListResponse;
 import mock.auction.repository.AbstractRepository;
 import mock.auction.service.GenericService;
+import mock.auction.utils.CloudinaryUtil;
 import mock.auction.utils.SearchUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Scope;
@@ -17,10 +19,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -30,6 +35,7 @@ public abstract class AbstractService<TDto,TEntity> implements GenericService<TD
     private Class<TEntity> entityClass;
     private ModelMapper modelMapper;
     private Map<String, String> searchFiledTypes;
+    private CloudinaryUtil cloudinaryUtil;
 
     @Override
     public ListResponse<TDto> findAll(int pageNumber, int size, String sort, String filter, String search, boolean all) {
@@ -53,6 +59,7 @@ public abstract class AbstractService<TDto,TEntity> implements GenericService<TD
     }
 
     @Override
+    @Transactional
     public BaseResponse save(TDto dto) {
         try{
             TEntity entity = this.transformDtoToEntity(dto);
@@ -77,4 +84,12 @@ public abstract class AbstractService<TDto,TEntity> implements GenericService<TD
     public void delete(List<Integer> ids) {
         repository.deleteAllById(ids);
     }
+
+    @Override
+    public List<String> uploadFiles(List<MultipartFile> files, String folder) {
+        return files.stream()
+                .map(file -> cloudinaryUtil.upload(file, folder))
+                .collect(Collectors.toList());
+    }
+
 }

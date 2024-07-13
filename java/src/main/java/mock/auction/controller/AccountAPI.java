@@ -4,9 +4,10 @@ import jakarta.annotation.Nullable;
 import mock.auction.entity.AccountEntity;
 import mock.auction.model.BaseResponse;
 import mock.auction.model.ListResponse;
-import mock.auction.model.account.AccountAnnotation;
 import mock.auction.model.account.AccountDto;
-import mock.auction.service.impl.AccountService;
+import mock.auction.model.account.SlipConfirm;
+import mock.auction.service.AccountService;
+import mock.auction.service.impl.AccountServiceImp;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,9 +15,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/account/")
 public class AccountAPI extends BaseAPI<AccountDto,AccountEntity>{
     private AccountService accountService;
-    public AccountAPI(AccountService accountService){
-        super(accountService);
-        this.accountService = accountService;
+    public AccountAPI(AccountServiceImp accountServiceImp){
+        super(accountServiceImp);
+        this.accountService = accountServiceImp;
     }
 
     @Override
@@ -30,5 +31,10 @@ public class AccountAPI extends BaseAPI<AccountDto,AccountEntity>{
     @PostMapping("/register")
     public ResponseEntity<BaseResponse> create(AccountDto accountDto) {
         return ResponseEntity.ok(accountService.save(accountDto));
+    }
+
+    @PostMapping("/confirm")
+    public ResponseEntity<BaseResponse> confirm(@RequestBody SlipConfirm slipConfirm){
+        return ResponseEntity.ok(accountService.acceptOrReject(slipConfirm));
     }
 }

@@ -1,0 +1,16 @@
+.ant-table-thead {
+    cursor: default;
+}
+
+.ant-modal-title {
+    text-align: center;
+    font-size: 24px !important;
+}
+
+.seller-detail-info .ant-modal-footer button:first-child {
+    display: inline-block !important;
+}
+
+/* body {
+    overflow: hidden;
+} */

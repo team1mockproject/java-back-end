@@ -2,6 +2,7 @@ package mock.auction.service.impl;
 
 import jakarta.transaction.Transactional;
 import mock.auction.entity.Auction;
+import mock.auction.exception.EntityNotFoundException;
 import mock.auction.repository.AuctionRepository;
 import mock.auction.repository.AuctionTypeRepository;
 import mock.auction.service.AuctionService;
@@ -27,43 +28,73 @@ public class AuctionServiceImpl implements AuctionService {
     @Override
     @Transactional
     public Auction addAuction(Auction auction) {
-        return auctionRepository.save(auction);
+        try {
+            return auctionRepository.save(auction);
+        } catch (Exception e) {
+            // Handle exception, log it, and/or rethrow a custom exception
+            throw new RuntimeException("Error adding auction", e);
+        }
     }
 
     @Override
     @Transactional
     public Auction updateAuction(Integer id, Auction auction) {
-        Optional<Auction> existAuction = auctionRepository.findById(id);
-        if (existAuction.isPresent()) {
-            return auctionRepository.saveAndFlush(auction);
-        } else {
-            return null;
+        try {
+            Optional<Auction> existAuction = auctionRepository.findById(id);
+            if (existAuction.isPresent()) {
+                return auctionRepository.saveAndFlush(auction);
+            } else {
+                throw new EntityNotFoundException("Auction not found with id: " + id);
+            }
+        } catch (Exception e) {
+            // Handle exception, log it, and/or rethrow a custom exception
+            throw new RuntimeException("Error updating auction", e);
         }
     }
 
     @Override
     @Transactional
     public void deleteAuction(Integer id) {
-        if (auctionRepository.findById(id).isPresent()) {
-            auctionRepository.deleteById(id);
-        } else {
-
+        try {
+            if (auctionRepository.findById(id).isPresent()) {
+                auctionRepository.deleteById(id);
+            } else {
+                throw new EntityNotFoundException("Auction not found with id: " + id);
+            }
+        } catch (Exception e) {
+            // Handle exception, log it, and/or rethrow a custom exception
+            throw new RuntimeException("Error deleting auction", e);
         }
     }
 
     @Override
     public List<Auction> getAllAuction() {
-        return auctionRepository.findAll();
+        try {
+            return auctionRepository.findAll();
+        } catch (Exception e) {
+            // Handle exception, log it, and/or rethrow a custom exception
+            throw new RuntimeException("Error fetching all auctions", e);
+        }
     }
 
     @Override
     public List<Auction> searchAuction(String keyword) {
-        return auctionRepository.findByAsset_AssetName(keyword);
+        try {
+            return auctionRepository.findByAsset_AssetName(keyword);
+        } catch (Exception e) {
+            // Handle exception, log it, and/or rethrow a custom exception
+            throw new RuntimeException("Error searching auction by keyword", e);
+        }
     }
 
     @Override
-    public List<Auction> filterAuction(LocalDateTime startDate, LocalDateTime endDate, double minPrice,
-            double maxPrice) {
-        return auctionRepository.findAuctionsByDateRangeAndAmount(startDate, endDate, minPrice, maxPrice);
+    public List<Auction> filterAuction(LocalDateTime startDate, LocalDateTime endDate, Double minPrice, Double maxPrice) {
+        try {
+            return auctionRepository.findAuctionsByDateRangeAndAmount(startDate, endDate, minPrice, maxPrice);
+        } catch (Exception e) {
+            // Handle exception, log it, and/or rethrow a custom exception
+            throw new RuntimeException("Error filtering auctions", e);
+        }
     }
+
 }

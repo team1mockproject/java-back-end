@@ -13,6 +13,8 @@ import mock.auction.request.CategoryRequest;
 import mock.auction.response.CategoryResponse;
 import mock.auction.service.CategoryService;
 
+import java.util.List;
+
 @Service
 public class CategoryServiceImpl extends AbstractService<CategoryDto, CategoryAsset> implements CategoryService {
 
@@ -60,6 +62,11 @@ public class CategoryServiceImpl extends AbstractService<CategoryDto, CategoryAs
         CategoryAsset category = categoryRepository.findById(id)
                 .orElseThrow(() -> new Exception("Category not found"));
         return CategoryResponse.fromCategoryAsset(category);
+    }
+
+    @Override
+    public List<CategoryAsset> getAllCategory() {
+        return categoryRepository.findAll();
     }
 
     @Override

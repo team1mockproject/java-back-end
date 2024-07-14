@@ -1,5 +1,6 @@
 package mock.auction.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,14 +23,14 @@ public class AccountController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<AccountEntity> addUser(@RequestBody AccountEntity accountEntity,
+    public ResponseEntity<AccountEntity> addUser(@Valid  @RequestBody AccountEntity accountEntity,
             @RequestParam Set<Integer> roleIds) {
-        AccountEntity newStaff = accountService.addStaff(accountEntity, roleIds);
+        AccountEntity newStaff = accountService.addStaff(accountEntity);
         return ResponseEntity.ok(newStaff);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<AccountEntity> updateUser(@PathVariable Integer id,
+    public ResponseEntity<AccountEntity> updateUser(@Valid @PathVariable Integer id,
             @RequestBody AccountEntity accountEntity) {
         return ResponseEntity.ok(accountService.updateStaff(id, accountEntity));
     }

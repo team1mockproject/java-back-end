@@ -1,5 +1,6 @@
 package mock.auction.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,13 +28,13 @@ public class AuctionEventController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<AuctionEvent> addAuctionEvent(@RequestBody AuctionEvent auctionEvent) {
+    public ResponseEntity<AuctionEvent> addAuctionEvent(@Valid @RequestBody AuctionEvent auctionEvent) {
         AuctionEvent savedAuctionEvent = auctionEventService.addAuctionEvent(auctionEvent);
         return new ResponseEntity<>(savedAuctionEvent, HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<AuctionEvent> updateAuctionEvent(@PathVariable Integer id,
+    public ResponseEntity<AuctionEvent> updateAuctionEvent(@Valid @PathVariable Integer id,
             @RequestBody AuctionEvent auctionEvent) {
         return ResponseEntity.ok(auctionEventService.updateAuctionEvent(id, auctionEvent));
     }

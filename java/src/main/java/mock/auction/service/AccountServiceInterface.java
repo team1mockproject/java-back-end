@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Service
 public interface AccountServiceInterface {
-    public AccountEntity addStaff(AccountEntity accountEntity, Set<Integer> roleIds);
+    public AccountEntity addStaff(AccountEntity accountEntity);
 
     public AccountEntity updateStaff(Integer id, AccountEntity accountEntity);
 

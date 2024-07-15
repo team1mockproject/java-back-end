@@ -1,8 +1,10 @@
 package mock.auction.service.impl;
 
 import jakarta.transaction.Transactional;
+import mock.auction.entity.Asset;
 import mock.auction.entity.Auction;
 import mock.auction.exception.EntityNotFoundException;
+import mock.auction.repository.AssetRepository;
 import mock.auction.repository.AuctionRepository;
 import mock.auction.repository.AuctionTypeRepository;
 import mock.auction.service.AuctionService;
@@ -17,19 +19,19 @@ import java.util.Optional;
 @Service
 public class AuctionServiceImpl implements AuctionService {
     private AuctionRepository auctionRepository;
-    private AuctionTypeRepository auctionTypeRepository;
+    private AssetRepository assetRepository;
 
     @Autowired
-    public AuctionServiceImpl(AuctionRepository auctionRepository, AuctionTypeRepository auctionTypeRepository) {
+    public AuctionServiceImpl(AuctionRepository auctionRepository, AssetRepository assetRepository) {
         this.auctionRepository = auctionRepository;
-        this.auctionTypeRepository = auctionTypeRepository;
+        this.assetRepository = assetRepository;
     }
 
     @Override
     @Transactional
-    public Auction addAuction(Auction auction) {
+    public Auction createAuction(Auction auction) {
         try {
-            return auctionRepository.save(auction);
+            Asset
         } catch (Exception e) {
             // Handle exception, log it, and/or rethrow a custom exception
             throw new RuntimeException("Error adding auction", e);

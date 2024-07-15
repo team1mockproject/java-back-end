@@ -1,6 +1,7 @@
 package mock.auction.service.impl;
 
 import jakarta.transaction.Transactional;
+import mock.auction.entity.AccountEntity;
 import mock.auction.entity.Asset;
 import mock.auction.entity.Auction;
 import mock.auction.entity.AuctionType;
@@ -138,8 +139,27 @@ public class AuctionServiceImpl implements AuctionService {
     }
 
     @Override
-    public void closeAuction(Long auctionId) {
+    public void closeAuction(Integer auctionId,Double highestPrice) {
+        Auction auction = auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Auction not found"));
+        if (auction.getEndDate().isAfter(LocalDateTime.now())) {
+            throw new ResourceNotFoundException("Auction has not ended yet");
+        }
+        auction.setHighestPrice(highestPrice);
+        auction.setAuctionStatus("complete");
+        auctionRepository.save(auction);
 
+        AccountEntity highestBidder = auction.getWinner();
+        if (highestBidder == null) {
+            throw new ResourceNotFoundException("No bids placed");
+        }
+
+        // Thông báo cho người chiến thắng
+        sendNotification(highestBidder, "You have won the auction for asset " + auction.getAsset().getAssetName() + " with bid amount: " + auction.getHighestPrice());
+    }
+
+    private void sendNotification(AccountEntity user, String message) {
+        // Logic để gửi thông báo (email, SMS, v.v.)
     }
 
 }

@@ -21,5 +21,5 @@ public interface AuctionService {
 
     public Auction placeBid(Long auctionId, Long userId, Double bidAmount);
 
-    public void closeAuction(Long auctionId);
+    public void closeAuction(Integer auctionId, Double highestPrice);
 }

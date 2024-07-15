@@ -57,4 +57,10 @@ public class AuctionController {
         return ResponseEntity.ok(searchResults);
     }
 
+    @PostMapping("/{id}/close")
+    public ResponseEntity<Void> closeAuction(@PathVariable Integer id, @PathVariable Double highestPrice) {
+        auctionService.closeAuction(id,highestPrice);
+        return ResponseEntity.noContent().build();
+    }
+
 }

@@ -16,6 +16,6 @@ public interface AuctionService {
 
     public List<Auction> searchAuction(String keyword);
 
-    public List<Auction> filterAuction(LocalDateTime startDate, LocalDateTime endDate, double minPrice,
-            double maxPrice);
+    public List<Auction> filterAuction(LocalDateTime startDate, LocalDateTime endDate, Double minPrice,
+            Double maxPrice);
 }

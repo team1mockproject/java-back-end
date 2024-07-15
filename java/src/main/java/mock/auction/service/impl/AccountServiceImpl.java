@@ -2,7 +2,7 @@ package mock.auction.service.impl;
 
 import jakarta.transaction.Transactional;
 import mock.auction.entity.AccountEntity;
-import mock.auction.entity.RoleEntity;
+import mock.auction.exception.EntityNotFoundException;
 import mock.auction.repository.AccountRepository;
 import mock.auction.repository.RoleRepository;
 import mock.auction.service.AccountServiceInterface;
@@ -12,75 +12,91 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class AccountServiceImpl implements AccountServiceInterface {
     private AccountRepository accountRepository;
-    private RoleRepository roleRepository;
+
 
     @Autowired
-    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
-        this.roleRepository = roleRepository;
     }
 
     @Override
     @Transactional
-    public AccountEntity addStaff(AccountEntity accountEntity, Set<Integer> roleIds) {
-        for (Integer roleId : roleIds) {
-            RoleEntity role = new RoleEntity();
-            role.setId(Math.toIntExact(roleId));
-            accountEntity.getRoles().add(role);
+    public AccountEntity addStaff(AccountEntity accountEntity) {
+        try {
+            return accountRepository.save(accountEntity);
+        } catch (Exception e) {
+            // Handle exception, log it, and/or rethrow a custom exception
+            throw new RuntimeException("Error adding staff", e);
         }
-
-        return accountRepository.save(accountEntity);
     }
 
     @Override
     @Transactional
     public AccountEntity updateStaff(Integer id, AccountEntity accountEntity) {
-        Optional<AccountEntity> account_Entity = accountRepository.findById(Math.toIntExact(id));
-        if (account_Entity.isPresent()) {
-            AccountEntity staff = account_Entity.get();
-            staff.setFullName(accountEntity.getFullName());
-            staff.setPhone(accountEntity.getPhone());
-            staff.setEmail(accountEntity.getEmail());
-            staff.setPassWord(accountEntity.getPassWord());
-            staff.setGender(accountEntity.getGender());
-            staff.setRoles(accountEntity.getRoles());
-            staff.setLocation(accountEntity.getLocation());
-            return accountRepository.save(staff);
-        } else {
-            return null;
+        try {
+            Optional<AccountEntity> existAccount = accountRepository.findById(id);
+            if (existAccount.isPresent()) {
+                return accountRepository.saveAndFlush(accountEntity);
+            } else {
+                throw new EntityNotFoundException("Staff not found with id: " + id);
+            }
+        } catch (Exception e) {
+            // Handle exception, log it, and/or rethrow a custom exception
+            throw new RuntimeException("Error updating staff", e);
         }
     }
 
     @Override
     @Transactional
     public void deleteStaff(Integer id) {
-        if (accountRepository.existsById(Math.toIntExact(id))) {
-            accountRepository.deleteById(Math.toIntExact(id));
+        try {
+            if (accountRepository.existsById(id)) {
+                accountRepository.deleteById(id);
+            } else {
+                throw new EntityNotFoundException("Staff not found with id: " + id);
+            }
+        } catch (Exception e) {
+            // Handle exception, log it, and/or rethrow a custom exception
+            throw new RuntimeException("Error deleting staff", e);
         }
-
     }
 
     @Override
     public List<AccountEntity> getAllStaff() {
-        return accountRepository.findByRolesName("staff");
+        try {
+            return accountRepository.findByRolesName("staff");
+        } catch (Exception e) {
+            // Handle exception, log it, and/or rethrow a custom exception
+            throw new RuntimeException("Error fetching all staff", e);
+        }
     }
 
     @Override
     public List<AccountEntity> searchStaff(String keyword) {
-        return accountRepository.findByFullNameContainingIgnoreCase(keyword);
+        try {
+            return accountRepository.findByFullNameContainingIgnoreCase(keyword);
+        } catch (Exception e) {
+            // Handle exception, log it, and/or rethrow a custom exception
+            throw new RuntimeException("Error searching staff by keyword", e);
+        }
     }
 
     @Override
     public List<AccountEntity> filterStaff(String status) {
-        if ("all".equalsIgnoreCase(status)) {
-            return accountRepository.findByRolesName("staff");
-        } else {
-            return accountRepository.findByRolesNameAndStatus("staff", status);
+        try {
+            if ("all".equalsIgnoreCase(status)) {
+                return accountRepository.findByRolesName("staff");
+            } else {
+                return accountRepository.findByRolesNameAndStatus("staff", status);
+            }
+        } catch (Exception e) {
+            // Handle exception, log it, and/or rethrow a custom exception
+            throw new RuntimeException("Error filtering staff by status", e);
         }
     }
+
 }

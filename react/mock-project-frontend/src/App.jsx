@@ -12,6 +12,8 @@ import ManagerSellerList from './pages/manager-seller-list'
 import ManagerAppraiserList from './pages/manager-appraiser-list'
 import ClientRegisterToAuction from "./pages/client-register-to-auction";
 import ManagerAssetList from './pages/manager-asset-list'
+import Categories from './pages/Categories'
+import ManagerStaffList from './pages/manager-staff-list/ManagerStaffList'
 
 const router = createBrowserRouter([
   {
@@ -49,8 +51,16 @@ const router = createBrowserRouter([
       {
         path: "asset",
         element: <ManagerAssetList />
+      },
+      {
+        path: "staff",
+        element: <ManagerStaffList />
       }
     ]
+  },
+  {
+    path: "categories",
+    element: <Categories />,
   },
   {
     path: "/login",

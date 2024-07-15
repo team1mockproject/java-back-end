@@ -19,6 +19,7 @@ import mock.auction.request.AssessorRequest;
 import mock.auction.response.AssessorResponse;
 import mock.auction.service.AssessorService;
 import mock.auction.service.LocationService;
+import mock.auction.service.PublicHolidayChecker;
 
 /**
  * AssessorServiceImpl
@@ -41,6 +42,7 @@ public class AssessorServiceImpl implements AssessorService {
 
     private final AssessorRepository assessorRepository;
     private final LocationService locationService;
+    private final PublicHolidayChecker checker;
 
     private LocationEntity resoleLocation(AssessorRequest request) throws Exception {
         LocationEntity location = new LocationEntity();
@@ -58,6 +60,9 @@ public class AssessorServiceImpl implements AssessorService {
      */
     @Override
     public AssessorResponse createAssessor(AssessorRequest request) throws Exception {
+
+        checker.isPublicHoliday(null);
+
         String email = request.getEmail();
 
         // check email

@@ -118,6 +118,9 @@ public class AuctionServiceImpl implements AuctionService {
     public List<AuctionResponse> searchAuctions(String auctionStatus, String sortOrder, Integer pageNumber,
             Integer pageSize,
             String keyWord) throws Exception {
+        if (auctionStatus == null) {
+            auctionStatus = "preparing";
+        }
         AuctionSpecification spec = createSpecification(auctionStatus, keyWord);
         Sort sort = Sort.by("asset.marketPrice");
         if ("desc".equalsIgnoreCase(sortOrder)) {
@@ -135,7 +138,7 @@ public class AuctionServiceImpl implements AuctionService {
     private AuctionSpecification createSpecification(String auctionStatus, String keyWord) {
         AuctionSpecification spec = new AuctionSpecification(auctionStatus, keyWord);
 
-        if (auctionStatus == null && keyWord == null) {
+        if (keyWord == null) {
             spec = null; // Return null specification to fetch all if no filters are applied
         }
 

@@ -4,8 +4,16 @@ import Logo from "../../assets/logo-1.jfif"
 import { Link } from "react-router-dom"
 import { CiMail } from "react-icons/ci"
 import { RiLockPasswordFill } from "react-icons/ri"
+import { loginApi } from "../../services/AccountService"
+import { useState } from "react"
+import { toast } from "react-toastify"
 const Login = () => {
     const [form] = Form.useForm()
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const handleLogin = () => {
+        if (!email || !password)
+    }
     return (
         <div className="m-8">
             <img
@@ -97,7 +105,8 @@ const Login = () => {
                                 <Flex justify="center">
                                     <Button
                                         className="bg-[var(--color-primary)] text-white font-medium px-14 py-5 text-base"
-                                        onClick={() => { form.submit() }}
+                                        // onClick={() => { form.submit() }}
+                                        onClick={() => handleLogin()}
                                         style={{}}
                                     >
                                         Login

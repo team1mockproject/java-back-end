@@ -234,6 +234,12 @@ const Signup = () => {
                                                 className="mr-1"
                                                 label='Address'
                                                 name='address'
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message: 'Please enter your address!'
+                                                    }
+                                                ]}
                                             >
                                                 <Input placeholder="Address" />
                                             </Form.Item>
@@ -246,7 +252,7 @@ const Signup = () => {
                                                 rules={[
                                                     {
                                                         required: true,
-                                                        message: 'Please enter your zip code'
+                                                        message: 'Please enter your zip code!'
                                                     }
                                                 ]}
                                             >

@@ -63,7 +63,7 @@ const ManagerSidebar = (props) => {
                         },
                         {
                             key: '152',
-                            label: <Link className='text-base' onClick={() => {
+                            label: <Link to={'/manager/asset'} className='text-base' onClick={() => {
                                 setIsShowSidebar(false)
                                 localStorage.setItem('sidebar_item', '152')
                                 setSelectedSidebar(localStorage.getItem('sidebar_item'))

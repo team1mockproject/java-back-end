@@ -5,9 +5,15 @@ import mock.auction.entity.Auction;
 import mock.auction.exception.EntityNotFoundException;
 import mock.auction.repository.AuctionRepository;
 import mock.auction.repository.AuctionTypeRepository;
+import mock.auction.repository.specifications.AuctionSpecification;
+import mock.auction.response.AuctionResponse;
 import mock.auction.service.AuctionService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -88,7 +94,8 @@ public class AuctionServiceImpl implements AuctionService {
     }
 
     @Override
-    public List<Auction> filterAuction(LocalDateTime startDate, LocalDateTime endDate, Double minPrice, Double maxPrice) {
+    public List<Auction> filterAuction(LocalDateTime startDate, LocalDateTime endDate, Double minPrice,
+            Double maxPrice) {
         try {
             return auctionRepository.findAuctionsByDateRangeAndAmount(startDate, endDate, minPrice, maxPrice);
         } catch (Exception e) {
@@ -97,4 +104,44 @@ public class AuctionServiceImpl implements AuctionService {
         }
     }
 
+    /**
+     * search auctions
+     * @param auctionStatus
+     * @param sortOrder
+     * @param pageNumber
+     * @param pageSize
+     * @param keyWord
+     * @return List<AuctionResponse>
+     * @throws Exception
+     */
+    @Override
+    public List<AuctionResponse> searchAuctions(String auctionStatus, String sortOrder, Integer pageNumber,
+            Integer pageSize,
+            String keyWord) throws Exception {
+        if (auctionStatus == null) {
+            auctionStatus = "preparing";
+        }
+        AuctionSpecification spec = createSpecification(auctionStatus, keyWord);
+        Sort sort = Sort.by("asset.marketPrice");
+        if ("desc".equalsIgnoreCase(sortOrder)) {
+            sort = sort.descending();
+        } else {
+            sort = sort.ascending();
+        }
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Page<Auction> page = auctionRepository.findAll(spec, pageable);
+        List<Auction> auctions = page.getContent().stream()
+                .filter(auction -> auction.getDelFlag() == false).toList();
+        return auctions.stream().map(AuctionResponse::of).toList();
+    }
+
+    private AuctionSpecification createSpecification(String auctionStatus, String keyWord) {
+        AuctionSpecification spec = new AuctionSpecification(auctionStatus, keyWord);
+
+        if (keyWord == null) {
+            spec = null; // Return null specification to fetch all if no filters are applied
+        }
+
+        return spec;
+    }
 }

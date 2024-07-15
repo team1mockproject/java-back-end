@@ -597,10 +597,10 @@ const ManagerStaffList = () => {
                                                 ]}
                                             >
                                                 <Select placeholder="Select a position">
-                                                    <Option value="staff">Staff</Option>
-                                                    <Option value="manager">Manager</Option>
-                                                    <Option value="director">Director</Option>
-                                                    <Option value="intern">Intern</Option>
+                                                    <Select.Option value="staff">Staff</Select.Option>
+                                                    <Select.Option value="manager">Manager</Select.Option>
+                                                    <Select.Option value="director">Director</Select.Option>
+                                                    <Select.Option value="intern">Intern</Select.Option>
                                                 </Select>
                                             </Form.Item>
                                         </Col>
@@ -635,7 +635,7 @@ const ManagerStaffList = () => {
                                 <Form
                                     className="p-2"
                                     layout="vertical"
-                                    form={createForm}
+                                    form={updateForm}
                                 >
                                     <span className="font-semibold">Personal information </span>
                                     <Row gutter={16}>
@@ -745,10 +745,10 @@ const ManagerStaffList = () => {
                                                 ]}
                                             >
                                                 <Select placeholder="Select a position">
-                                                    <Option value="staff">Staff</Option>
-                                                    <Option value="manager">Manager</Option>
-                                                    <Option value="director">Director</Option>
-                                                    <Option value="intern">Intern</Option>
+                                                    <Select.Option value="staff">Staff</Select.Option>
+                                                    <Select.Option value="manager">Manager</Select.Option>
+                                                    <Select.Option value="director">Director</Select.Option>
+                                                    <Select.Option value="intern">Intern</Select.Option>
                                                 </Select>
                                             </Form.Item>
                                         </Col>
@@ -759,8 +759,9 @@ const ManagerStaffList = () => {
 
                                     <Row justify={"end"} className="mt-8">
                                         <Button className="bg-blue-500 border border-blue-500 text-white cursor-pointer" onClick={() => {
-                                            validateCreateForm()
-                                        }}>Create</Button>
+                                            setConfirmStatus('Update')
+                                            validateUpdateForm()
+                                        }}>Save</Button>
                                         <Button
                                             className="ml-2 bg-red-500 border border-red-500 text-white cursor-pointer hover:bg-white hover:!text-red-500 hover:!border-red-500"
                                             onClick={() => { setIsStaffCreateOpen(false) }}
@@ -921,63 +922,122 @@ const ManagerStaffList = () => {
                                     layout="vertical"
                                     form={createForm}
                                 >
-                                    <p className="text-center italic"><span className="font-semibold">Id: </span>{data.length + 1}</p>
-                                    <Form.Item
-                                        label='Name'
-                                        name={'name'}
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Please enter staff name!'
-                                            }
-                                        ]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label='Email'
-                                        name={'email'}
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Please enter staff email!'
-                                            },
-                                            {
-                                                type: 'email',
-                                                message: 'Wrong email format!'
-                                            }
-                                        ]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label='Code'
-                                        name={'code'}
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Please enter staff code!'
-                                            }
-                                        ]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label='Phone Number'
-                                        name={'phone'}
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Please enter staff phone!'
-                                            },
-                                            // {
-                                            //     pattern: /^(\(\d{3}\)\s?|\d{3}[-.\s]?)?\d{3}[-.\s]?\d{4}$/,
-                                            //     message: 'Wrong US phone number format!'
-                                            // }
-                                        ]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
+                                    <span className="font-semibold">Personal information </span>
+                                    <Row gutter={16}>
+                                        <Col span={12}>
+                                            <Form.Item
+                                                label='Name'
+                                                name={'name'}
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message: 'Please enter staff name!'
+                                                    }
+                                                ]}
+                                            >
+                                                <Input />
+                                            </Form.Item>
+                                            <Form.Item
+                                                label='Email'
+                                                name={'email'}
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message: 'Please enter staff email!'
+                                                    },
+                                                    {
+                                                        type: 'email',
+                                                        message: 'Wrong email format!'
+                                                    }
+                                                ]}
+                                            >
+                                                <Input />
+                                            </Form.Item>
+                                            <Form.Item
+                                                label='Birthday'
+                                                name={'birthday'}
+                                            >
+                                                <DatePicker format="DD-MM-YYYY" />
+                                            </Form.Item>
+                                            <Form.Item
+                                                label='Address'
+                                                name={'address'}
+                                            >
+                                                <Input />
+                                            </Form.Item>
+                                            <Form.Item
+                                                label='Code'
+                                                name={'code'}
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message: 'Please enter staff code!'
+                                                    }
+                                                ]}
+                                            >
+                                                <Input />
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={12}>
+                                            <Form.Item
+                                                label='Phone Number'
+                                                name={'phone'}
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message: 'Please enter staff phone!'
+                                                    },
+                                                    // {
+                                                    //     pattern: /^(\(\d{3}\)\s?|\d{3}[-.\s]?)?\d{3}[-.\s]?\d{4}$/,
+                                                    //     message: 'Wrong US phone number format!'
+                                                    // }
+                                                ]}
+                                            >
+                                                <Input />
+                                            </Form.Item>
+
+                                            <Form.Item
+                                                label='Password'
+                                                name={'password'}
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message: 'Please enter staff password!'
+                                                    }
+                                                ]}
+                                            >
+                                                <Input.Password />
+                                            </Form.Item>
+
+                                            <Form.Item
+                                                label='Gender'
+                                                name={'gender'}
+                                            >
+                                                <Radio.Group>
+                                                    <Radio value="male">Male</Radio>
+                                                    <Radio value="female">Female</Radio>
+                                                </Radio.Group>
+                                            </Form.Item>
+
+                                            <Form.Item
+                                                label='Position'
+                                                name={'position'}
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message: 'Please select position!',
+                                                    },
+                                                ]}
+                                            >
+                                                <Select placeholder="Select a position">
+                                                    <Select.Option value="staff">Staff</Select.Option>
+                                                    <Select.Option value="manager">Manager</Select.Option>
+                                                    <Select.Option value="director">Director</Select.Option>
+                                                    <Select.Option value="intern">Intern</Select.Option>
+                                                </Select>
+                                            </Form.Item>
+                                        </Col>
+                                    </Row>
                                     <Row justify={"end"} className="mt-8">
                                         <Button className="bg-blue-500 border border-blue-500 text-white cursor-pointer" onClick={() => {
                                             validateCreateForm()
@@ -1004,7 +1064,7 @@ const ManagerStaffList = () => {
                                 <Form
                                     className="p-2"
                                     layout="vertical"
-                                    form={createForm}
+                                    form={updateForm}
                                 >
                                     <span className="font-semibold">Personal information </span>
                                     <Row gutter={16}>
@@ -1114,10 +1174,10 @@ const ManagerStaffList = () => {
                                                 ]}
                                             >
                                                 <Select placeholder="Select a position">
-                                                    <Option value="staff">Staff</Option>
-                                                    <Option value="manager">Manager</Option>
-                                                    <Option value="director">Director</Option>
-                                                    <Option value="intern">Intern</Option>
+                                                    <Select.Option value="staff">Staff</Select.Option>
+                                                    <Select.Option value="manager">Manager</Select.Option>
+                                                    <Select.Option value="director">Director</Select.Option>
+                                                    <Select.Option value="intern">Intern</Select.Option>
                                                 </Select>
                                             </Form.Item>
                                         </Col>
@@ -1126,13 +1186,17 @@ const ManagerStaffList = () => {
 
 
 
-                                    <Row justify={"end"} className="mt-8">
+                                    <Row justify={"space-between"} className="mt-8">
                                         <Button className="bg-blue-500 border border-blue-500 text-white cursor-pointer" onClick={() => {
-                                            validateCreateForm()
-                                        }}>Create</Button>
+                                            setConfirmStatus('Update')
+                                            validateUpdateForm()
+                                        }}>Update</Button>
                                         <Button
                                             className="ml-2 bg-red-500 border border-red-500 text-white cursor-pointer hover:bg-white hover:!text-red-500 hover:!border-red-500"
-                                            onClick={() => { setIsStaffCreateOpen(false) }}
+                                            onClick={() => {
+                                                setConfirmStatus('Delete')
+                                                setIsConfirmOpen(true)
+                                            }}
                                         >
                                             Cancel
                                         </Button>
@@ -1399,10 +1463,10 @@ const ManagerStaffList = () => {
                                                 ]}
                                             >
                                                 <Select placeholder="Select a position">
-                                                    <Option value="staff">Staff</Option>
-                                                    <Option value="manager">Manager</Option>
-                                                    <Option value="director">Director</Option>
-                                                    <Option value="intern">Intern</Option>
+                                                    <Select.Option value="staff">Staff</Select.Option>
+                                                    <Select.Option value="manager">Manager</Select.Option>
+                                                    <Select.Option value="director">Director</Select.Option>
+                                                    <Select.Option value="intern">Intern</Select.Option>
                                                 </Select>
                                             </Form.Item>
                                         </Col>
@@ -1437,7 +1501,7 @@ const ManagerStaffList = () => {
                                 <Form
                                     className="p-2"
                                     layout="vertical"
-                                    form={createForm}
+                                    form={updateForm}
                                 >
                                     <span className="font-semibold">Personal information </span>
                                     <Row gutter={16}>
@@ -1547,10 +1611,10 @@ const ManagerStaffList = () => {
                                                 ]}
                                             >
                                                 <Select placeholder="Select a position">
-                                                    <Option value="staff">Staff</Option>
-                                                    <Option value="manager">Manager</Option>
-                                                    <Option value="director">Director</Option>
-                                                    <Option value="intern">Intern</Option>
+                                                    <Select.Option value="staff">Staff</Select.Option>
+                                                    <Select.Option value="manager">Manager</Select.Option>
+                                                    <Select.Option value="director">Director</Select.Option>
+                                                    <Select.Option value="intern">Intern</Select.Option>
                                                 </Select>
                                             </Form.Item>
                                         </Col>
@@ -1559,13 +1623,17 @@ const ManagerStaffList = () => {
 
 
 
-                                    <Row justify={"end"} className="mt-8">
+                                    <Row justify={"space-between"} className="mt-8">
                                         <Button className="bg-blue-500 border border-blue-500 text-white cursor-pointer" onClick={() => {
-                                            validateCreateForm()
-                                        }}>Create</Button>
+                                            setConfirmStatus('Update')
+                                            validateUpdateForm()
+                                        }}>Update</Button>
                                         <Button
                                             className="ml-2 bg-red-500 border border-red-500 text-white cursor-pointer hover:bg-white hover:!text-red-500 hover:!border-red-500"
-                                            onClick={() => { setIsStaffCreateOpen(false) }}
+                                            onClick={() => {
+                                                setConfirmStatus('Delete')
+                                                setIsConfirmOpen(true)
+                                            }}
                                         >
                                             Cancel
                                         </Button>

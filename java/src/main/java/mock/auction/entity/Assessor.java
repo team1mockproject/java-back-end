@@ -19,6 +19,7 @@ public class Assessor {
     private String name;
     private String email;
     private String phone;
+    private String status;
     @ManyToOne
     @JoinColumn(name = "location_id")
     private LocationEntity location;

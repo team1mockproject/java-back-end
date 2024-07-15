@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AuctionService {
-    public Auction createAuction(Auction auction);
+    public Auction createAuction(Auction auction,List<Integer> AssetIds);
 
     public Auction updateAuction(Integer id, Auction auction);
 
@@ -18,4 +18,8 @@ public interface AuctionService {
 
     public List<Auction> filterAuction(LocalDateTime startDate, LocalDateTime endDate, Double minPrice,
             Double maxPrice);
+
+    public Auction placeBid(Long auctionId, Long userId, Double bidAmount);
+
+    public void closeAuction(Long auctionId);
 }

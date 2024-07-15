@@ -17,7 +17,9 @@ public class Assessor {
     @Column(name = "assessor_id")
     private Integer assessorId;
     private String name;
+    @Column(unique = true)
     private String email;
+    @Column(unique = true)
     private String phone;
     private String status;
     @ManyToOne

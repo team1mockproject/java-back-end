@@ -30,4 +30,8 @@ public class LocationEntity {
     private Collection<Assessor> assessors;
     @OneToMany(mappedBy = "location")
     private Collection<AuctionEvent> auctionEvents;
+
+    @ManyToOne
+    @JoinColumn(name = "state_code")
+    private State state;
 }

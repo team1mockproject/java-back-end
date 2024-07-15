@@ -16,11 +16,13 @@ const ManagerAssetList = () => {
     const [isServiceModalOpen, setIsServiceModalOpen] = useState(false)
     const [viewOption, setViewOption] = useState('View')
     const [serviceSelected, setServiceSelected] = useState([])
+    const [newServiceSelected, setNewServiceSelected] = useState([])
+
     const [modalServiceSelected, setModalServiceSelected] = useState([])
     const [uploadStatus, setUploadStatus] = useState('No upload')
-    // useEffect(() => {
-    //     console.log(">>> Check:", serviceSelected)
-    // }, [serviceSelected])
+    useEffect(() => {
+        console.log(">>> Check:", serviceSelected)
+    }, [serviceSelected])
 
     const [form] = Form.useForm()
 
@@ -28,8 +30,25 @@ const ManagerAssetList = () => {
         setPageCurrent(pagination.current)
     }
 
+
+
     const onChangeSelected = (event, key) => {
-        let serviceList = modalServiceSelected
+
+        // let serviceList = [...newServiceSelected]
+        // if (event.target.checked) {
+        //     serviceList.push(key)
+        // } else {
+        //     let index = serviceList.indexOf(key)
+        //     if (index !== -1) {
+        //         serviceList.splice(index, 1)
+        //     }
+        // }
+
+        // // console.log("Check: ", serviceList)
+        // setNewServiceSelected(serviceList)
+
+
+        let serviceList = [...modalServiceSelected]
         if (event.target.checked) {
             serviceList.push(key)
         } else {
@@ -38,8 +57,21 @@ const ManagerAssetList = () => {
                 serviceList.splice(index, 1)
             }
         }
+
+        // console.log("Check: ", serviceList)
+        setModalServiceSelected(serviceList)
+
+
+        // setModalServiceSelected(form.getFieldValue('primaryServices'))
+        // if (!isOk) {
+        //     let index = serviceList.indexOf(key)
+        //     if (index !== -1) {
+        //         serviceList.splice(index, 1)
+        //     }
+
+        // }
         // form.setFieldValue('primaryServices', ['1'])
-        console.log(form.getFieldValue('primaryServices'))
+        // console.log(form.getFieldValue('primaryServices'))
         // setModalServiceSelected(serviceList)
     }
 
@@ -1355,17 +1387,25 @@ const ManagerAssetList = () => {
                                     </Row>
                                 </div>
                             </Form>
+
+
                             <Modal
                                 title='Add services'
                                 open={isServiceModalOpen}
                                 width={700}
                                 centered={true}
                                 onCancel={() => {
+                                    // setModalServiceSelected(modalServiceSelected)
+                                    // setModalServiceSelected(serviceSelected)
                                     setIsServiceModalOpen(false)
                                 }}
                                 onOk={() => {
+                                    // setModalServiceSelected([
+                                    //     ...modalServiceSelected,
+                                    //     ...newServiceSelected
+                                    // ])
+                                    form.setFieldValue('primaryServices', modalServiceSelected)
                                     setServiceSelected(modalServiceSelected)
-                                    form.setFieldValue('primaryServices', serviceSelected)
                                     setIsServiceModalOpen(false)
                                 }}
                             >
@@ -1378,6 +1418,7 @@ const ManagerAssetList = () => {
                                             <div key={service.key} className="mb-2 flex items-start gap-2">
                                                 <Checkbox
                                                     id={`service${service.key}`}
+
                                                     onChange={(event) => { onChangeSelected(event, service.key) }}
                                                     defaultChecked={serviceSelected.includes(service.key)}
                                                 />

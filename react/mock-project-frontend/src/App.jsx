@@ -17,6 +17,7 @@ import ManagerStaffList from './pages/manager-staff-list/ManagerStaffList'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import { ModalStateWrapper } from './context/modal-state-context/ModalStateContext'
+import ClientAssetWantToAuction from './pages/client-asset-want-to-auction/ClientAssetWantToAuction'
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
       {
         path: "/register-to-auction",
         element: <ClientRegisterToAuction />,
+      },
+      {
+        path: "/asset-want-to-auction",
+        element: <ClientAssetWantToAuction />
       },
     ],
   },

@@ -1,7 +1,42 @@
 import { Button, Checkbox, Col, ConfigProvider, DatePicker, Flex, Form, Input, Radio, Row } from "antd"
+import { useState } from "react"
 import { Link } from "react-router-dom"
 
 const Signup = () => {
+    const [personalOrAgency, setPersonalOrAgency ] = useState(null);
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [repeatPassword, setRepeatPassword] = useState("");
+    const [fullName, setFullName] = useState("");
+    const [roles, setRoles] = useState([]);
+    const [phone, setPhone] = useState("");
+	const [error, setError] = useState("");
+
+    const handleSignUp = async () => {
+		try {
+			const response = await fetch("http://localhost:8888/api/authenticate/account/register", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ fullName, lastName, email, password }),
+			});
+
+			if (response.ok) {
+				const data = await response.json();
+				// Xử lý đăng ký thành công - ví dụ, chuyển hướng người dùng hoặc hiển thị thông báo thành công
+				console.log("Sign-up successful", data);
+			} else {
+				const errorData = await response.json();
+				// Xử lý lỗi trả về từ backend
+				setError(errorData.data || "Đăng ký thất bại");
+			}
+		} catch (error) {
+			// Xử lý lỗi không mong muốn (ví dụ: lỗi mạng)
+			setError("Có lỗi xảy ra. Vui lòng thử lại sau.");
+		}
+	};
+
     const [form] = Form.useForm()
     const validateConfirmPassword = () => {
         if (form.getFieldValue('confirmPassword') !== form.getFieldValue('password')) {

@@ -61,7 +61,7 @@ public class AccountServiceImp extends AbstractService<AccountDto, AccountEntity
             throw new ResourceConflictException(phone, "Phone already exists");
         }
         AccountEntity accountEntity = accountDto.getId() == null ? createNewAccount(accountDto) : updateExistingAccount(accountDto);
-        accountEntity.setLocation(fetchLocation(accountDto.getLocationId()));
+//        accountEntity.setLocation(fetchLocation(accountDto.getLocationId()));
         accountEntity.setRoles(setRoles(accountDto.getRoleIds()));
 
         return accountEntity;

@@ -7,13 +7,31 @@ import { RiLockPasswordFill } from "react-icons/ri"
 import { loginApi } from "../../services/AccountService"
 import { useState } from "react"
 import { toast } from "react-toastify"
+import { useDispatch } from "react-redux"
+import { login } from "../../redux/slices/authSlice"
 const Login = () => {
     const [form] = Form.useForm()
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const handleLogin = () => {
-        if (!email || !password)
+    const dispatch = useDispatch();
+
+    const handleLogin = async () => {
+        if (!email || !password) {
+            toast.error("Email/Password is required");
+            return;
+        }
+
+        let res = await loginApi(email, password)
+        if (res && res.data && res.data.accessToken) {
+            localStorage.setItem('token', res.data.accessToken);
+            dispatch(login(res.data.accessToken));
+            toast.success("Login successful");
+        } else {
+            console.log(123)
+            toast.error("Login failed");
+        }
     }
+
     return (
         <div className="m-8">
             <img
@@ -63,6 +81,7 @@ const Login = () => {
                                 ]}
                             >
                                 <Input
+                                    onChange={(event) => setEmail(event.target.value)}
                                     className="text-base py-2"
                                     placeholder="Email"
                                     prefix={<CiMail />}
@@ -78,6 +97,7 @@ const Login = () => {
                                 ]}
                             >
                                 <Input.Password
+                                    onChange={(event) => setPassword(event.target.value)}
                                     className="text-base py-2"
                                     placeholder="Password"
                                     prefix={<RiLockPasswordFill />}
@@ -106,7 +126,7 @@ const Login = () => {
                                     <Button
                                         className="bg-[var(--color-primary)] text-white font-medium px-14 py-5 text-base"
                                         // onClick={() => { form.submit() }}
-                                        onClick={() => handleLogin()}
+                                        onClick={handleLogin}
                                         style={{}}
                                     >
                                         Login

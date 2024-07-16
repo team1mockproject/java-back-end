@@ -20,7 +20,6 @@ public class AccountDto {
     private String phone;
     private char gender;
     private int age;
-    private Integer locationId;
     private LocationDto location;
     private String career;
     private int countSpam;

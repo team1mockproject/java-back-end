@@ -27,7 +27,7 @@ public class AccountEntity {
     private String phone;
     private char gender;
     private int age;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="location_id")
     private LocationEntity location;
     private String career;

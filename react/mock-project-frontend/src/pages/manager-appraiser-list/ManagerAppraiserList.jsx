@@ -5,6 +5,7 @@ import { useContext, useState } from "react";
 import { ResponsiveContext } from "../../context/responsive-context/ResponsiveContext";
 import { FaPlusCircle } from "react-icons/fa";
 import { FaXmark } from "react-icons/fa6";
+import ModalStateContext from "../../context/modal-state-context";
 const ManagerAppraiserList = () => {
     const [appraiserKey, setAppraiserKey] = useState()
     const [isAppraiserCreateOpen, setIsAppraiserCreateOpen] = useState(false)
@@ -17,6 +18,7 @@ const ManagerAppraiserList = () => {
     const [updateForm] = Form.useForm()
 
     const { isMobile, isTablet, isDesktop } = useContext(ResponsiveContext)
+    const { setModalState } = useContext(ModalStateContext)
 
     const validateCreateForm = () => {
         createForm.validateFields()
@@ -87,6 +89,7 @@ const ManagerAppraiserList = () => {
                             onClick={() => {
                                 setIsAppraiserUpdateOpen(true)
                                 setAppraiserKey(record.key)
+                                setModalState(true)
                                 updateForm.setFieldsValue({
                                     name: record.name,
                                     email: record.email,
@@ -302,6 +305,7 @@ const ManagerAppraiserList = () => {
                                         onClick={() => {
                                             setIsAppraiserCreateOpen(true)
                                             createForm.resetFields()
+                                            setModalState(true)
                                         }}
                                     >
                                         Create <FaPlusCircle />
@@ -344,7 +348,10 @@ const ManagerAppraiserList = () => {
                             `}>
                                 <span className="flex justify-end">
                                     <FaXmark className='text-2xl text-red-500 cursor-pointer bg-white transition-all hover:bg-red-200'
-                                        onClick={() => { setIsAppraiserCreateOpen(false) }}
+                                        onClick={() => {
+                                            setIsAppraiserCreateOpen(false)
+                                            setModalState(false)
+                                        }}
                                     />
                                 </span>
                                 <h3 className="text-xl text-center font-semibold">Create appraiser</h3>
@@ -415,7 +422,10 @@ const ManagerAppraiserList = () => {
                                         }}>Create</Button>
                                         <Button
                                             className="ml-2 bg-red-500 border border-red-500 text-white cursor-pointer hover:bg-white hover:!text-red-500 hover:!border-red-500"
-                                            onClick={() => { setIsAppraiserCreateOpen(false) }}
+                                            onClick={() => {
+                                                setIsAppraiserCreateOpen(false)
+                                                setModalState(false)
+                                            }}
                                         >
                                             Cancel
                                         </Button>
@@ -428,7 +438,10 @@ const ManagerAppraiserList = () => {
                             `}>
                                 <span className="flex justify-end">
                                     <FaXmark className='text-2xl text-red-500 cursor-pointer bg-white transition-all hover:bg-red-200'
-                                        onClick={() => { setIsAppraiserUpdateOpen(false) }}
+                                        onClick={() => {
+                                            setIsAppraiserUpdateOpen(false)
+                                            setModalState(false)
+                                        }}
                                     />
                                 </span>
                                 <h3 className="text-xl text-center font-semibold">Update appraiser</h3>
@@ -500,7 +513,10 @@ const ManagerAppraiserList = () => {
                                         }}>Save</Button>
                                         <Button
                                             className="ml-2 bg-red-500 border border-red-500 text-white cursor-pointer hover:bg-white hover:!text-red-500 hover:!border-red-500"
-                                            onClick={() => { setIsAppraiserUpdateOpen(false) }}
+                                            onClick={() => {
+                                                setIsAppraiserUpdateOpen(false)
+                                                setModalState(false)
+                                            }}
                                         >
                                             Cancel
                                         </Button>
@@ -564,6 +580,7 @@ const ManagerAppraiserList = () => {
                                         onClick={() => {
                                             setIsAppraiserCreateOpen(true)
                                             createForm.resetFields()
+                                            setModalState(true)
                                         }}
                                     >
                                         Create <FaPlusCircle />
@@ -582,6 +599,7 @@ const ManagerAppraiserList = () => {
                                                 onClick={() => {
                                                     setAppraiserKey(appraiser.key)
                                                     setIsAppraiserUpdateOpen(true)
+                                                    setModalState(true)
                                                     updateForm.setFieldsValue({
                                                         name: appraiser.name,
                                                         address: appraiser.address,
@@ -640,6 +658,7 @@ const ManagerAppraiserList = () => {
                                     <FaXmark className='text-2xl text-red-500 cursor-pointer bg-white transition-all hover:bg-red-200'
                                         onClick={() => {
                                             setIsAppraiserCreateOpen(false)
+                                            setModalState(false)
                                         }}
                                     />
                                 </span>
@@ -711,7 +730,10 @@ const ManagerAppraiserList = () => {
                                         }}>Create</Button>
                                         <Button
                                             className="ml-2 bg-red-500 border border-red-500 text-white cursor-pointer hover:bg-white hover:!text-red-500 hover:!border-red-500"
-                                            onClick={() => { setIsAppraiserCreateOpen(false) }}
+                                            onClick={() => {
+                                                setIsAppraiserCreateOpen(false)
+                                                setModalState(false)
+                                            }}
                                         >
                                             Cancel
                                         </Button>
@@ -724,7 +746,10 @@ const ManagerAppraiserList = () => {
                         `}>
                                 <span className="flex justify-end">
                                     <FaXmark className='text-2xl text-red-500 cursor-pointer bg-white transition-all hover:bg-red-200'
-                                        onClick={() => { setIsAppraiserUpdateOpen(false) }}
+                                        onClick={() => {
+                                            setIsAppraiserUpdateOpen(false)
+                                            setModalState(false)
+                                        }}
                                     />
                                 </span>
                                 <h3 className="text-xl text-center font-semibold">Update appraiser</h3>
@@ -862,6 +887,7 @@ const ManagerAppraiserList = () => {
                                     <Button className="bg-blue-500 text-white !py-2 h-fit text-base hover:!border-blue-500 hover:!text-blue-500"
                                         onClick={() => {
                                             setIsAppraiserCreateOpen(true)
+                                            setModalState(true)
                                             createForm.resetFields()
                                         }}
                                     >
@@ -881,6 +907,7 @@ const ManagerAppraiserList = () => {
                                                 onClick={() => {
                                                     setAppraiserKey(appraiser.key)
                                                     setIsAppraiserUpdateOpen(true)
+                                                    setModalState(true)
                                                     updateForm.setFieldsValue({
                                                         name: appraiser.name,
                                                         address: appraiser.address,
@@ -939,6 +966,7 @@ const ManagerAppraiserList = () => {
                                     <FaXmark className='text-2xl text-red-500 cursor-pointer bg-white transition-all hover:bg-red-200'
                                         onClick={() => {
                                             setIsAppraiserCreateOpen(false)
+                                            setModalState(false)
                                         }}
                                     />
                                 </span>
@@ -1010,7 +1038,10 @@ const ManagerAppraiserList = () => {
                                         }}>Create</Button>
                                         <Button
                                             className="ml-2 bg-red-500 border border-red-500 text-white cursor-pointer hover:bg-white hover:!text-red-500 hover:!border-red-500"
-                                            onClick={() => { setIsAppraiserCreateOpen(false) }}
+                                            onClick={() => {
+                                                setIsAppraiserCreateOpen(false)
+                                                setModalState(false)
+                                            }}
                                         >
                                             Cancel
                                         </Button>
@@ -1023,7 +1054,10 @@ const ManagerAppraiserList = () => {
                     `}>
                                 <span className="flex justify-end">
                                     <FaXmark className='text-2xl text-red-500 cursor-pointer bg-white transition-all hover:bg-red-200'
-                                        onClick={() => { setIsAppraiserUpdateOpen(false) }}
+                                        onClick={() => {
+                                            setIsAppraiserUpdateOpen(false)
+                                            setModalState(false)
+                                        }}
                                     />
                                 </span>
                                 <h3 className="text-xl text-center font-semibold">Update appraiser</h3>

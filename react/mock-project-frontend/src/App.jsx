@@ -14,6 +14,7 @@ import ClientRegisterToAuction from "./pages/client-register-to-auction";
 import ManagerAssetList from './pages/manager-asset-list'
 import Categories from './pages/Categories'
 import ManagerStaffList from './pages/manager-staff-list/ManagerStaffList'
+import { ModalStateWrapper } from './context/modal-state-context/ModalStateContext'
 
 const router = createBrowserRouter([
   {
@@ -75,7 +76,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <ResponsiveWrapper>
-      <RouterProvider router={router} />
+      <ModalStateWrapper>
+        <RouterProvider router={router} />
+      </ModalStateWrapper>
     </ResponsiveWrapper>
   );
 }

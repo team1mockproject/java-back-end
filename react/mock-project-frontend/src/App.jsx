@@ -15,6 +15,7 @@ import ManagerAssetList from './pages/manager-asset-list'
 import Categories from './pages/Categories'
 import ManagerStaffList from './pages/manager-staff-list/ManagerStaffList'
 import { ModalStateWrapper } from './context/modal-state-context/ModalStateContext'
+import ClientAssetWantToAuction from './pages/client-asset-want-to-auction/ClientAssetWantToAuction'
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
       {
         path: "/register-to-auction",
         element: <ClientRegisterToAuction />,
+      },
+      {
+        path: "/asset-want-to-auction",
+        element: <ClientAssetWantToAuction />
       },
     ],
   },

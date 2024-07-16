@@ -9,8 +9,7 @@ import TextArea from "antd/es/input/TextArea"
 import Search from "antd/es/input/Search"
 import { HiXMark } from "react-icons/hi2"
 import ModalStateContext from "../../context/modal-state-context"
-
-const ManagerAssetList = () => {
+const ClientAssetWantToAuction = () => {
     const { isMobile, isTablet, isDesktop } = useContext(ResponsiveContext)
     const [assetKey, setAssetKey] = useState()
     const [pageCurrent, setPageCurrent] = useState(1)
@@ -25,10 +24,6 @@ const ManagerAssetList = () => {
     const [uploadStatus, setUploadStatus] = useState('No upload')
 
     const { modalState, setModalState } = useContext(ModalStateContext)
-
-    // useEffect(() => {
-    //     console.log(serviceSelected)
-    // }, [serviceSelected])
 
     const [form] = Form.useForm()
 
@@ -100,7 +95,7 @@ const ManagerAssetList = () => {
             }
         },
         {
-            title: 'Name',
+            title: 'Product Name',
             dataIndex: 'name',
             key: 'name',
         },
@@ -110,12 +105,12 @@ const ManagerAssetList = () => {
             key: 'category',
         },
         {
-            title: 'Owner',
-            dataIndex: 'owner',
-            key: 'owner',
+            title: 'Appraiser',
+            dataIndex: 'appraiser',
+            key: 'appraiser',
         },
         {
-            title: 'Market price',
+            title: 'Start Price',
             dataIndex: 'marketPrice',
             key: 'marketPrice',
         },
@@ -123,11 +118,6 @@ const ManagerAssetList = () => {
             title: 'Status',
             dataIndex: 'status',
             key: 'status',
-        },
-        {
-            title: 'Inventory',
-            dataIndex: 'inventory',
-            key: 'inventory',
         },
         {
             title: <span className="block text-center">Action</span>,
@@ -870,7 +860,7 @@ const ManagerAssetList = () => {
             <div className={`absolute top-0 left-0 right-0 bottom-0 bg-black opacity-30 z-10 ${isModalOpen || isServiceModalOpen ? '' : 'hidden'}`}></div>
             <div className="w-full px-8 pt-8">
                 {isDesktop &&
-                    <div className="ml-[247px]">
+                    <div className="">
                         <h2 className="text-center text-3xl font-medium uppercase mb-4">Asset List</h2>
                         <ConfigProvider
                             theme={{
@@ -895,15 +885,46 @@ const ManagerAssetList = () => {
                             <div className="w-full">
                                 <Row justify={"space-between"}>
                                     {/* Search Component */}
-                                    <Col xs={19} className="flex">
-                                        <Input className="h-full rounded-tr-none rounded-br-none" placeholder="Search for asset" />
-                                        <Button className="h-full rounded-tl-none rounded-bl-none">
+                                    <Col xs={14} className="flex">
+                                        <Input className="h-[40px] rounded-tr-none rounded-br-none" placeholder="Search for asset" />
+                                        <Button className="h-[40px] rounded-tl-none rounded-bl-none">
                                             <IoSearch className="text-xl" />
                                         </Button>
                                     </Col>
+                                    {/* Filter Component */}
+                                    <Col xs={6} xl={5} className="flex items-center gap-1">
+                                        <span>Status: </span>
+                                        <Select
+                                            className="w-full rounded-none"
+                                            size="large"
+                                            defaultValue={'All'}
+                                            options={[
+                                                {
+                                                    value: 'All',
+                                                    label: 'All',
+                                                },
+                                                {
+                                                    value: 'Sold',
+                                                    label: 'Sold',
+                                                },
+                                                {
+                                                    value: 'Selling',
+                                                    label: 'Selling',
+                                                },
+                                                {
+                                                    value: 'Upcoming',
+                                                    label: 'Upcoming',
+                                                },
+                                                {
+                                                    value: 'In progress',
+                                                    label: 'In progress',
+                                                }
+                                            ]}
+                                        />
+                                    </Col>
                                     {/* Create Modal Component */}
                                     <Col className="flex items-center justify-end gap-3">
-                                        <Button className="bg-blue-500 text-white !py-2 h-fit text-base hover:!border-blue-500 hover:!text-blue-500"
+                                        <Button className="bg-blue-500 text-white h-[40px] text-base hover:!border-blue-500 hover:!text-blue-500"
                                             onClick={() => {
                                                 form.resetFields()
                                                 form.setFieldValue('listingDate', `${String(new Date().getDate()).length === 1 ? '0' + String(new Date().getDate()) : String(new Date().getDate())}/${String(new Date().getMonth() + 1).length === 1 ? '0' + String(new Date().getMonth() + 1) : String(new Date().getMonth() + 1)}/${new Date().getFullYear()}`)
@@ -915,58 +936,6 @@ const ManagerAssetList = () => {
                                             }}
                                         >
                                             <FaPlusCircle /> New Asset
-                                        </Button>
-                                    </Col>
-                                </Row>
-                                <Row className="mt-3" align={"bottom"} justify={"space-between"}>
-                                    <Col xs={17} className="flex gap-5">
-                                        <Col xs={6} xl={5}>
-                                            <h3>Status: </h3>
-                                            <Select
-                                                className="w-full rounded-none"
-                                                size="large"
-                                                defaultValue={'All'}
-                                                options={[
-                                                    {
-                                                        value: 'All',
-                                                        label: 'All',
-                                                    },
-                                                    {
-                                                        value: 'Sold',
-                                                        label: 'Sold',
-                                                    },
-                                                    {
-                                                        value: 'Selling',
-                                                        label: 'Selling',
-                                                    },
-                                                    {
-                                                        value: 'Upcoming',
-                                                        label: 'Upcoming',
-                                                    },
-                                                    {
-                                                        value: 'In progress',
-                                                        label: 'In progress',
-                                                    }
-                                                ]}
-                                            />
-                                        </Col>
-                                        <Col xs={18} xl={19}>
-                                            <h3 className="">Price: </h3>
-                                            <div className="flex gap-2 items-center justify-between">
-                                                <Input id="priceFrom" addonAfter='USD' size="large" />
-                                                <FaArrowRightLong className="text-3xl" />
-                                                <Input id="priceFrom" addonAfter='USD' size="large" />
-                                            </div>
-                                        </Col>
-                                    </Col>
-                                    <Col>
-                                        <Button className="w-full bg-[var(--color-primary)] text-white !py-2 h-fit text-base hover:!border-[var(--color-primary)] hover:!text-[var(--color-primary)]"
-                                            onClick={() => {
-                                                // setIsassetCreateOpen(true)
-                                                // createForm.resetFields()
-                                            }}
-                                        >
-                                            <TiExport /> Export
                                         </Button>
                                     </Col>
                                 </Row>
@@ -1080,7 +1049,7 @@ const ManagerAssetList = () => {
                                                 <Select
                                                     id="category"
                                                     className="w-full mt-1"
-                                                    disabled={!isCreateMode}
+                                                    disabled={!isCreateMode && isViewMode}
                                                     placeholder='Choose type'
                                                     options={[
                                                         {
@@ -1110,7 +1079,7 @@ const ManagerAssetList = () => {
                                                     }
                                                 ]}
                                             >
-                                                <Input disabled={!isCreateMode} id="name" className="" placeholder="Enter asset name" />
+                                                <Input disabled={!isCreateMode && isViewMode} id="name" className="" placeholder="Enter asset name" />
                                             </Form.Item>
 
                                             {/* Asset description */}
@@ -1123,7 +1092,7 @@ const ManagerAssetList = () => {
                                                 <Select
                                                     className="!w-[150px]"
                                                     placeholder={'Custom Sample'}
-                                                    disabled={!isCreateMode}
+                                                    disabled={!isCreateMode && isViewMode}
                                                     options={[
                                                         {
                                                             value: 'Custom Sample',
@@ -1136,7 +1105,7 @@ const ManagerAssetList = () => {
                                             <Form.Item
                                                 name='description'
                                             >
-                                                <TextArea className="mt-3" disabled={!isCreateMode} rows={6} id="description" placeholder="Write a detailed description of your item, or save time and let AI draft it for you" />
+                                                <TextArea className="mt-3" disabled={!isCreateMode && isViewMode} rows={6} id="description" placeholder="Write a detailed description of your item, or save time and let AI draft it for you" />
                                             </Form.Item>
 
                                             {/* Asset market price */}
@@ -1150,7 +1119,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input disabled={!isCreateMode} id="marketPrice" placeholder="Enter market price" suffix='USD' />
+                                                <Input disabled={!isCreateMode && isViewMode} id="marketPrice" placeholder="Enter market price" suffix='USD' />
                                             </Form.Item>
 
                                             {/* Asset email */}
@@ -1168,7 +1137,7 @@ const ManagerAssetList = () => {
                                                     }
                                                 ]}
                                             >
-                                                <Input disabled={!isCreateMode} id="email" placeholder="Enter email owner" />
+                                                <Input disabled={!isCreateMode && isViewMode} id="email" placeholder="Enter email owner" />
                                             </Form.Item>
 
                                             {/* Asset origin */}
@@ -1182,7 +1151,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input disabled={!isCreateMode} id="origin" placeholder="Enter origin" />
+                                                <Input disabled={!isCreateMode && isViewMode} id="origin" placeholder="Enter origin" />
                                             </Form.Item>
 
                                             {/* Asset appraiser */}
@@ -1196,7 +1165,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="appraiser" placeholder="Enter appraiser" />
+                                                <Input disabled={true} id="appraiser" placeholder="Enter appraiser" />
                                             </Form.Item>
 
                                             {/* Asset valuation */}
@@ -1210,7 +1179,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="valuation" placeholder="Enter valuation" suffix='USD' />
+                                                <Input disabled={true} id="valuation" placeholder="Enter valuation" suffix='USD' />
                                             </Form.Item>
 
                                             <div className="flex justify-between">
@@ -1221,7 +1190,7 @@ const ManagerAssetList = () => {
                                                         name='appraisalDocument'
                                                     >
                                                         <Upload {...uploadProps}>
-                                                            {uploadStatus === 'No upload' ? <Button disabled={isViewMode}>Choose file</Button> : ''}
+                                                            {uploadStatus === 'No upload' ? <Button disabled={true}>Choose file</Button> : ''}
                                                         </Upload>
                                                     </Form.Item>
                                                 </div>
@@ -1235,7 +1204,7 @@ const ManagerAssetList = () => {
                                                     >
                                                         {/* <Input readOnly={true} id="legalDocument" type="file" className="!hidden" /> */}
                                                         <Upload {...uploadProps}>
-                                                            {uploadStatus === 'No upload' ? <Button disabled={isViewMode}>Choose file</Button> : ''}
+                                                            {uploadStatus === 'No upload' ? <Button disabled={true}>Choose file</Button> : ''}
                                                         </Upload>
                                                     </Form.Item>
                                                 </div>
@@ -1255,7 +1224,7 @@ const ManagerAssetList = () => {
                                                     <Select
                                                         id="status"
                                                         className="w-full mt-1 h-10"
-                                                        disabled={isViewMode}
+                                                        disabled={true}
                                                         placeholder='Choose status'
                                                         options={[
                                                             {
@@ -1288,7 +1257,7 @@ const ManagerAssetList = () => {
                                                         {...uploadProps}
                                                         showUploadList={false}
                                                     >
-                                                        <Button disabled={isViewMode}>Upload images</Button>
+                                                        <Button disabled={isViewMode && !isCreateMode}>Upload images</Button>
                                                     </Upload>
                                                 </Form.Item>
                                                 <div className="absolute bottom-2">
@@ -1326,7 +1295,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="listingFee" placeholder="Enter listing fee" suffix='USD' />
+                                                <Input disabled={true} id="listingFee" placeholder="Enter listing fee" suffix='USD' />
                                             </Form.Item>
 
                                             {/* Asset advertise fee */}
@@ -1340,7 +1309,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="advertiseFee" placeholder="Enter advertise fee" suffix='USD' />
+                                                <Input disabled={true} id="advertiseFee" placeholder="Enter advertise fee" suffix='USD' />
                                             </Form.Item>
 
                                             {/* Commission fee */}
@@ -1354,7 +1323,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="commissionFee" placeholder="Enter commission fee" suffix='USD' />
+                                                <Input disabled={true} id="commissionFee" placeholder="Enter commission fee" suffix='USD' />
                                             </Form.Item>
 
                                             {/* Delivery fee */}
@@ -1368,7 +1337,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="deliveryFee" placeholder="Enter delivery fee" suffix='USD' />
+                                                <Input disabled={true} id="deliveryFee" placeholder="Enter delivery fee" suffix='USD' />
                                             </Form.Item>
 
                                             {/* Inventory  */}
@@ -1385,7 +1354,7 @@ const ManagerAssetList = () => {
                                                 <Select
                                                     id="inventory"
                                                     className="w-full mt-1 h-10"
-                                                    disabled={isViewMode}
+                                                    disabled={true}
                                                     placeholder='Choose inventory'
                                                     options={[
                                                         {
@@ -1413,12 +1382,17 @@ const ManagerAssetList = () => {
                                                 <TextArea readOnly={true} id="primaryServices" className="border-none px-0 py-0 -mt-1" autoSize={true} />
                                             </Form.Item>
                                             <Button
-                                                disabled={isViewMode}
+                                                disabled={isViewMode && !isCreateMode}
                                                 className="-mt-1"
                                                 onClick={() => {
-                                                    let dataRow = data.filter(value => form.getFieldValue('key') === value.key)
-                                                    setServiceSelected(dataRow[0].primaryServices)
-                                                    setModalServiceSelected(dataRow[0].primaryServices)
+                                                    if (isCreateMode) {
+                                                        setServiceSelected([])
+                                                        setModalServiceSelected([])
+                                                    } else {
+                                                        let dataRow = data.filter(value => form.getFieldValue('key') === value.key)
+                                                        setServiceSelected(typeof dataRow[0].primaryServices === 'undefined' ? [] : dataRow[0].primaryServices)
+                                                        setModalServiceSelected(typeof dataRow[0].primaryServices === 'undefined' ? [] : dataRow[0].primaryServices)
+                                                    }
                                                     setIsServiceModalOpen(true)
                                                 }}>+ Add primary service</Button>
                                         </Col>
@@ -1570,17 +1544,48 @@ const ManagerAssetList = () => {
                             <div className="w-full">
                                 <Row justify={"space-between"}>
                                     {/* Search Component */}
-                                    <Col xs={24} className="flex">
-                                        <Input className="h-full rounded-tr-none rounded-br-none py-3" placeholder="Search for asset" />
-                                        <Button className="h-full rounded-tl-none rounded-bl-none">
+                                    <Col xs={24} className="flex mb-2">
+                                        <Input className="h-[40px] rounded-tr-none rounded-br-none" placeholder="Search for asset" />
+                                        <Button className="h-[40px] rounded-tl-none rounded-bl-none">
                                             <IoSearch className="text-xl" />
                                         </Button>
                                     </Col>
                                 </Row>
-                                <Row justify={"space-between"} className="mt-2">
+                                <Row justify={"space-between"}>
+                                    {/* Filter Component */}
+                                    <Col xs={10} className="flex items-center gap-1">
+                                        <span>Status: </span>
+                                        <Select
+                                            className="w-full rounded-none"
+                                            size="large"
+                                            defaultValue={'All'}
+                                            options={[
+                                                {
+                                                    value: 'All',
+                                                    label: 'All',
+                                                },
+                                                {
+                                                    value: 'Sold',
+                                                    label: 'Sold',
+                                                },
+                                                {
+                                                    value: 'Selling',
+                                                    label: 'Selling',
+                                                },
+                                                {
+                                                    value: 'Upcoming',
+                                                    label: 'Upcoming',
+                                                },
+                                                {
+                                                    value: 'In progress',
+                                                    label: 'In progress',
+                                                }
+                                            ]}
+                                        />
+                                    </Col>
                                     {/* Create Modal Component */}
                                     <Col className="flex items-center justify-end gap-3">
-                                        <Button className="bg-blue-500 text-white !py-2 h-fit text-base hover:!border-blue-500 hover:!text-blue-500"
+                                        <Button className="bg-blue-500 text-white h-[40px] text-base hover:!border-blue-500 hover:!text-blue-500"
                                             onClick={() => {
                                                 form.resetFields()
                                                 form.setFieldValue('listingDate', `${String(new Date().getDate()).length === 1 ? '0' + String(new Date().getDate()) : String(new Date().getDate())}/${String(new Date().getMonth() + 1).length === 1 ? '0' + String(new Date().getMonth() + 1) : String(new Date().getMonth() + 1)}/${new Date().getFullYear()}`)
@@ -1593,60 +1598,6 @@ const ManagerAssetList = () => {
                                         >
                                             <FaPlusCircle /> New Asset
                                         </Button>
-                                    </Col>
-
-                                    {/* Export */}
-                                    <Col>
-                                        <Button className="w-full bg-[var(--color-primary)] text-white !py-2 h-fit text-base hover:!border-[var(--color-primary)] hover:!text-[var(--color-primary)]"
-                                            onClick={() => {
-                                                // setIsassetCreateOpen(true)
-                                                // createForm.resetFields()
-                                            }}
-                                        >
-                                            <TiExport /> Export
-                                        </Button>
-                                    </Col>
-                                </Row>
-                                <Row className="mt-3" align={"bottom"} justify={"space-between"}>
-                                    <Col xs={24} className="flex gap-5">
-                                        <Col xs={6} xl={5}>
-                                            <h3>Status: </h3>
-                                            <Select
-                                                className="w-full rounded-none"
-                                                size="large"
-                                                defaultValue={'All'}
-                                                options={[
-                                                    {
-                                                        value: 'All',
-                                                        label: 'All',
-                                                    },
-                                                    {
-                                                        value: 'Sold',
-                                                        label: 'Sold',
-                                                    },
-                                                    {
-                                                        value: 'Selling',
-                                                        label: 'Selling',
-                                                    },
-                                                    {
-                                                        value: 'Upcoming',
-                                                        label: 'Upcoming',
-                                                    },
-                                                    {
-                                                        value: 'In progress',
-                                                        label: 'In progress',
-                                                    }
-                                                ]}
-                                            />
-                                        </Col>
-                                        <Col xs={17} xl={19}>
-                                            <h3 className="">Price: </h3>
-                                            <div className="flex gap-2 items-center justify-between">
-                                                <Input id="priceFrom" addonAfter='USD' size="large" />
-                                                <FaArrowRightLong className="text-3xl" />
-                                                <Input id="priceFrom" addonAfter='USD' size="large" />
-                                            </div>
-                                        </Col>
                                     </Col>
                                 </Row>
 
@@ -1698,7 +1649,7 @@ const ManagerAssetList = () => {
                                                         }}
                                                     >
                                                         <td className="border-t border-gray-300 w-full flex">
-                                                            <div className="w-1/4 text-left pl-2 py-2 font-bold">Name</div>
+                                                            <div className="w-1/4 text-left pl-2 py-2 font-bold">Product Name</div>
                                                             <div className="py-2">{asset.name}</div>
                                                         </td>
                                                         <td className="border-t border-gray-300 w-full flex">
@@ -1706,20 +1657,16 @@ const ManagerAssetList = () => {
                                                             <div className="py-2">{asset.category}</div>
                                                         </td>
                                                         <td className="border-t border-gray-300 w-full flex">
-                                                            <div className="w-1/4 text-left pl-2 py-2 font-bold">Owner</div>
-                                                            <div className="py-2">{asset.owner}</div>
+                                                            <div className="w-1/4 text-left pl-2 py-2 font-bold">Appraiser</div>
+                                                            <div className="py-2">{asset.appraiser}</div>
                                                         </td>
                                                         <td className="border-t border-gray-300 w-full flex">
-                                                            <div className="w-1/4 text-left pl-2 py-2 font-bold">Market price</div>
+                                                            <div className="w-1/4 text-left pl-2 py-2 font-bold">Start price</div>
                                                             <div className="py-2">{`${asset.marketPrice.toLocaleString()} USD`}</div>
                                                         </td>
                                                         <td className="border-t border-gray-300 w-full flex">
                                                             <div className="w-1/4 text-left pl-2 py-2 font-bold">Status</div>
                                                             <div className="py-2">{asset.status}</div>
-                                                        </td>
-                                                        <td className="border-t border-gray-300 w-full flex">
-                                                            <div className="w-1/4 text-left pl-2 py-2 font-bold">Inventory</div>
-                                                            <div className="py-2">{asset.inventory}</div>
                                                         </td>
                                                     </tr>
                                                 )
@@ -1786,7 +1733,7 @@ const ManagerAssetList = () => {
                                                 <Select
                                                     id="category"
                                                     className="w-full mt-1"
-                                                    disabled={!isCreateMode}
+                                                    disabled={isViewMode && !isCreateMode}
                                                     placeholder='Choose type'
                                                     options={[
                                                         {
@@ -1816,7 +1763,7 @@ const ManagerAssetList = () => {
                                                     }
                                                 ]}
                                             >
-                                                <Input disabled={!isCreateMode} id="name" className="" placeholder="Enter asset name" />
+                                                <Input disabled={!isCreateMode && isViewMode} id="name" className="" placeholder="Enter asset name" />
                                             </Form.Item>
 
                                             {/* Asset description */}
@@ -1829,7 +1776,7 @@ const ManagerAssetList = () => {
                                                 <Select
                                                     className="!w-[150px]"
                                                     placeholder={'Custom Sample'}
-                                                    disabled={!isCreateMode}
+                                                    disabled={!isCreateMode && isViewMode}
                                                     options={[
                                                         {
                                                             value: 'Custom Sample',
@@ -1842,21 +1789,21 @@ const ManagerAssetList = () => {
                                             <Form.Item
                                                 name='description'
                                             >
-                                                <TextArea className="mt-3" disabled={!isCreateMode} rows={6} id="description" placeholder="Write a detailed description of your item, or save time and let AI draft it for you" />
+                                                <TextArea className="mt-3" disabled={!isCreateMode && isViewMode} rows={6} id="description" placeholder="Write a detailed description of your item, or save time and let AI draft it for you" />
                                             </Form.Item>
 
                                             {/* Asset market price */}
                                             <Form.Item
                                                 name='marketPrice'
-                                                label={<span className="font-semibold">Market price</span>}
+                                                label={<span className="font-semibold">Start price</span>}
                                                 rules={[
                                                     {
                                                         required: true,
-                                                        message: 'Please enter market price!'
+                                                        message: 'Please enter start price!'
                                                     },
                                                 ]}
                                             >
-                                                <Input disabled={!isCreateMode} id="marketPrice" placeholder="Enter market price" suffix='USD' />
+                                                <Input disabled={!isCreateMode && isViewMode} id="marketPrice" placeholder="Enter start price" suffix='USD' />
                                             </Form.Item>
 
                                             {/* Asset email */}
@@ -1874,7 +1821,7 @@ const ManagerAssetList = () => {
                                                     }
                                                 ]}
                                             >
-                                                <Input disabled={!isCreateMode} id="email" placeholder="Enter email owner" />
+                                                <Input disabled={!isCreateMode && isViewMode} id="email" placeholder="Enter email owner" />
                                             </Form.Item>
 
                                             {/* Asset origin */}
@@ -1888,7 +1835,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input disabled={!isCreateMode} id="origin" placeholder="Enter origin" />
+                                                <Input disabled={!isCreateMode && isViewMode} id="origin" placeholder="Enter origin" />
                                             </Form.Item>
 
                                             {/* Asset asset */}
@@ -1902,7 +1849,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="appraiser" placeholder="Enter appraiser" />
+                                                <Input disabled={true} id="appraiser" placeholder="Enter appraiser" />
                                             </Form.Item>
 
                                             {/* Asset valuation */}
@@ -1916,7 +1863,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="valuation" placeholder="Enter valuation" suffix='USD' />
+                                                <Input disabled={true} id="valuation" placeholder="Enter valuation" suffix='USD' />
                                             </Form.Item>
 
                                             <div className="flex justify-between">
@@ -1927,7 +1874,7 @@ const ManagerAssetList = () => {
                                                         name='appraisalDocument'
                                                     >
                                                         <Upload {...uploadProps}>
-                                                            {uploadStatus === 'No upload' ? <Button disabled={isViewMode}>Choose file</Button> : ''}
+                                                            {uploadStatus === 'No upload' ? <Button disabled={true}>Choose file</Button> : ''}
                                                         </Upload>
                                                     </Form.Item>
                                                 </div>
@@ -1941,7 +1888,7 @@ const ManagerAssetList = () => {
                                                     >
                                                         {/* <Input readOnly={true} id="legalDocument" type="file" className="!hidden" /> */}
                                                         <Upload {...uploadProps}>
-                                                            {uploadStatus === 'No upload' ? <Button disabled={isViewMode}>Choose file</Button> : ''}
+                                                            {uploadStatus === 'No upload' ? <Button disabled={true}>Choose file</Button> : ''}
                                                         </Upload>
                                                     </Form.Item>
                                                 </div>
@@ -1961,7 +1908,7 @@ const ManagerAssetList = () => {
                                                 <Select
                                                     id="status"
                                                     className="w-full mt-1 h-10"
-                                                    disabled={isViewMode}
+                                                    disabled={true}
                                                     placeholder='Choose status'
                                                     options={[
                                                         {
@@ -1993,7 +1940,7 @@ const ManagerAssetList = () => {
                                                         {...uploadProps}
                                                         showUploadList={false}
                                                     >
-                                                        <Button disabled={isViewMode}>Upload images</Button>
+                                                        <Button disabled={isViewMode && !isCreateMode}>Upload images</Button>
                                                     </Upload>
                                                 </Form.Item>
                                                 <div className="absolute bottom-2">
@@ -2032,7 +1979,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="listingFee" placeholder="Enter listing fee" suffix='USD' />
+                                                <Input disabled={true} id="listingFee" placeholder="Enter listing fee" suffix='USD' />
                                             </Form.Item>
 
                                             {/* Asset advertise fee */}
@@ -2046,7 +1993,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="advertiseFee" placeholder="Enter advertise fee" suffix='USD' />
+                                                <Input disabled={true} id="advertiseFee" placeholder="Enter advertise fee" suffix='USD' />
                                             </Form.Item>
 
                                             {/* Commission fee */}
@@ -2060,7 +2007,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="commissionFee" placeholder="Enter commission fee" suffix='USD' />
+                                                <Input disabled={true} id="commissionFee" placeholder="Enter commission fee" suffix='USD' />
                                             </Form.Item>
 
                                             {/* Delivery fee */}
@@ -2074,7 +2021,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="deliveryFee" placeholder="Enter delivery fee" suffix='USD' />
+                                                <Input disabled={true} id="deliveryFee" placeholder="Enter delivery fee" suffix='USD' />
                                             </Form.Item>
 
                                             {/* Inventory  */}
@@ -2091,7 +2038,7 @@ const ManagerAssetList = () => {
                                                 <Select
                                                     id="inventory"
                                                     className="w-full mt-1 h-10"
-                                                    disabled={isViewMode}
+                                                    disabled={true}
                                                     placeholder='Choose inventory'
                                                     options={[
                                                         {
@@ -2119,13 +2066,17 @@ const ManagerAssetList = () => {
                                                 <TextArea readOnly={true} id="primaryServices" className="border-none px-0 py-0 -mt-1" autoSize={true} />
                                             </Form.Item>
                                             <Button
-                                                disabled={isViewMode}
+                                                disabled={isViewMode && !isCreateMode}
                                                 className="-mt-1"
                                                 onClick={() => {
-                                                    let dataRow = data.filter(value => form.getFieldValue('key') === value.key)
-                                                    setServiceSelected(dataRow[0].primaryServices)
-                                                    setModalServiceSelected(dataRow[0].primaryServices)
-                                                    console.log(data[0])
+                                                    if (isCreateMode) {
+                                                        setServiceSelected([])
+                                                        setModalServiceSelected([])
+                                                    } else {
+                                                        let dataRow = data.filter(value => form.getFieldValue('key') === value.key)
+                                                        setServiceSelected(typeof dataRow[0].primaryServices === 'undefined' ? [] : dataRow[0].primaryServices)
+                                                        setModalServiceSelected(typeof dataRow[0].primaryServices === 'undefined' ? [] : dataRow[0].primaryServices)
+                                                    }
                                                     setIsServiceModalOpen(true)
                                                 }}>+ Add primary service</Button>
                                         </Col>
@@ -2279,46 +2230,17 @@ const ManagerAssetList = () => {
                             <div className="w-full">
                                 <Row justify={"space-between"}>
                                     {/* Search Component */}
-                                    <Col xs={24} className="flex">
-                                        <Input className="h-full rounded-tr-none rounded-br-none py-3" placeholder="Search for asset" />
-                                        <Button className="h-full rounded-tl-none rounded-bl-none">
+                                    <Col xs={24} className="flex mb-2">
+                                        <Input className="h-[40px] rounded-tr-none rounded-br-none" placeholder="Search for asset" />
+                                        <Button className="h-[40px] rounded-tl-none rounded-bl-none">
                                             <IoSearch className="text-xl" />
                                         </Button>
                                     </Col>
                                 </Row>
-                                <Row justify={"space-between"} className="mt-2">
-                                    {/* Create Modal Component */}
-                                    <Col className="flex items-center justify-end gap-3">
-                                        <Button className="bg-blue-500 text-white !py-2 h-fit text-base hover:!border-blue-500 hover:!text-blue-500"
-                                            onClick={() => {
-                                                form.resetFields()
-                                                form.setFieldValue('listingDate', `${String(new Date().getDate()).length === 1 ? '0' + String(new Date().getDate()) : String(new Date().getDate())}/${String(new Date().getMonth() + 1).length === 1 ? '0' + String(new Date().getMonth() + 1) : String(new Date().getMonth() + 1)}/${new Date().getFullYear()}`)
-                                                form.setFieldValue('key', data.length + 1)
-                                                setIsModalOpen(true)
-                                                setIsViewMode(false)
-                                                setModalState(true)
-                                                setIsCreateMode(true)
-                                            }}
-                                        >
-                                            <FaPlusCircle /> New Asset
-                                        </Button>
-                                    </Col>
-
-                                    {/* Export */}
-                                    <Col>
-                                        <Button className="w-full bg-[var(--color-primary)] text-white !py-2 h-fit text-base hover:!border-[var(--color-primary)] hover:!text-[var(--color-primary)]"
-                                            onClick={() => {
-                                                // setIsassetCreateOpen(true)
-                                                // createForm.resetFields()
-                                            }}
-                                        >
-                                            <TiExport /> Export
-                                        </Button>
-                                    </Col>
-                                </Row>
-                                <Row className="mt-3" align={"bottom"} justify={"space-between"}>
-                                    <Col xs={24} xl={5}>
-                                        <h3>Status: </h3>
+                                <Row justify={"space-between"} className="mb-2">
+                                    {/* Filter Component */}
+                                    <Col xs={24} className="flex items-center gap-1">
+                                        <span>Status: </span>
                                         <Select
                                             className="w-full rounded-none"
                                             size="large"
@@ -2347,13 +2269,23 @@ const ManagerAssetList = () => {
                                             ]}
                                         />
                                     </Col>
-                                    <Col xs={24} xl={19}>
-                                        <h3 className="">Price: </h3>
-                                        <div className="flex-col gap-2">
-                                            <Input id="priceFrom" addonAfter='USD' size="large" />
-                                            <FaArrowDownLong className="text-xl my-3 m-auto" />
-                                            <Input id="priceFrom" addonAfter='USD' size="large" />
-                                        </div>
+                                </Row>
+                                <Row>
+                                    {/* Create Modal Component */}
+                                    <Col xs={24} className="flex items-center justify-end gap-3">
+                                        <Button className="bg-blue-500 text-white w-full h-[40px] text-base hover:!border-blue-500 hover:!text-blue-500"
+                                            onClick={() => {
+                                                form.resetFields()
+                                                form.setFieldValue('listingDate', `${String(new Date().getDate()).length === 1 ? '0' + String(new Date().getDate()) : String(new Date().getDate())}/${String(new Date().getMonth() + 1).length === 1 ? '0' + String(new Date().getMonth() + 1) : String(new Date().getMonth() + 1)}/${new Date().getFullYear()}`)
+                                                form.setFieldValue('key', data.length + 1)
+                                                setIsModalOpen(true)
+                                                setIsViewMode(false)
+                                                setModalState(true)
+                                                setIsCreateMode(true)
+                                            }}
+                                        >
+                                            <FaPlusCircle /> New Asset
+                                        </Button>
                                     </Col>
                                 </Row>
 
@@ -2405,7 +2337,7 @@ const ManagerAssetList = () => {
                                                         }}
                                                     >
                                                         <td className="border-t border-gray-300 w-full flex">
-                                                            <div className="w-1/3 text-left pl-2 py-2 font-bold">Name</div>
+                                                            <div className="w-1/3 text-left pl-2 py-2 font-bold">Product Name</div>
                                                             <div className="py-2">{asset.name}</div>
                                                         </td>
                                                         <td className="border-t border-gray-300 w-full flex">
@@ -2413,20 +2345,16 @@ const ManagerAssetList = () => {
                                                             <div className="py-2">{asset.category}</div>
                                                         </td>
                                                         <td className="border-t border-gray-300 w-full flex">
-                                                            <div className="w-1/3 text-left pl-2 py-2 font-bold">Owner</div>
-                                                            <div className="py-2">{asset.owner}</div>
+                                                            <div className="w-1/3 text-left pl-2 py-2 font-bold">Appraiser</div>
+                                                            <div className="py-2">{asset.appraiser}</div>
                                                         </td>
                                                         <td className="border-t border-gray-300 w-full flex">
-                                                            <div className="w-1/3 text-left pl-2 py-2 font-bold">Market price</div>
+                                                            <div className="w-1/3 text-left pl-2 py-2 font-bold">Start price</div>
                                                             <div className="py-2">{`${asset.marketPrice.toLocaleString()} USD`}</div>
                                                         </td>
                                                         <td className="border-t border-gray-300 w-full flex">
                                                             <div className="w-1/3 text-left pl-2 py-2 font-bold">Status</div>
                                                             <div className="py-2">{asset.status}</div>
-                                                        </td>
-                                                        <td className="border-t border-gray-300 w-full flex">
-                                                            <div className="w-1/3 text-left pl-2 py-2 font-bold">Inventory</div>
-                                                            <div className="py-2">{asset.inventory}</div>
                                                         </td>
                                                     </tr>
                                                 )
@@ -2492,7 +2420,7 @@ const ManagerAssetList = () => {
                                                 <Select
                                                     id="category"
                                                     className="w-full mt-1"
-                                                    disabled
+                                                    disabled={isViewMode && !isCreateMode}
                                                     placeholder='Choose type'
                                                     options={[
                                                         {
@@ -2522,7 +2450,7 @@ const ManagerAssetList = () => {
                                                     }
                                                 ]}
                                             >
-                                                <Input readOnly={true} disabled id="name" className="" placeholder="Enter asset name" />
+                                                <Input disabled={isViewMode && !isCreateMode} id="name" className="" placeholder="Enter asset name" />
                                             </Form.Item>
 
                                             {/* Asset description */}
@@ -2536,7 +2464,7 @@ const ManagerAssetList = () => {
                                             <Select
                                                 className="!w-full my-1"
                                                 placeholder={'Custom Sample'}
-                                                disabled
+                                                disabled={isViewMode && !isCreateMode}
                                                 options={[
                                                     {
                                                         value: 'Custom Sample',
@@ -2548,7 +2476,7 @@ const ManagerAssetList = () => {
                                             <Form.Item
                                                 name='description'
                                             >
-                                                <TextArea className="mt-1" disabled rows={6} id="description" placeholder="Write a detailed description of your item, or save time and let AI draft it for you" />
+                                                <TextArea className="mt-1" disabled={isViewMode && !isCreateMode} rows={6} id="description" placeholder="Write a detailed description of your item, or save time and let AI draft it for you" />
                                             </Form.Item>
 
                                             {/* Asset market price */}
@@ -2562,7 +2490,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={true} disabled id="marketPrice" placeholder="Enter market price" suffix='USD' />
+                                                <Input disabled={isViewMode && !isCreateMode} id="marketPrice" placeholder="Enter market price" suffix='USD' />
                                             </Form.Item>
 
                                             {/* Asset email */}
@@ -2580,7 +2508,7 @@ const ManagerAssetList = () => {
                                                     }
                                                 ]}
                                             >
-                                                <Input readOnly={true} disabled id="email" placeholder="Enter email owner" />
+                                                <Input disabled={isViewMode && !isCreateMode} id="email" placeholder="Enter email owner" />
                                             </Form.Item>
 
                                             {/* Asset origin */}
@@ -2594,7 +2522,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={true} disabled id="origin" placeholder="Enter origin" />
+                                                <Input disabled={isViewMode && !isCreateMode} id="origin" placeholder="Enter origin" />
                                             </Form.Item>
 
                                             {/* Asset asset */}
@@ -2608,7 +2536,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="appraiser" placeholder="Enter appraiser" />
+                                                <Input disabled={true} id="appraiser" placeholder="Enter appraiser" />
                                             </Form.Item>
 
                                             {/* Asset valuation */}
@@ -2622,7 +2550,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="valuation" placeholder="Enter valuation" suffix='USD' />
+                                                <Input disabled={true} id="valuation" placeholder="Enter valuation" suffix='USD' />
                                             </Form.Item>
 
                                             {/* Asset appraisal document */}
@@ -2631,7 +2559,7 @@ const ManagerAssetList = () => {
                                                 name='appraisalDocument'
                                             >
                                                 <Upload {...uploadProps}>
-                                                    {uploadStatus === 'No upload' ? <Button disabled={isViewMode}>Choose file</Button> : ''}
+                                                    {uploadStatus === 'No upload' ? <Button disabled={true}>Choose file</Button> : ''}
                                                 </Upload>
                                             </Form.Item>
 
@@ -2643,7 +2571,7 @@ const ManagerAssetList = () => {
                                             >
                                                 {/* <Input readOnly={true} id="legalDocument" type="file" className="!hidden" /> */}
                                                 <Upload {...uploadProps}>
-                                                    {uploadStatus === 'No upload' ? <Button disabled={isViewMode}>Choose file</Button> : ''}
+                                                    {uploadStatus === 'No upload' ? <Button disabled={true}>Choose file</Button> : ''}
                                                 </Upload>
                                             </Form.Item>
                                             {/* Asset status */}
@@ -2661,7 +2589,7 @@ const ManagerAssetList = () => {
                                                 <Select
                                                     id="status"
                                                     className="w-full mt-1 h-10"
-                                                    disabled={isViewMode}
+                                                    disabled={true}
                                                     placeholder='Choose status'
                                                     options={[
                                                         {
@@ -2691,7 +2619,7 @@ const ManagerAssetList = () => {
                                                         {...uploadProps}
                                                         showUploadList={false}
                                                     >
-                                                        <Button disabled={isViewMode}>Upload images</Button>
+                                                        <Button disabled={isViewMode && !isCreateMode}>Upload images</Button>
                                                     </Upload>
                                                 </Form.Item>
                                                 <div className="absolute bottom-2">
@@ -2730,7 +2658,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="listingFee" placeholder="Enter listing fee" suffix='USD' />
+                                                <Input disabled={true} id="listingFee" placeholder="Enter listing fee" suffix='USD' />
                                             </Form.Item>
 
                                             {/* Asset advertise fee */}
@@ -2744,7 +2672,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="advertiseFee" placeholder="Enter advertise fee" suffix='USD' />
+                                                <Input disabled={isViewMode} id="advertiseFee" placeholder="Enter advertise fee" suffix='USD' />
                                             </Form.Item>
 
                                             {/* Commission fee */}
@@ -2758,7 +2686,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="commissionFee" placeholder="Enter commission fee" suffix='USD' />
+                                                <Input disabled={true} id="commissionFee" placeholder="Enter commission fee" suffix='USD' />
                                             </Form.Item>
 
                                             {/* Delivery fee */}
@@ -2772,7 +2700,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="deliveryFee" placeholder="Enter delivery fee" suffix='USD' />
+                                                <Input disabled={true} id="deliveryFee" placeholder="Enter delivery fee" suffix='USD' />
                                             </Form.Item>
 
                                             {/* Inventory  */}
@@ -2789,7 +2717,7 @@ const ManagerAssetList = () => {
                                                 <Select
                                                     id="inventory"
                                                     className="w-full mt-1 h-10"
-                                                    disabled={isViewMode}
+                                                    disabled={true}
                                                     placeholder='Choose inventory'
                                                     options={[
                                                         {
@@ -2817,12 +2745,17 @@ const ManagerAssetList = () => {
                                                 <TextArea readOnly={true} id="primaryServices" className="border-none px-0 py-0 -mt-1" autoSize={true} />
                                             </Form.Item>
                                             <Button
-                                                disabled={isViewMode}
+                                                disabled={isViewMode && !isCreateMode}
                                                 className="-mt-1"
                                                 onClick={() => {
-                                                    let dataRow = data.filter(value => form.getFieldValue('key') === value.key)
-                                                    setServiceSelected(dataRow[0].primaryServices)
-                                                    setModalServiceSelected(dataRow[0].primaryServices)
+                                                    if (isCreateMode) {
+                                                        setServiceSelected([])
+                                                        setModalServiceSelected([])
+                                                    } else {
+                                                        let dataRow = data.filter(value => form.getFieldValue('key') === value.key)
+                                                        setServiceSelected(typeof dataRow[0].primaryServices === 'undefined' ? [] : dataRow[0].primaryServices)
+                                                        setModalServiceSelected(typeof dataRow[0].primaryServices === 'undefined' ? [] : dataRow[0].primaryServices)
+                                                    }
                                                     setIsServiceModalOpen(true)
                                                 }}>+ Add primary service</Button>
                                         </Col>
@@ -2955,4 +2888,4 @@ const ManagerAssetList = () => {
         </>
     )
 }
-export default ManagerAssetList
+export default ClientAssetWantToAuction

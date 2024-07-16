@@ -8,6 +8,7 @@ import mock.auction.entity.Auction;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface AuctionRepository extends JpaRepository<Auction, Integer> {
 
@@ -30,4 +31,7 @@ public interface AuctionRepository extends JpaRepository<Auction, Integer> {
             @Param("endDate") LocalDateTime endDate,
             @Param("minPrice") Double minPrice,
             @Param("maxPrice") Double maxPrice);
+
+    @Query("SELECT a FROM Auction a JOIN FETCH a.asset WHERE a.id = :auctionId")
+    Optional<Auction> findAuctionWithAssetById(@Param("auctionId") Integer auctionId);
 }

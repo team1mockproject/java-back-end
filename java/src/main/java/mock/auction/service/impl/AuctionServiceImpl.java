@@ -1,22 +1,16 @@
 package mock.auction.service.impl;
 
 import jakarta.transaction.Transactional;
-import mock.auction.entity.AccountEntity;
-import mock.auction.entity.Asset;
-import mock.auction.entity.Auction;
-import mock.auction.entity.AuctionType;
+import mock.auction.entity.*;
 import mock.auction.exception.EntityNotFoundException;
 import mock.auction.exception.ResourceNotFoundException;
-import mock.auction.repository.AssetRepository;
-import mock.auction.repository.AuctionRepository;
-import mock.auction.repository.AuctionTypeRepository;
+import mock.auction.repository.*;
 import mock.auction.service.AuctionService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,49 +19,27 @@ public class AuctionServiceImpl implements AuctionService {
     private AuctionRepository auctionRepository;
     private AssetRepository assetRepository;
     private AuctionTypeRepository auctionTypeRepository;
+    private AccountRepository accountRepository;
+    @Autowired
+    private RegistParticipateAuctionRepository registParticipateAuctionRepository;
 
-    public AuctionServiceImpl(AuctionRepository auctionRepository, AssetRepository assetRepository, AuctionTypeRepository auctionTypeRepository) {
+    @Autowired
+    public AuctionServiceImpl(AuctionRepository auctionRepository, AssetRepository assetRepository, AuctionTypeRepository auctionTypeRepository, AccountRepository accountRepository, RegistParticipateAuctionRepository registParticipateAuctionRepository) {
         this.auctionRepository = auctionRepository;
         this.assetRepository = assetRepository;
         this.auctionTypeRepository = auctionTypeRepository;
+        this.accountRepository = accountRepository;
+        this.registParticipateAuctionRepository = registParticipateAuctionRepository;
     }
-
-    @Autowired
-
 
     @Override
     @Transactional
-    public Auction createAuction(Auction auction, List<Integer> assetIds) {
-        Auction auction2 = new Auction();
-        auction2.setConductor(auction.getConductor());
-        auction2.setPeriod(auction.getPeriod());
-        auction2.setAuctionStatus("upcoming");
-
-        List<Asset> assets = new ArrayList<>();
+    public Auction createAuction(Auction auction) {
         try {
-            for (int i = 0; i < assetIds.size(); i++) { // Change <= to < for proper indexing
-                int finalI = i;
-                Asset asset = assetRepository.findById(assetIds.get(i))
-                        .orElseThrow(() -> new ResourceNotFoundException("Asset not found with id: " + assetIds.get(finalI)));
-                assets.add(asset);
-            }
-
-            // Set assets and additional properties for each asset
-            for (int i = 0; i < assets.size(); i++) {
-                Asset asset = assets.get(i);
-                auction2.setStartDate(LocalDateTime.now().plusHours(2 * i));
-                auction2.setEndDate(LocalDateTime.now().plusHours(2 * (i + 1)));
-                auction2.setStartingPrice(asset.getMarketPrice());
-            }
-
-            AuctionType auctionType = auctionTypeRepository.findById(auction.getAuctionId())
-                    .orElseThrow(() -> new ResourceNotFoundException("AuctionType not found with id: " + auction.getAuctionId()));
-            auction2.setAuctionType(auctionType);
-
+            return auctionRepository.save(auction);
         } catch (Exception e) {
-            throw new RuntimeException("Error adding auction", e);
+            throw new RuntimeException("Error updating auction", e);
         }
-        return auctionRepository.save(auction2);
     }
 
 
@@ -82,7 +54,6 @@ public class AuctionServiceImpl implements AuctionService {
                 throw new EntityNotFoundException("Auction not found with id: " + id);
             }
         } catch (Exception e) {
-            // Handle exception, log it, and/or rethrow a custom exception
             throw new RuntimeException("Error updating auction", e);
         }
     }
@@ -97,7 +68,6 @@ public class AuctionServiceImpl implements AuctionService {
                 throw new EntityNotFoundException("Auction not found with id: " + id);
             }
         } catch (Exception e) {
-            // Handle exception, log it, and/or rethrow a custom exception
             throw new RuntimeException("Error deleting auction", e);
         }
     }
@@ -107,7 +77,6 @@ public class AuctionServiceImpl implements AuctionService {
         try {
             return auctionRepository.findAll();
         } catch (Exception e) {
-            // Handle exception, log it, and/or rethrow a custom exception
             throw new RuntimeException("Error fetching all auctions", e);
         }
     }
@@ -117,7 +86,6 @@ public class AuctionServiceImpl implements AuctionService {
         try {
             return auctionRepository.findByAsset_AssetName(keyword);
         } catch (Exception e) {
-            // Handle exception, log it, and/or rethrow a custom exception
             throw new RuntimeException("Error searching auction by keyword", e);
         }
     }
@@ -127,39 +95,66 @@ public class AuctionServiceImpl implements AuctionService {
         try {
             return auctionRepository.findAuctionsByDateRangeAndAmount(startDate, endDate, minPrice, maxPrice);
         } catch (Exception e) {
-            // Handle exception, log it, and/or rethrow a custom exception
             throw new RuntimeException("Error filtering auctions", e);
         }
     }
 
-    //Create an invoice when there is an auction winner
-    @Override
-    public Auction placeBid(Long auctionId, Long userId, Double bidAmount) {
-        return null;
-    }
 
     @Override
-    public void closeAuction(Integer auctionId,Double highestPrice) {
+    public Asset getAssetByAuctionId(Integer auctionId) {
+        Auction auction = auctionRepository.findAuctionWithAssetById(auctionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Auction not found with id: " + auctionId));
+        return auction.getAsset();
+    }
+
+    //Create units when auction ends
+    @Override
+    @Transactional
+    public Auction closeAndFinalizeAuction(Integer auctionId, Integer winnerId, Double highestPrice, String paymentMethod, LocalDateTime timeLimit) {
         Auction auction = auctionRepository.findById(auctionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Auction not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Auction not found with id: " + auctionId));
+
         if (auction.getEndDate().isAfter(LocalDateTime.now())) {
-            throw new ResourceNotFoundException("Auction has not ended yet");
+            throw new IllegalStateException("Auction has not ended yet");
         }
-        auction.setHighestPrice(highestPrice);
-        auction.setAuctionStatus("complete");
-        auctionRepository.save(auction);
+        Asset asset = auction.getAsset();
 
-        AccountEntity highestBidder = auction.getWinner();
-        if (highestBidder == null) {
-            throw new ResourceNotFoundException("No bids placed");
+        if (winnerId != null && highestPrice != null) {
+            AccountEntity winner = accountRepository.findById(winnerId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Winner not found with id: " + winnerId));
+
+            // Fetch registration or participation fee for the winner
+            RegistParticipateAuction registParticipateAuction = registParticipateAuctionRepository.findById(winnerId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Registration/participation details not found"));
+            double registrationFee = registParticipateAuction.getAmount();
+
+            auction.setHighestPrice(highestPrice);
+            auction.setWinner(winner);
+            auction.setPaymentStatus("pending");
+            auction.setPaymentAmount(highestPrice - registrationFee);
+            auction.setPaymentMethod(paymentMethod);
+            auction.setAuctionStatus("complete");
+
+            asset.setAssetStatus("sold"); // Update asset status to 'sold'
+
+            // Notification for winner
+            sendNotification(winner, "You have won the auction for asset " + asset.getAssetName() + " with a bid amount of: " + highestPrice);
+        } else {
+            asset.setAssetStatus("unsold"); // Update asset status to 'unsold'
+        }
+        if(auction.getEndDate().equals(LocalDateTime.now())){
+            auction.setAuctionStatus("closed");
+            throw new IllegalStateException("Auction ended");
         }
 
-        // Thông báo cho người chiến thắng
-        sendNotification(highestBidder, "You have won the auction for asset " + auction.getAsset().getAssetName() + " with bid amount: " + auction.getHighestPrice());
+        assetRepository.save(asset); // Save asset status change
+        return auctionRepository.save(auction); // Save auction changes
     }
+
 
     private void sendNotification(AccountEntity user, String message) {
-        // Logic để gửi thông báo (email, SMS, v.v.)
+        // send Notification
     }
+
 
 }

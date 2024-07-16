@@ -1,12 +1,13 @@
 package mock.auction.service;
 
+import mock.auction.entity.Asset;
 import mock.auction.entity.Auction;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AuctionService {
-    public Auction createAuction(Auction auction,List<Integer> AssetIds);
+    public Auction createAuction(Auction auction);
 
     public Auction updateAuction(Integer id, Auction auction);
 
@@ -19,7 +20,8 @@ public interface AuctionService {
     public List<Auction> filterAuction(LocalDateTime startDate, LocalDateTime endDate, Double minPrice,
             Double maxPrice);
 
-    public Auction placeBid(Long auctionId, Long userId, Double bidAmount);
+    public Asset getAssetByAuctionId(Integer auctionId);
 
-    public void closeAuction(Integer auctionId, Double highestPrice);
+    public Auction closeAndFinalizeAuction(Integer auctionId, Integer winnerId, Double
+            highestPrice, String paymentMethod, LocalDateTime timeLimit);
 }

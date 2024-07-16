@@ -1,6 +1,7 @@
 package mock.auction.controller;
 
 import jakarta.validation.Valid;
+import mock.auction.entity.Asset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -24,8 +25,8 @@ public class AuctionController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Auction> addAuction(@Valid @RequestBody Auction auction, @RequestBody List<Integer> assetIds) {
-        Auction addedAuction = auctionService.createAuction(auction,assetIds);
+    public ResponseEntity<Auction> addAuction(@Valid @RequestBody Auction auction) {
+        Auction addedAuction = auctionService.createAuction(auction);
         return new ResponseEntity<>(addedAuction, HttpStatus.CREATED);
     }
 
@@ -57,10 +58,21 @@ public class AuctionController {
         return ResponseEntity.ok(searchResults);
     }
 
-    @PostMapping("/{id}/close")
-    public ResponseEntity<Void> closeAuction(@PathVariable Integer id, @PathVariable Double highestPrice) {
-        auctionService.closeAuction(id,highestPrice);
-        return ResponseEntity.noContent().build();
+    @GetMapping("/{auctionId}/asset")
+    public ResponseEntity<Asset> getAssetByAuctionId(@PathVariable Integer auctionId) {
+        Asset asset = auctionService.getAssetByAuctionId(auctionId);
+        return ResponseEntity.ok(asset);
+    }
+    // Create units when auction ends
+    @PostMapping("/{auctionId}/finalize")
+    public ResponseEntity<Auction> finalizeAuction(
+            @PathVariable(required = false) Integer auctionId,
+            @RequestParam(required = false) Integer winnerId,
+            @RequestParam(required = false) Double winningBid,
+            @RequestParam(required = false) String paymentMethod,
+            @RequestParam(required = false) LocalDateTime timeLimit) {
+        Auction auction = auctionService.closeAndFinalizeAuction(auctionId, winnerId, winningBid, paymentMethod, timeLimit);
+        return ResponseEntity.ok(auction);
     }
 
 }

@@ -18,6 +18,7 @@ public class RegistParticipateAuction {
     private Integer accountId;
 
     private String payment;
+
     private double amount;
 
     @ManyToOne

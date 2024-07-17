@@ -360,9 +360,9 @@ const ManagerBuyerList = () => {
     ]
 
     return (
-        <div className="w-full px-8 pt-8 pb-20 h-screen overflow-y-auto">
+        <div className="w-full px-8 pt-8">
             {isDesktop &&
-                <>
+                <div className="ml-[247px]">
                     <h2 className="text-center text-3xl font-medium uppercase mb-4">Buyer List</h2>
                     <ConfigProvider
                         theme={{
@@ -533,7 +533,7 @@ const ManagerBuyerList = () => {
                     >
                         <p className="text-base">Do you want to <span className={`${buyerData.status === 'Active' ? 'text-red-500' : 'text-blue-500'} font-semibold`}>{buyerData.status === 'Active' ? 'lock' : 'unlock'}</span> this account?</p>
                     </Modal>
-                </>
+                </div>
             }
             {isTablet &&
                 <>

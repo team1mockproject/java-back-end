@@ -11,8 +11,17 @@ import ManagerBuyerList from "./pages/manager-buyer-list";
 import ManagerSellerList from "./pages/manager-seller-list";
 import ManagerAppraiserList from "./pages/manager-appraiser-list";
 import ClientRegisterToAuction from "./pages/client-register-to-auction";
+
 import ManagerAuctionList from "./pages/manager-auction-list";
 import ClientListAuction from "./pages/client-list-auction";
+
+import ManagerAssetList from './pages/manager-asset-list'
+import Categories from './pages/Categories'
+import ManagerStaffList from './pages/manager-staff-list/ManagerStaffList'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
+import { ModalStateWrapper } from './context/modal-state-context/ModalStateContext'
+import ClientAssetWantToAuction from './pages/client-asset-want-to-auction/ClientAssetWantToAuction'
 
 const router = createBrowserRouter([
   {
@@ -31,6 +40,10 @@ const router = createBrowserRouter([
       {
         path: "list-auction",
         element: <ClientListAuction />,
+       },
+  {
+        path: "/asset-want-to-auction",
+        element: <ClientAssetWantToAuction />
       },
     ],
   },
@@ -48,14 +61,26 @@ const router = createBrowserRouter([
         element: <ManagerSellerList />,
       },
       {
-        path: "appraiser",
-        element: <ManagerAppraiserList />,
-      },
-      {
         path: "auction",
         element: <ManagerAuctionList />,
       },
-    ],
+    {
+        path: "appraiser",
+        element: <ManagerAppraiserList />
+      },
+      {
+        path: "asset",
+        element: <ManagerAssetList />
+      },
+      {
+        path: "staff",
+        element: <ManagerStaffList />
+      }
+    ]
+  },
+  {
+    path: "categories",
+    element: <Categories />,
   },
   {
     path: "/login",
@@ -70,7 +95,21 @@ const router = createBrowserRouter([
 function App() {
   return (
     <ResponsiveWrapper>
+    <ModalStateWrapper>
       <RouterProvider router={router} />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </ModalStateWrapper>
     </ResponsiveWrapper>
   );
 }

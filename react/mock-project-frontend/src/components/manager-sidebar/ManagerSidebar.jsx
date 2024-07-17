@@ -18,20 +18,80 @@ const ManagerSidebar = (props) => {
       label: <span className="font-medium text-base">Management</span>,
       children: [
         {
-          key: "11",
-          label: (
-            <Link
-              to={"/manager"}
-              className="text-base"
-              onClick={() => {
-                setIsShowSidebar(false);
-                localStorage.setItem("sidebar_item", "11");
-                setSelectedSidebar(localStorage.getItem("sidebar_item"));
-              }}
-            >
-              Buyer
-            </Link>
-          ),
+            key: '1',
+            label: <span className='font-medium text-base'>Management</span>,
+            children: [
+                {
+                    key: '11',
+                    label: <Link to={"/manager"} className='text-base' onClick={() => {
+                        setIsShowSidebar(false)
+                        localStorage.setItem('sidebar_item', '11')
+                        setSelectedSidebar(localStorage.getItem('sidebar_item'))
+                    }}>Buyer</Link>,
+                },
+                {
+                    key: '12',
+                    label: <Link to={"/manager/seller"} className='text-base' onClick={() => {
+                        setIsShowSidebar(false)
+                        localStorage.setItem('sidebar_item', '12')
+                        setSelectedSidebar(localStorage.getItem('sidebar_item'))
+                    }}>Seller</Link>,
+                },
+                {
+                    key: '13',
+                    label: <Link to={"/manager/staff"} className='text-base' onClick={() => {
+                        setIsShowSidebar(false)
+                        localStorage.setItem('sidebar_item', '13')
+                        setSelectedSidebar(localStorage.getItem('sidebar_item'))
+                    }}>Staff</Link>,
+                },
+                {
+                    key: '14',
+                    label: <Link to={'/manager/appraiser'} className='text-base' onClick={() => {
+                        setIsShowSidebar(false)
+                        localStorage.setItem('sidebar_item', '14')
+                        setSelectedSidebar(localStorage.getItem('sidebar_item'))
+                    }}>Appraiser</Link>,
+                },
+                {
+                    key: '15',
+                    label: <span className='text-base'>Auction Asset</span>,
+                    children: [
+                        {
+                            key: '151',
+                            label: <Link className='text-base' onClick={() => {
+                                setIsShowSidebar(false)
+                                localStorage.setItem('sidebar_item', '151')
+                                setSelectedSidebar(localStorage.getItem('sidebar_item'))
+                            }}>Auction</Link>
+                        },
+                        {
+                            key: '152',
+                            label: <Link to={'/manager/asset'} className='text-base' onClick={() => {
+                                setIsShowSidebar(false)
+                                localStorage.setItem('sidebar_item', '152')
+                                setSelectedSidebar(localStorage.getItem('sidebar_item'))
+                            }}>Asset</Link>
+                        }
+                    ]
+                },
+                {
+                    key: '16',
+                    label: <Link className='text-base' onClick={() => {
+                        setIsShowSidebar(false)
+                        localStorage.setItem('sidebar_item', '16')
+                        setSelectedSidebar(localStorage.getItem('sidebar_item'))
+                    }}>Financial</Link>,
+                },
+                {
+                    key: '17',
+                    label: <Link className='text-base' onClick={() => {
+                        setIsShowSidebar(false)
+                        localStorage.setItem('sidebar_item', '17')
+                        setSelectedSidebar(localStorage.getItem('sidebar_item'))
+                    }}>Inventory</Link>,
+                },
+            ],
         },
         {
           key: "12",

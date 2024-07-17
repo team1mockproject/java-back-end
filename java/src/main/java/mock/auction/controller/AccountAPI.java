@@ -5,7 +5,9 @@ import mock.auction.entity.AccountEntity;
 import mock.auction.model.BaseResponse;
 import mock.auction.model.ListResponse;
 import mock.auction.model.account.AccountDto;
-import mock.auction.service.impl.AccountService;
+import mock.auction.model.account.SlipConfirm;
+import mock.auction.service.AccountServiceInterface;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +15,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/authenticate/account")
 public class AccountAPI extends BaseAPI<AccountDto, AccountEntity> {
-    private AccountService accountService;
+    private AccountServiceInterface accountService;
 
-    public AccountAPI(AccountService accountService) {
+    public AccountAPI(AccountServiceInterface accountService) {
         super(accountService);
         this.accountService = accountService;
     }
@@ -31,6 +33,16 @@ public class AccountAPI extends BaseAPI<AccountDto, AccountEntity> {
     @Override
     @PostMapping("/register")
     public ResponseEntity<BaseResponse> create(AccountDto accountDto, BindingResult bindingResult) {
-        return ResponseEntity.ok(accountService.save(accountDto));
+        try {
+            return ResponseEntity.ok(accountService.save(accountDto));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(BaseResponse.builder().code(400).data(e.getMessage()).message("register failed").build());
+        }
+    }
+
+    @PostMapping("/confirm")
+    public ResponseEntity<BaseResponse> confirm(@RequestBody SlipConfirm slipConfirm) {
+        return ResponseEntity.ok(accountService.acceptOrReject(slipConfirm));
     }
 }

@@ -21,7 +21,7 @@ const ClientFooter = () => {
             </div>
             <div className='w-full max-w-[600px] flex justify-between mt-5'>
                 <div className="links">
-                    <span className='text-[#6b6b6b] font-bold'>SUPPORT</span>
+                    <span className='text-[#6b6b6b] font-bold cursor-default'>SUPPORT</span>
                     <div className="flex flex-col gap-4 mt-2">
                         <a href="#" className='hover:underline'>Help Center</a>
                         <a href="#" className='hover:underline'>Locations</a>
@@ -29,7 +29,7 @@ const ClientFooter = () => {
                     </div>
                 </div>
                 <div className="items">
-                    <span className='text-[#6b6b6b] font-bold'>CORPORATE</span>
+                    <span className='text-[#6b6b6b] font-bold cursor-default'>CORPORATE</span>
                     <div className="flex flex-col gap-4 mt-2">
                         <a href="#" className='hover:underline'>Press</a>
                         <a href="#" className='hover:underline'>Privacy Policy</a>
@@ -38,7 +38,7 @@ const ClientFooter = () => {
                     </div>
                 </div>
                 <div className="items">
-                    <span className='text-[#6b6b6b] font-bold'>MORE...</span>
+                    <span className='text-[#6b6b6b] font-bold cursor-default'>MORE...</span>
                     <div className="flex flex-col gap-4 mt-2">
                         <a href="#" className='hover:underline'>Security</a>
                         <a href="#" className='hover:underline'>Terms & Conditions</a>

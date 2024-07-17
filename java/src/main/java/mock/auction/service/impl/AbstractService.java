@@ -8,6 +8,7 @@ import mock.auction.model.BaseResponse;
 import mock.auction.model.ListResponse;
 import mock.auction.repository.AbstractRepository;
 import mock.auction.service.GenericService;
+import mock.auction.utils.CloudinaryUtil;
 import mock.auction.utils.SearchUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -29,6 +30,7 @@ public abstract class AbstractService<TDto, TEntity> implements GenericService<T
     private Class<TEntity> entityClass;
     private ModelMapper modelMapper;
     private Map<String, String> searchFiledTypes;
+    private CloudinaryUtil cloudinaryUtil;
 
     @Override
     public ListResponse<TDto> findAll(int pageNumber, int size, String sort, String filter, String search,

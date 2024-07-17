@@ -12,6 +12,7 @@ import mock.auction.repository.CategoryRepository;
 import mock.auction.request.CategoryRequest;
 import mock.auction.response.CategoryResponse;
 import mock.auction.service.CategoryService;
+import mock.auction.utils.CloudinaryUtil;
 
 import java.util.List;
 
@@ -19,14 +20,17 @@ import java.util.List;
 public class CategoryServiceImpl extends AbstractService<CategoryDto, CategoryAsset> implements CategoryService {
 
     private ModelMapper modelMapper;
+    private CloudinaryUtil cloudinaryUtil;
 
     @Autowired
     CategoryRepository categoryRepository;
 
-    public CategoryServiceImpl(ModelMapper modelMapper, CategoryRepository categoryRepository) {
+    public CategoryServiceImpl(ModelMapper modelMapper, CategoryRepository categoryRepository,
+            CloudinaryUtil cloudinaryUtil) {
         super(categoryRepository, CategoryDto.class, CategoryAsset.class, modelMapper,
-                SearchFields.ACCOUNT_FIELD_TYPES);
+                SearchFields.ACCOUNT_FIELD_TYPES, cloudinaryUtil);
         this.modelMapper = modelMapper;
+        this.cloudinaryUtil = cloudinaryUtil;
     }
 
     @Override

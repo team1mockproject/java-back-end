@@ -8,13 +8,13 @@ import java.util.Optional;
 
 @Repository
 public interface AccountRepository extends AbstractRepository<AccountEntity> {
-    Optional<AccountEntity> findByEmail(String email);
+        Optional<AccountEntity> findByEmail(String email);
 
-    Optional<AccountEntity> findByPhone(String phone);
+        Optional<AccountEntity> findByPhone(String phone);
 
-    List<AccountEntity> findByRolesName(String roleName);
+        List<AccountEntity> findByRolesName(String roleName);
 
-    List<AccountEntity> findByRolesNameAndStatus(String roleName, String status);
+        List<AccountEntity> findByRolesNameAndStatus(String roleName, String status);
 
-    List<AccountEntity> findByFullNameContainingIgnoreCase(String keyword);
+        List<AccountEntity> findByFullNameContainingIgnoreCase(String keyword);
 }

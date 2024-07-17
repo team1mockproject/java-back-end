@@ -7,6 +7,20 @@ import mock.auction.entity.LocationEntity;
 import mock.auction.repository.LocationRepository;
 import mock.auction.service.LocationService;
 
+/**
+ * LocationServiceImpl
+ * 
+ * Version 1.0
+ * 
+ * Date: 12-07-2024
+ * 
+ * Copyright
+ * 
+ * Modification Logs:
+ * DATE         AUTHOR          DESCRIPTION
+ * ----------------------------------------
+ * 12-07-2024   kiet-kun-afk    Create
+ */
 @Service
 @RequiredArgsConstructor
 public class LocationServiceImpl implements LocationService {
@@ -27,21 +41,20 @@ public class LocationServiceImpl implements LocationService {
         if (city.length() < 3 || city.length() > 50) {
             throw new Exception("City must be between 3 and 50 characters long");
         }
-        if (zipCode.isBlank()) {
-            throw new Exception("Zip code cannot be blank");
-        }
-        if (!zipCode.matches("\\d{5}")) {
-            throw new Exception("Zip code must be 5-digit numbers");
+        if (!zipCode.isBlank()) {
+            if (!zipCode.matches("\\d{5}")) {
+                throw new Exception("Zip code must be 5-digit numbers");
+            }
         }
         return true;
     }
 
     @Override
-    public void createLocation(LocationEntity locationRequest) throws Exception {
+    public LocationEntity createLocation(LocationEntity locationRequest) throws Exception {
         String province = locationRequest.getProvince();
         String city = locationRequest.getCity();
-        String zipCode = locationRequest.getZipCode();
-        String address = locationRequest.getAddress();
+        String zipCode = locationRequest.getZipCode() == null ? "" : locationRequest.getZipCode();
+        String address = locationRequest.getAddress() == null ? "" : locationRequest.getAddress();
         if (isValid(province, city, zipCode)) {
             LocationEntity location = locationRepository.findByProvinceAndCityAndAddressAndZipCode(
                     province,
@@ -55,8 +68,9 @@ public class LocationServiceImpl implements LocationService {
                 location.setAddress(address);
                 location.setZipCode(zipCode);
             }
-            locationRepository.save(location);
+            return locationRepository.save(location);
         }
+        throw new Exception("Location invalid");
     }
 
     @Override

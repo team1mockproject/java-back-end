@@ -9,10 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import mock.auction.entity.Auction;
+import mock.auction.model.BaseResponse;
+import mock.auction.response.AuctionResponse;
 import mock.auction.service.AuctionService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/authenticate/auction")
@@ -75,4 +78,31 @@ public class AuctionController {
         return ResponseEntity.ok(auction);
     }
 
+    @GetMapping("/clients/search")
+    public ResponseEntity<BaseResponse> searchAuctions(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String sortOrder,
+            @RequestParam Optional<Integer> page,
+            @RequestParam Optional<Integer> size,
+            @RequestParam(required = false) String keyword) {
+        try {
+            List<AuctionResponse> auctions = auctionService.searchAuctions(
+                    status,
+                    sortOrder,
+                    page.orElse(0),
+                    size.orElse(10),
+                    keyword);
+            return ResponseEntity.ok(BaseResponse.builder()
+                    .code(200)
+                    .message("Search auction successfully")
+                    .data(auctions)
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(BaseResponse.builder()
+                    .code(400)
+                    .message("Search auction failed")
+                    .data(e.getMessage())
+                    .build());
+        }
+    }
 }

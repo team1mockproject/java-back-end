@@ -2,9 +2,11 @@ package mock.auction.service.impl;
 
 import jakarta.transaction.Transactional;
 import mock.auction.entity.AuctionEvent;
+import mock.auction.entity.LocationEntity;
 import mock.auction.exception.EntityNotFoundException;
 import mock.auction.repository.AuctionEventRepository;
 import mock.auction.service.AuctionEventService;
+import mock.auction.service.PublicHolidayChecker;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,10 @@ import java.util.Optional;
 
 @Service
 public class AuctionEventServiceImpl implements AuctionEventService {
+
+    @Autowired
+    private PublicHolidayChecker holidayChecker;
+
     private AuctionEventRepository auctionEventRepository;
 
     @Autowired
@@ -25,6 +31,9 @@ public class AuctionEventServiceImpl implements AuctionEventService {
     @Transactional
     public AuctionEvent addAuctionEvent(AuctionEvent auctionEvent) {
         try {
+            LocationEntity location = auctionEvent.getLocation();
+            String stateCode = location.getState().getStateCode();
+            holidayChecker.isPublicHoliday(stateCode);
             return auctionEventRepository.save(auctionEvent);
         } catch (Exception e) {
             // Handle exception, log it, and/or rethrow a custom exception

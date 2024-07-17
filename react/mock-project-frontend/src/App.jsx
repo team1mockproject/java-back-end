@@ -14,6 +14,9 @@ import ClientRegisterToAuction from "./pages/client-register-to-auction";
 import ManagerAssetList from './pages/manager-asset-list'
 import Categories from './pages/Categories'
 import ManagerStaffList from './pages/manager-staff-list/ManagerStaffList'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
+import { ModalStateWrapper } from './context/modal-state-context/ModalStateContext'
 
 const router = createBrowserRouter([
   {
@@ -75,7 +78,21 @@ const router = createBrowserRouter([
 function App() {
   return (
     <ResponsiveWrapper>
+    <ModalStateWrapper>
       <RouterProvider router={router} />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </ModalStateWrapper>
     </ResponsiveWrapper>
   );
 }

@@ -45,27 +45,21 @@ public class Auction {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "asset_id")
-    @JsonIgnore
     private Asset asset;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auction_type_id")
     private AuctionType auctionType;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "winner_id")
-    @JsonIgnore
     private AccountEntity winner;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auction_event_id")
-    @JsonIgnore
     private AuctionEvent auctionEvent;
 
     @OneToMany(mappedBy = "auction", fetch = FetchType.LAZY)
-    @JsonIgnore
     private List<BidHistory> bidHistories;
     @OneToMany(mappedBy = "auction", fetch = FetchType.LAZY)
-    @JsonIgnore
     private List<RegistParticipateAuction> registParticipateAuctions;
     @OneToMany(mappedBy = "auction", fetch = FetchType.LAZY)
-    @JsonIgnore
     private List<AuctionFee> auctionFees;
 }

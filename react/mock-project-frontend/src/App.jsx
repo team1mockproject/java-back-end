@@ -11,10 +11,12 @@ import ManagerBuyerList from './pages/manager-buyer-list'
 import ManagerSellerList from './pages/manager-seller-list'
 import ManagerAppraiserList from './pages/manager-appraiser-list'
 import ClientRegisterToAuction from "./pages/client-register-to-auction";
+import ManagerAssetList from './pages/manager-asset-list'
 import Categories from './pages/Categories'
 import ManagerStaffList from './pages/manager-staff-list/ManagerStaffList'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import { ModalStateWrapper } from './context/modal-state-context/ModalStateContext'
 
 const router = createBrowserRouter([
   {
@@ -50,6 +52,10 @@ const router = createBrowserRouter([
         element: <ManagerAppraiserList />
       },
       {
+        path: "asset",
+        element: <ManagerAssetList />
+      },
+      {
         path: "staff",
         element: <ManagerStaffList />
       }
@@ -72,8 +78,8 @@ const router = createBrowserRouter([
 function App() {
   return (
     <ResponsiveWrapper>
+    <ModalStateWrapper>
       <RouterProvider router={router} />
-
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -86,6 +92,7 @@ function App() {
         pauseOnHover
         theme="light"
       />
+    </ModalStateWrapper>
     </ResponsiveWrapper>
   );
 }

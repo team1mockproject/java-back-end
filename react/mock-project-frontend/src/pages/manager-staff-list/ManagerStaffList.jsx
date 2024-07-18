@@ -733,7 +733,6 @@ const ManagerStaffList = () => {
                                 }
                             }}
                         >
-
                         </ConfigProvider>
                         <Modal
                             title={`${confirmStatus === 'Update' ? 'Confirm change staff information' : 'Confirm delete staff'}`}

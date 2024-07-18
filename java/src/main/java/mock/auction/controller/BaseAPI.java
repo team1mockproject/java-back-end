@@ -37,7 +37,7 @@ public class BaseAPI <TDto ,TEntity >{
         return ResponseEntity.ok(service.findById(id));
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<BaseResponse> deleteResource(@PathVariable("id") Integer id) {
         service.delete(id);
         return ResponseEntity.ok(new BaseResponse(200,"delete success"));
@@ -48,5 +48,7 @@ public class BaseAPI <TDto ,TEntity >{
         service.delete(ids);
         return ResponseEntity.ok(new BaseResponse(200,"delete success"));
     }
+
+
 
 }

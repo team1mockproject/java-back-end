@@ -6,5 +6,5 @@ import mock.auction.model.account.AccountDto;
 import mock.auction.model.account.SlipConfirm;
 
 public interface AccountService extends GenericService<AccountDto, AccountEntity>{
-    BaseResponse acceptOrReject(SlipConfirm slipConfirm);
+    BaseResponse enableDOrDisabled(SlipConfirm slipConfirm);
 }

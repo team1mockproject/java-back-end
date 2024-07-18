@@ -6,6 +6,7 @@ import mock.auction.entity.AssetEntity;
 import mock.auction.model.location.LocationDto;
 import mock.auction.model.role.RoleDto;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -26,5 +27,5 @@ public class AccountDto {
     private String status;
     private Boolean delFlag;
     private List<Integer> roleIds;
-    private Set<RoleDto> roles;
+    private Collection<RoleDto> roles;
 }

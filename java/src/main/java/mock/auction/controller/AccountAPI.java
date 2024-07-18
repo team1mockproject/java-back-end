@@ -35,6 +35,11 @@ public class AccountAPI extends BaseAPI<AccountDto,AccountEntity>{
 
     @PostMapping("/confirm")
     public ResponseEntity<BaseResponse> confirm(@RequestBody SlipConfirm slipConfirm){
-        return ResponseEntity.ok(accountService.acceptOrReject(slipConfirm));
+        return ResponseEntity.ok(accountService.enableDOrDisabled(slipConfirm));
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<BaseResponse> update(@RequestBody AccountDto accountDto){
+        return ResponseEntity.ok(accountService.save(accountDto));
     }
 }

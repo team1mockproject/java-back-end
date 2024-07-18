@@ -1,6 +1,6 @@
 import { Button, Checkbox, Col, ConfigProvider, Flex, Form, Input, Row } from "antd";
 import Logo from "../../assets/logo-1.jfif";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CiMail } from "react-icons/ci";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { loginApi } from "../../services/AccountService";
@@ -13,6 +13,7 @@ const Login = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 
 	const handleLogin = async () => {
 		if (!email || !password) {
@@ -25,8 +26,8 @@ const Login = () => {
 			localStorage.setItem("token", res.data.accessToken);
 			dispatch(login(res.data.accessToken));
 			toast.success("Login successful");
+			navigate("/");
 		} else {
-			console.log(123);
 			toast.error("Login failed");
 		}
 	};

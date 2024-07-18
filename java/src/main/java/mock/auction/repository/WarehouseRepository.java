@@ -1,8 +1,8 @@
 package mock.auction.repository;
 
-import mock.auction.entity.WarehouseEntity;
+import mock.auction.entity.Warehouse;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface WarehouseRepository extends AbstractRepository<WarehouseEntity>{
+public interface WarehouseRepository extends AbstractRepository<Warehouse> {
 }

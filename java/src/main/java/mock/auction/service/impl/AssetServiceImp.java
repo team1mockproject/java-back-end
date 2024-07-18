@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class AssetServiceImp extends AbstractService<AssetDto, AssetEntity> implements AssetService {
+public class AssetServiceImp extends AbstractService<AssetDto, Asset> implements AssetService {
     private AssetRepository assetRepository;
     private ModelMapper modelMapper;
     private AccountRepository accountRepository;
@@ -35,7 +35,7 @@ public class AssetServiceImp extends AbstractService<AssetDto, AssetEntity> impl
             CloudinaryUtil cloudinaryUtil,
             CategoryAssetRepository categoryAssetRepository,
             AssetFileRepository assetFileRepository) {
-        super(assetRepository, AssetDto.class, AssetEntity.class, modelMapper, SearchFields.ASSET_FIELD_TYPES,
+        super(assetRepository, AssetDto.class, Asset.class, modelMapper, SearchFields.ASSET_FIELD_TYPES,
                 cloudinaryUtil);
         this.assetRepository = assetRepository;
         this.modelMapper = modelMapper;
@@ -48,16 +48,16 @@ public class AssetServiceImp extends AbstractService<AssetDto, AssetEntity> impl
     }
 
     @Override
-    public AssetEntity transformDtoToEntity(AssetDto assetDto) {
+    public Asset transformDtoToEntity(AssetDto assetDto) {
         Integer assetId = assetDto.getAssetId();
         Integer sellerId = assetDto.getAccountId();
         Integer assessorId = assetDto.getAssessorId();
         Integer warehouseId = assetDto.getWarehouseId();
         Integer categoryId = assetDto.getCategoryAssetId();
 
-        CategoryAssetEntity category = fetchCategory(categoryId);
+        CategoryAsset category = fetchCategory(categoryId);
 
-        AssetEntity assetEntity = (assetId == null) ? createNewAssetEntity(assetDto, sellerId, category)
+        Asset assetEntity = (assetId == null) ? createNewAssetEntity(assetDto, sellerId, category)
                 : updateExistingAssetEntity(assetDto, assetId, assessorId, warehouseId, category);
 
         return assetEntity;
@@ -69,9 +69,9 @@ public class AssetServiceImp extends AbstractService<AssetDto, AssetEntity> impl
                 .anyMatch("seller"::equalsIgnoreCase);
     }
 
-    private CategoryAssetEntity fetchCategory(Integer categoryId) {
+    private CategoryAsset fetchCategory(Integer categoryId) {
         return categoryAssetRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException(CategoryAssetEntity.class.getName(), "id",
+                .orElseThrow(() -> new ResourceNotFoundException(CategoryAsset.class.getName(), "id",
                         categoryId.toString()));
     }
 
@@ -81,23 +81,23 @@ public class AssetServiceImp extends AbstractService<AssetDto, AssetEntity> impl
                         () -> new ResourceNotFoundException(AccountEntity.class.getName(), "id", sellerId.toString()));
     }
 
-    private AssessorEntity fetchAssessor(Integer assessorId) {
+    private Assessor fetchAssessor(Integer assessorId) {
         return assessorRepository.findById(assessorId)
-                .orElseThrow(() -> new ResourceNotFoundException(AssessorEntity.class.getName(), "id",
+                .orElseThrow(() -> new ResourceNotFoundException(Assessor.class.getName(), "id",
                         assessorId.toString()));
     }
 
-    private WarehouseEntity fetchWarehouse(Integer warehouseId) {
+    private Warehouse fetchWarehouse(Integer warehouseId) {
         return warehouseRepository.findById(warehouseId)
-                .orElseThrow(() -> new ResourceNotFoundException(WarehouseEntity.class.getName(), "id",
+                .orElseThrow(() -> new ResourceNotFoundException(Warehouse.class.getName(), "id",
                         warehouseId.toString()));
     }
 
-    private AssetEntity createNewAssetEntity(AssetDto assetDto, Integer sellerId, CategoryAssetEntity category) {
+    private Asset createNewAssetEntity(AssetDto assetDto, Integer sellerId, CategoryAsset category) {
         validateNewAsset(assetDto, sellerId);
         assetDto.setListingDate(LocalDateTime.now());
 
-        AssetEntity assetEntity = modelMapper.map(assetDto, AssetEntity.class);
+        Asset assetEntity = modelMapper.map(assetDto, Asset.class);
         updateAssetFiles(assetDto, assetEntity);
         assetEntity.setCategoryAsset(category);
         assetEntity.setLegalStatus("illegal");
@@ -120,23 +120,23 @@ public class AssetServiceImp extends AbstractService<AssetDto, AssetEntity> impl
         }
     }
 
-    private AssetEntity updateExistingAssetEntity(AssetDto assetDto, Integer assetId, Integer assessorId,
-            Integer warehouseId, CategoryAssetEntity category) {
-        AssetEntity assetInDb = assetRepository.findById(assetId)
+    private Asset updateExistingAssetEntity(AssetDto assetDto, Integer assetId, Integer assessorId,
+            Integer warehouseId, CategoryAsset category) {
+        Asset assetInDb = assetRepository.findById(assetId)
                 .orElseThrow(
-                        () -> new ResourceNotFoundException(AssetEntity.class.getName(), "id", assetId.toString()));
+                        () -> new ResourceNotFoundException(Asset.class.getName(), "id", assetId.toString()));
 
         if (assessorId != null) {
-            AssessorEntity assessor = fetchAssessor(assessorId);
+            Assessor assessor = fetchAssessor(assessorId);
             if (assetInDb.getAssessor() == null) {
                 assetInDb.setAssessor(assessor);
             }
         }
 
-        WarehouseEntity warehouse = (warehouseId != null) ? fetchWarehouse(warehouseId) : null;
+        Warehouse warehouse = (warehouseId != null) ? fetchWarehouse(warehouseId) : null;
         assetDto.setListingDate(assetInDb.getListingDate());
 
-        AssetEntity assetEntity = modelMapper.map(assetDto, AssetEntity.class);
+        Asset assetEntity = modelMapper.map(assetDto, Asset.class);
         if (!areUrlsEqual(assetInDb.getAssetFiles().stream().toList(), assetDto.getUrls())) {
             assetFileRepository.deleteAll(assetInDb.getAssetFiles());
             updateAssetFiles(assetDto, assetEntity);
@@ -151,26 +151,26 @@ public class AssetServiceImp extends AbstractService<AssetDto, AssetEntity> impl
         return assetEntity;
     }
 
-    private boolean areUrlsEqual(List<AssetFileEntity> assetFiles, List<String> urls) {
+    private boolean areUrlsEqual(List<AssetFile> assetFiles, List<String> urls) {
         if (assetFiles.size() != urls.size()) {
             return false;
         }
         List<String> assetFileUrls = assetFiles.stream()
-                .map(AssetFileEntity::getUrl)
+                .map(AssetFile::getUrl)
                 .collect(Collectors.toList());
         return assetFileUrls.containsAll(urls);
     }
 
-    private void updateAssetFiles(AssetDto assetDto, AssetEntity assetEntity) {
-        List<AssetFileEntity> assetFileEntityList = assetDto.getUrls().stream()
+    private void updateAssetFiles(AssetDto assetDto, Asset assetEntity) {
+        List<AssetFile> assetFileEntityList = assetDto.getUrls().stream()
                 .map(url -> createAssetFileEntity(url, assetEntity))
                 .collect(Collectors.toList());
 
         assetEntity.setAssetFiles(assetFileEntityList);
     }
 
-    private AssetFileEntity createAssetFileEntity(String url, AssetEntity assetEntity) {
-        AssetFileEntity assetFile = new AssetFileEntity();
+    private AssetFile createAssetFileEntity(String url, Asset assetEntity) {
+        AssetFile assetFile = new AssetFile();
         assetFile.setUrl(url);
         assetFile.setAsset(assetEntity);
         return assetFile;

@@ -95,7 +95,7 @@ public class CategoryAPI extends BaseAPI<CategoryDto, CategoryAsset> {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete-by-id/{id}")
     public ResponseEntity<ResponseObject> delete(@PathVariable Integer id) {
         try {
             categoryService.deleteCategory(id);

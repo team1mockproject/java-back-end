@@ -2,7 +2,6 @@ package mock.auction.service.impl;
 
 import io.github.perplexhub.rsql.RSQLJPASupport;
 import lombok.AllArgsConstructor;
-import mock.auction.constants.AppConstants;
 import mock.auction.exception.ComponentException;
 import mock.auction.exception.ResourceNotFoundException;
 import mock.auction.model.BaseResponse;

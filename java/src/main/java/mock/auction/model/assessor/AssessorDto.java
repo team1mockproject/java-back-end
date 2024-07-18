@@ -2,7 +2,6 @@ package mock.auction.model.assessor;
 
 import lombok.Getter;
 import lombok.Setter;
-import mock.auction.entity.AssetEntity;
 import mock.auction.model.location.LocationDto;
 
 import java.util.Collection;

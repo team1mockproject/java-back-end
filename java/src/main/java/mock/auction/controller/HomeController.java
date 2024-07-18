@@ -1,6 +1,5 @@
 package mock.auction.controller;
 
-import mock.auction.entity.Auction;
 import mock.auction.entity.AuctionEvent;
 import mock.auction.entity.CategoryAsset;
 import mock.auction.response.AuctionResponse;

@@ -2,7 +2,6 @@ package mock.auction.model.warehouse;
 
 import lombok.Getter;
 import lombok.Setter;
-import mock.auction.entity.AssetEntity;
 import mock.auction.model.asset.AssetDto;
 import mock.auction.model.location.LocationDto;
 

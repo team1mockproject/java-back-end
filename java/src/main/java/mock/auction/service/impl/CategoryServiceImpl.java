@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import mock.auction.constants.SearchFields;
 import mock.auction.entity.CategoryAsset;
 import mock.auction.exception.ResourceConflictException;
-import mock.auction.model.ListResponse;
 import mock.auction.model.category.CategoryDto;
 import mock.auction.repository.CategoryRepository;
 import mock.auction.request.CategoryRequest;

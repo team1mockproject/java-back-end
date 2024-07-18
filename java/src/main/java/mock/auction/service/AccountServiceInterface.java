@@ -8,7 +8,6 @@ import mock.auction.model.account.AccountDto;
 import mock.auction.model.account.SlipConfirm;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 public interface AccountServiceInterface extends GenericService<AccountDto, AccountEntity> {
@@ -27,4 +26,5 @@ public interface AccountServiceInterface extends GenericService<AccountDto, Acco
     BaseResponse acceptOrReject(SlipConfirm slipConfirm);
 
     public void reActive(Integer id) throws Exception;
+
 }

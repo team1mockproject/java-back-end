@@ -11,7 +11,6 @@ import mock.auction.exception.EntityNotFoundException;
 import mock.auction.exception.ResourceConflictException;
 import mock.auction.exception.ResourceNotFoundException;
 import mock.auction.model.BaseResponse;
-import mock.auction.model.ListResponse;
 import mock.auction.model.account.AccountDto;
 import mock.auction.model.account.SlipConfirm;
 import mock.auction.repository.AccountRepository;

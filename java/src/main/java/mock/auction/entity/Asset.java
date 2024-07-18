@@ -1,14 +1,20 @@
 package mock.auction.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "Asset")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Asset {
 
     @Id
@@ -24,11 +30,11 @@ public class Asset {
     @Column(name = "market_price")
     private Double marketPrice;
     @Column(name = "listing_date")
-    private Date listingDate;
+    private LocalDateTime listingDate;
     @Column(name = "legal_status")
     private String legalStatus;
     @Column(name = "assessment_date")
-    private Date assessmentDate;
+    private LocalDateTime assessmentDate;
     @Column(name = "assessment_report")
     private String assessmentReport;
     @Column(name = "shipping_status")
@@ -63,175 +69,4 @@ public class Asset {
     @OneToMany(mappedBy = "asset")
     @JsonIgnore
     private List<AssetFile> assetFiles;
-
-    public Asset() {
-    }
-
-    public List<AssetFee> getAssetFees() {
-        return assetFees;
-    }
-
-    public void setAssetFees(List<AssetFee> assetFees) {
-        this.assetFees = assetFees;
-    }
-
-    public List<InventoryRecord> getInventoryRecords() {
-        return inventoryRecords;
-    }
-
-    public void setInventoryRecords(List<InventoryRecord> inventoryRecords) {
-        this.inventoryRecords = inventoryRecords;
-    }
-
-    public List<Watchlist> getWatchlists() {
-        return watchlists;
-    }
-
-    public void setWatchlists(List<Watchlist> watchlists) {
-        this.watchlists = watchlists;
-    }
-
-    public List<Auction> getAuctions() {
-        return auctions;
-    }
-
-    public void setAuctions(List<Auction> auctions) {
-        this.auctions = auctions;
-    }
-
-    public List<AssetFile> getAssetFiles() {
-        return assetFiles;
-    }
-
-    public void setAssetFiles(List<AssetFile> assetFiles) {
-        this.assetFiles = assetFiles;
-    }
-
-    public Integer getAssetId() {
-        return assetId;
-    }
-
-    public void setAssetId(Integer assetId) {
-        this.assetId = assetId;
-    }
-
-    public String getAssetName() {
-        return assetName;
-    }
-
-    public void setAssetName(String assetName) {
-        this.assetName = assetName;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getAssetStatus() {
-        return assetStatus;
-    }
-
-    public void setAssetStatus(String assetStatus) {
-        this.assetStatus = assetStatus;
-    }
-
-    public String getOrigin() {
-        return origin;
-    }
-
-    public void setOrigin(String origin) {
-        this.origin = origin;
-    }
-
-    public Double getMarketPrice() {
-        return marketPrice;
-    }
-
-    public void setMarketPrice(Double marketPrice) {
-        this.marketPrice = marketPrice;
-    }
-
-    public Date getListingDate() {
-        return listingDate;
-    }
-
-    public void setListingDate(Date listingDate) {
-        this.listingDate = listingDate;
-    }
-
-    public String getLegalStatus() {
-        return legalStatus;
-    }
-
-    public void setLegalStatus(String legalStatus) {
-        this.legalStatus = legalStatus;
-    }
-
-    public Date getAssessmentDate() {
-        return assessmentDate;
-    }
-
-    public void setAssessmentDate(Date assessmentDate) {
-        this.assessmentDate = assessmentDate;
-    }
-
-    public String getAssessmentReport() {
-        return assessmentReport;
-    }
-
-    public void setAssessmentReport(String assessmentReport) {
-        this.assessmentReport = assessmentReport;
-    }
-
-    public String getShippingStatus() {
-        return shippingStatus;
-    }
-
-    public void setShippingStatus(String shippingStatus) {
-        this.shippingStatus = shippingStatus;
-    }
-
-    public Boolean getDelFlag() {
-        return delFlag;
-    }
-
-    public void setDelFlag(Boolean delFlag) {
-        this.delFlag = delFlag;
-    }
-
-    public CategoryAsset getCategoryAsset() {
-        return categoryAsset;
-    }
-
-    public void setCategoryAsset(CategoryAsset categoryAsset) {
-        this.categoryAsset = categoryAsset;
-    }
-
-    public AccountEntity getSeller() {
-        return seller;
-    }
-
-    public void setSeller(AccountEntity seller) {
-        this.seller = seller;
-    }
-
-    public Assessor getAssessor() {
-        return assessor;
-    }
-
-    public void setAssessor(Assessor assessor) {
-        this.assessor = assessor;
-    }
-
-    public Warehouse getWarehouse() {
-        return warehouse;
-    }
-
-    public void setWarehouse(Warehouse warehouse) {
-        this.warehouse = warehouse;
-    }
 }

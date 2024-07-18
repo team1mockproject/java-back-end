@@ -1,4 +1,5 @@
 import Category from "../components/category/CategoryComponent";
+import ClientFooter from "../components/client-footer/ClientFooter";
 import ClientHeader from "../components/client-header";
 import { useContext, useState, useEffect } from "react";
 import axios from "axios";

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/staff")
+@RequestMapping("/api/authenticate/staff")
 public class AccountController {
 
     private AccountServiceInterface accountService;
@@ -23,7 +23,7 @@ public class AccountController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<AccountEntity> addUser(@Valid  @RequestBody AccountEntity accountEntity,
+    public ResponseEntity<AccountEntity> addUser(@Valid @RequestBody AccountEntity accountEntity,
             @RequestParam Set<Integer> roleIds) {
         AccountEntity newStaff = accountService.addStaff(accountEntity);
         return ResponseEntity.ok(newStaff);
@@ -35,9 +35,19 @@ public class AccountController {
         return ResponseEntity.ok(accountService.updateStaff(id, accountEntity));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @PutMapping("/delete/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         accountService.deleteStaff(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/re-active/{id}")
+    public ResponseEntity<Void> reActiveUser(@PathVariable Integer id) {
+        try {
+            accountService.reActive(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return ResponseEntity.noContent().build();
     }
 

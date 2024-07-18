@@ -2,6 +2,7 @@ package mock.auction.security;
 
 import lombok.Getter;
 import lombok.Setter;
+import mock.auction.constants.AppConstants;
 import mock.auction.entity.AccountEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,6 +16,7 @@ import java.util.List;
 @Setter
 public class MyUserDetails extends User {
     private int id;
+
     public MyUserDetails(
             int id,
             String userName,
@@ -31,17 +33,15 @@ public class MyUserDetails extends User {
     public static UserDetails build(AccountEntity accountEntity) {
         String role = accountEntity.getRoles().toString();
         List<GrantedAuthority> authorities = List.of(
-                new SimpleGrantedAuthority(role)
-        );
+                new SimpleGrantedAuthority(role));
         return new MyUserDetails(
                 accountEntity.getId(),
                 accountEntity.getEmail(),
                 accountEntity.getPassWord(),
-                accountEntity.getStatus().equals("active")?true:false,
+                accountEntity.getStatus().equals(AppConstants.ACTIVE) ? true : false,
                 true,
                 true,
                 true,
-                authorities
-        );
+                authorities);
     }
 }

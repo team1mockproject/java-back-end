@@ -2,6 +2,8 @@ package mock.auction.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import mock.auction.request.AssessorRequest;
 import mock.auction.response.AssessorResponse;
 
@@ -27,6 +29,8 @@ public interface AssessorService {
 
     public AssessorResponse getAssessor(Integer id) throws Exception;
 
-    public List<AssessorResponse> getAllAssessors(String status, String sortBy,
+    public void deleteAssessor(Integer id) throws Exception;
+
+    public Page<AssessorResponse> getAllAssessors(String status, String sortBy,
             Integer pageNumber, Integer pageSize, String keyword) throws Exception;
 }

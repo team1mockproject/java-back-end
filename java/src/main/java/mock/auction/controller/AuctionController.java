@@ -3,6 +3,7 @@ package mock.auction.controller;
 import jakarta.validation.Valid;
 import mock.auction.entity.Asset;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,18 +47,18 @@ public class AuctionController {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<List<Auction>> filterAuction(
+    public ResponseEntity<List<AuctionResponse>> filterAuction(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice) {
-        List<Auction> auctions = auctionService.filterAuction(startDate, endDate, minPrice, maxPrice);
+        List<AuctionResponse> auctions = auctionService.filterAuction(startDate, endDate, minPrice, maxPrice);
         return ResponseEntity.ok(auctions);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Auction>> searchAuction(@RequestParam String keyword) {
-        List<Auction> searchResults = auctionService.searchAuction(keyword);
+    public ResponseEntity<List<AuctionResponse>> searchAuction(@RequestParam String keyword) {
+        List<AuctionResponse> searchResults = auctionService.searchAuction(keyword);
         return ResponseEntity.ok(searchResults);
     }
 
@@ -66,6 +67,7 @@ public class AuctionController {
         Asset asset = auctionService.getAssetByAuctionId(auctionId);
         return ResponseEntity.ok(asset);
     }
+
     // Create units when auction ends
     @PostMapping("/{auctionId}/finalize")
     public ResponseEntity<Auction> finalizeAuction(
@@ -74,7 +76,8 @@ public class AuctionController {
             @RequestParam(required = false) Double winningBid,
             @RequestParam(required = false) String paymentMethod,
             @RequestParam(required = false) LocalDateTime timeLimit) {
-        Auction auction = auctionService.closeAndFinalizeAuction(auctionId, winnerId, winningBid, paymentMethod, timeLimit);
+        Auction auction = auctionService.closeAndFinalizeAuction(auctionId, winnerId, winningBid, paymentMethod,
+                timeLimit);
         return ResponseEntity.ok(auction);
     }
 
@@ -86,7 +89,7 @@ public class AuctionController {
             @RequestParam Optional<Integer> size,
             @RequestParam(required = false) String keyword) {
         try {
-            List<AuctionResponse> auctions = auctionService.searchAuctions(
+            Page<AuctionResponse> auctions = auctionService.searchAuctions(
                     status,
                     sortOrder,
                     page.orElse(0),

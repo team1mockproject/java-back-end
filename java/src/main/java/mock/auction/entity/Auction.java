@@ -57,9 +57,12 @@ public class Auction {
     private AuctionEvent auctionEvent;
 
     @OneToMany(mappedBy = "auction", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<BidHistory> bidHistories;
     @OneToMany(mappedBy = "auction", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<RegistParticipateAuction> registParticipateAuctions;
     @OneToMany(mappedBy = "auction", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<AuctionFee> auctionFees;
 }

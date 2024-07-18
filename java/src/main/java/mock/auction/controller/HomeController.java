@@ -3,6 +3,7 @@ package mock.auction.controller;
 import mock.auction.entity.Auction;
 import mock.auction.entity.AuctionEvent;
 import mock.auction.entity.CategoryAsset;
+import mock.auction.response.AuctionResponse;
 import mock.auction.service.AuctionEventService;
 import mock.auction.service.AuctionService;
 import mock.auction.service.CategoryService;
@@ -22,15 +23,16 @@ public class HomeController {
     private AuctionService auctionService;
 
     @Autowired
-    public HomeController(CategoryService categoryService, AuctionEventService auctionEventService, AuctionService auctionService) {
+    public HomeController(CategoryService categoryService, AuctionEventService auctionEventService,
+            AuctionService auctionService) {
         this.categoryService = categoryService;
         this.auctionEventService = auctionEventService;
         this.auctionService = auctionService;
     }
 
     @GetMapping("/auction")
-    public ResponseEntity<List<Auction>> getAllAuction() {
-        List<Auction> auctions = auctionService.getAllAuction();
+    public ResponseEntity<List<AuctionResponse>> getAllAuction() {
+        List<AuctionResponse> auctions = auctionService.getAllAuction();
         return ResponseEntity.ok(auctions);
     }
 
@@ -39,6 +41,7 @@ public class HomeController {
         List<AuctionEvent> auctionEvents = auctionEventService.geyAllAuctionEvent();
         return ResponseEntity.ok(auctionEvents);
     }
+
     @GetMapping("/category")
     public ResponseEntity<List<CategoryAsset>> getAllCategory() {
         List<CategoryAsset> categoryAssets = categoryService.getAllCategory();

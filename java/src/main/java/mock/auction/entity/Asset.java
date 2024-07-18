@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import java.sql.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "Asset")
 public class Asset {
@@ -48,14 +50,18 @@ public class Asset {
     private Warehouse warehouse;
 
     @OneToMany(mappedBy = "asset")
+    @JsonIgnore
     private List<AssetFee> assetFees;
     @OneToMany(mappedBy = "asset")
+    @JsonIgnore
     private List<InventoryRecord> inventoryRecords;
     @OneToMany(mappedBy = "asset")
+    @JsonIgnore
     private List<Watchlist> watchlists;
     @OneToMany(mappedBy = "asset")
     private List<Auction> auctions;
     @OneToMany(mappedBy = "asset")
+    @JsonIgnore
     private List<AssetFile> assetFiles;
 
     public Asset() {

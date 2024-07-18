@@ -1,13 +1,18 @@
 package mock.auction.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 public class BaseResponse {
     private Integer code;
     private String message;
+    private Object data;
+
+    public BaseResponse(Integer code, String message) {
+        this.code = code;
+        this.message = message;
+    }
 }

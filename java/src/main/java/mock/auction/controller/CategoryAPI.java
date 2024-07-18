@@ -112,4 +112,22 @@ public class CategoryAPI extends BaseAPI<CategoryDto, CategoryAsset> {
         }
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<ResponseObject> getAllCategory() {
+        try {
+            List<CategoryResponse> assets = categoryService.getAll();
+            return ResponseEntity.ok().body(ResponseObject.builder()
+                    .status(200)
+                    .message("Get all categories successfully")
+                    .data(assets)
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ResponseObject.builder()
+                    .status(400)
+                    .message("Get all categories failed")
+                    .data(e.getMessage())
+                    .build());
+        }
+    }
+
 }

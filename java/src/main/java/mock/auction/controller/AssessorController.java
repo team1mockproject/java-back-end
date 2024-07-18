@@ -3,6 +3,7 @@ package mock.auction.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -104,6 +105,23 @@ public class AssessorController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<BaseResponse> delete(@PathVariable Integer id) {
+        try {
+            assessorService.deleteAssessor(id);
+            return ResponseEntity.ok(BaseResponse.builder()
+                    .code(200)
+                    .message("Delete assessor successfully")
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(BaseResponse.builder()
+                    .code(400)
+                    .message("Delete assessor failed")
+                    .data(e.getMessage())
+                    .build());
+        }
+    }
+
     @GetMapping("/all")
     public ResponseEntity<BaseResponse> getAll(
             @RequestParam(required = false) String status,
@@ -112,7 +130,7 @@ public class AssessorController {
             @RequestParam Optional<Integer> size,
             @RequestParam(required = false) String search) {
         try {
-            List<AssessorResponse> response = assessorService.getAllAssessors(status, sort,
+            Page<AssessorResponse> response = assessorService.getAllAssessors(status, sort,
                     page.orElse(0),
                     size.orElse(10), search);
             return ResponseEntity.ok(BaseResponse.builder()

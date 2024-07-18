@@ -8,6 +8,7 @@ import mock.auction.entity.LocationEntity;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AssessorResponse {
+    private Integer assessorId;
     private String name;
     private LocationEntity location;
     private String email;
@@ -17,6 +18,7 @@ public class AssessorResponse {
     private String address;
 
     public AssessorResponse(Assessor assessor) {
+        this.assessorId = assessor.getAssessorId();
         this.name = assessor.getName();
         this.email = assessor.getEmail();
         this.phone = assessor.getPhone();

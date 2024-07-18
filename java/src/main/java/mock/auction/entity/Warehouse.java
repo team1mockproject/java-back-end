@@ -3,6 +3,9 @@ package mock.auction.entity;
 import jakarta.persistence.*;
 
 import java.util.Collection;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.*;
 
 @Data
@@ -21,7 +24,9 @@ public class Warehouse {
     @JoinColumn(name = "location_id")
     private LocationEntity location;
     @OneToMany(mappedBy = "warehouse")
+    @JsonIgnore
     private Collection<Asset> assets;
     @OneToMany(mappedBy = "warehouse")
+    @JsonIgnore
     private Collection<InventoryRecord> inventoryRecords;
 }

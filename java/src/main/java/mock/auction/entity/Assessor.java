@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -26,6 +28,7 @@ public class Assessor {
     @JoinColumn(name = "location_id")
     private LocationEntity location;
     @OneToMany(mappedBy = "assessor")
+    @JsonIgnore
     private List<Asset> assets;
 
 }

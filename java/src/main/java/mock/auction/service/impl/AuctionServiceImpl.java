@@ -5,14 +5,13 @@ import mock.auction.entity.*;
 import mock.auction.exception.EntityNotFoundException;
 import mock.auction.exception.ResourceNotFoundException;
 import mock.auction.repository.*;
-import mock.auction.repository.AuctionRepository;
-import mock.auction.repository.AuctionTypeRepository;
 import mock.auction.repository.specifications.AuctionSpecification;
 import mock.auction.response.AuctionResponse;
 import mock.auction.service.AuctionService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -32,7 +31,9 @@ public class AuctionServiceImpl implements AuctionService {
     private RegistParticipateAuctionRepository registParticipateAuctionRepository;
 
     @Autowired
-    public AuctionServiceImpl(AuctionRepository auctionRepository, AssetRepository assetRepository, AuctionTypeRepository auctionTypeRepository, AccountRepository accountRepository, RegistParticipateAuctionRepository registParticipateAuctionRepository) {
+    public AuctionServiceImpl(AuctionRepository auctionRepository, AssetRepository assetRepository,
+            AuctionTypeRepository auctionTypeRepository, AccountRepository accountRepository,
+            RegistParticipateAuctionRepository registParticipateAuctionRepository) {
         this.auctionRepository = auctionRepository;
         this.assetRepository = assetRepository;
         this.auctionTypeRepository = auctionTypeRepository;
@@ -49,7 +50,6 @@ public class AuctionServiceImpl implements AuctionService {
             throw new RuntimeException("Error updating auction", e);
         }
     }
-
 
     @Override
     @Transactional
@@ -81,28 +81,29 @@ public class AuctionServiceImpl implements AuctionService {
     }
 
     @Override
-    public List<Auction> getAllAuction() {
+    public List<AuctionResponse> getAllAuction() {
         try {
-            return auctionRepository.findAll();
+            return auctionRepository.findAll().stream().map(AuctionResponse::of).toList();
         } catch (Exception e) {
             throw new RuntimeException("Error fetching all auctions", e);
         }
     }
 
     @Override
-    public List<Auction> searchAuction(String keyword) {
+    public List<AuctionResponse> searchAuction(String keyword) {
         try {
-            return auctionRepository.findByAsset_AssetName(keyword);
+            return auctionRepository.findByAsset_AssetName(keyword).stream().map(AuctionResponse::of).toList();
         } catch (Exception e) {
             throw new RuntimeException("Error searching auction by keyword", e);
         }
     }
 
     @Override
-    public List<Auction> filterAuction(LocalDateTime startDate, LocalDateTime endDate, Double minPrice,
+    public List<AuctionResponse> filterAuction(LocalDateTime startDate, LocalDateTime endDate, Double minPrice,
             Double maxPrice) {
         try {
-            return auctionRepository.findAuctionsByDateRangeAndAmount(startDate, endDate, minPrice, maxPrice);
+            return auctionRepository.findAuctionsByDateRangeAndAmount(startDate, endDate, minPrice, maxPrice).stream()
+                    .map(AuctionResponse::of).toList();
         } catch (Exception e) {
             throw new RuntimeException("Error filtering auctions", e);
         }
@@ -118,7 +119,8 @@ public class AuctionServiceImpl implements AuctionService {
     //Create units when auction ends
     @Override
     @Transactional
-    public Auction closeAndFinalizeAuction(Integer auctionId, Integer winnerId, Double highestPrice, String paymentMethod, LocalDateTime timeLimit) {
+    public Auction closeAndFinalizeAuction(Integer auctionId, Integer winnerId, Double highestPrice,
+            String paymentMethod, LocalDateTime timeLimit) {
         Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Auction not found with id: " + auctionId));
 
@@ -146,11 +148,12 @@ public class AuctionServiceImpl implements AuctionService {
             asset.setAssetStatus("sold"); // Update asset status to 'sold'
 
             // Notification for winner
-            sendNotification(winner, "You have won the auction for asset " + asset.getAssetName() + " with a bid amount of: " + highestPrice);
+            sendNotification(winner, "You have won the auction for asset " + asset.getAssetName()
+                    + " with a bid amount of: " + highestPrice);
         } else {
             asset.setAssetStatus("unsold"); // Update asset status to 'unsold'
         }
-        if(auction.getEndDate().equals(LocalDateTime.now())){
+        if (auction.getEndDate().equals(LocalDateTime.now())) {
             auction.setAuctionStatus("closed");
             throw new IllegalStateException("Auction ended");
         }
@@ -159,11 +162,9 @@ public class AuctionServiceImpl implements AuctionService {
         return auctionRepository.save(auction); // Save auction changes
     }
 
-
     private void sendNotification(AccountEntity user, String message) {
         // send Notification
     }
-
 
     /**
      * search auctions
@@ -176,7 +177,7 @@ public class AuctionServiceImpl implements AuctionService {
      * @throws Exception
      */
     @Override
-    public List<AuctionResponse> searchAuctions(String auctionStatus, String sortOrder, Integer pageNumber,
+    public Page<AuctionResponse> searchAuctions(String auctionStatus, String sortOrder, Integer pageNumber,
             Integer pageSize,
             String keyWord) throws Exception {
         if (auctionStatus == null) {
@@ -193,7 +194,12 @@ public class AuctionServiceImpl implements AuctionService {
         Page<Auction> page = auctionRepository.findAll(spec, pageable);
         List<Auction> auctions = page.getContent().stream()
                 .filter(auction -> auction.getDelFlag() == false).toList();
-        return auctions.stream().map(AuctionResponse::of).toList();
+
+        List<AuctionResponse> auctionResponses = auctions.stream()
+                .map(AuctionResponse::of)
+                .toList();
+
+        return new PageImpl<>(auctionResponses, pageable, page.getTotalElements());
     }
 
     private AuctionSpecification createSpecification(String auctionStatus, String keyWord) {

@@ -136,20 +136,31 @@ public class AssessorServiceImpl implements AssessorService {
     }
 
     @Override
-    public List<AssessorResponse> getAllAssessors(String status, String sortBy,
+    public Page<AssessorResponse> getAllAssessors(String status, String sortBy,
             Integer pageNumber, Integer pageSize, String keyword) throws Exception {
         Specification<Assessor> specification = Specification.where(AssessorSpecification.hasStatus(status))
                 .and(AssessorSpecification.hasKeyword(keyword));
         Sort sort;
         if (sortBy == null || sortBy.isEmpty()) {
-            sort = Sort.by("name");
+            sort = Sort.by("assessorId");
         } else {
             sort = Sort.by(sortBy);
         }
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
         Page<Assessor> page = assessorRepository.findAll(specification, pageable);
-        List<Assessor> assessors = page.getContent();
-        return assessors.stream().map(AssessorResponse::fromAssessor).toList();
+        // List<Assessor> assessors = page.getContent();
+        return page.map(AssessorResponse::fromAssessor);
+    }
+
+    @Override
+    public void deleteAssessor(Integer id) throws Exception {
+        Assessor assessor = assessorRepository.findById(id).get();
+
+        // check is exist assessor in db
+        if (assessor == null) {
+            throw new Exception("Account not found");
+        }
+        assessorRepository.delete(assessor);
     }
 
 }

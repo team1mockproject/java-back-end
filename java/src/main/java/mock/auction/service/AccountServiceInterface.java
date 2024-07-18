@@ -25,4 +25,6 @@ public interface AccountServiceInterface extends GenericService<AccountDto, Acco
     public List<AccountEntity> filterStaff(String status);
 
     BaseResponse acceptOrReject(SlipConfirm slipConfirm);
+
+    public void reActive(Integer id) throws Exception;
 }

@@ -11,6 +11,7 @@ import mock.auction.exception.EntityNotFoundException;
 import mock.auction.exception.ResourceConflictException;
 import mock.auction.exception.ResourceNotFoundException;
 import mock.auction.model.BaseResponse;
+import mock.auction.model.ListResponse;
 import mock.auction.model.account.AccountDto;
 import mock.auction.model.account.SlipConfirm;
 import mock.auction.repository.AccountRepository;
@@ -85,8 +86,27 @@ public class AccountServiceImpl extends AbstractService<AccountDto, AccountEntit
     @Transactional
     public void deleteStaff(Integer id) {
         try {
+            AccountEntity account = accountRepository.findById(id).get();
             if (accountRepository.existsById(id)) {
-                accountRepository.deleteById(id);
+                account.setStatus(AppConstants.INACTIVE);
+                accountRepository.save(account);
+            } else {
+                throw new EntityNotFoundException("Staff not found with id: " + id);
+            }
+        } catch (Exception e) {
+            // Handle exception, log it, and/or rethrow a custom exception
+            throw new RuntimeException("Error deleting staff", e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void reActive(Integer id) {
+        try {
+            AccountEntity account = accountRepository.findById(id).get();
+            if (accountRepository.existsById(id)) {
+                account.setStatus(AppConstants.ACTIVE);
+                accountRepository.save(account);
             } else {
                 throw new EntityNotFoundException("Staff not found with id: " + id);
             }
@@ -141,7 +161,7 @@ public class AccountServiceImpl extends AbstractService<AccountDto, AccountEntit
                                 idAccount.toString()));
                 switch (type) {
                     case "accept": {
-                        accountEntity.setStatus("active");
+                        accountEntity.setStatus(AppConstants.ACTIVE);
                         accountRepository.save(accountEntity);
                     }
                         return new BaseResponse(200, "accept success");
@@ -222,4 +242,5 @@ public class AccountServiceImpl extends AbstractService<AccountDto, AccountEntit
         return locationRepository.findById(locationId)
                 .orElseThrow(() -> new ComponentException("ID location not found", HttpStatus.BAD_REQUEST));
     }
+
 }

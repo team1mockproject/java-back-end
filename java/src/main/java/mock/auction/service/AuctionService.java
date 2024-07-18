@@ -7,6 +7,8 @@ import mock.auction.response.AuctionResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 public interface AuctionService {
 
 	public Auction createAuction(Auction auction);
@@ -15,11 +17,11 @@ public interface AuctionService {
 
 	public void deleteAuction(Integer id);
 
-	public List<Auction> getAllAuction();
+	public List<AuctionResponse> getAllAuction();
 
-	public List<Auction> searchAuction(String keyword);
+	public List<AuctionResponse> searchAuction(String keyword);
 
-	public List<Auction> filterAuction(LocalDateTime startDate, LocalDateTime endDate, Double minPrice,
+	public List<AuctionResponse> filterAuction(LocalDateTime startDate, LocalDateTime endDate, Double minPrice,
 			Double maxPrice);
 
 	public Asset getAssetByAuctionId(Integer auctionId);
@@ -27,6 +29,6 @@ public interface AuctionService {
 	public Auction closeAndFinalizeAuction(Integer auctionId, Integer winnerId, Double highestPrice,
 			String paymentMethod, LocalDateTime timeLimit);
 
-	public List<AuctionResponse> searchAuctions(String auctionStatus, String sortOrder,
+	public Page<AuctionResponse> searchAuctions(String auctionStatus, String sortOrder,
 			Integer pageNumber, Integer pageSize, String keyWord) throws Exception;
 }

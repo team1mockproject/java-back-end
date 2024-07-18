@@ -15,4 +15,7 @@ public interface CategoryService {
     public CategoryResponse getById(Integer id) throws Exception;
 
     public List<CategoryAsset> getAllCategory();
+
+    public List<CategoryResponse> getAll();
+
 }

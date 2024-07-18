@@ -11,7 +11,9 @@ public class AuctionResponse {
     private Integer auctionId;
     private String eventName;
     private String assetName;
+    private String categoryName;
     private String auctionTypeName;
+    private String img;
     private String conductor;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
@@ -25,7 +27,10 @@ public class AuctionResponse {
     public AuctionResponse(Auction auction) {
         this.auctionId = auction.getAuctionId();
         this.eventName = auction.getAuctionEvent().getEventName();
+        this.categoryName = auction.getAsset().getCategoryAsset().getName();
         this.assetName = auction.getAsset().getAssetName();
+        this.img = auction.getAsset().getAssetFiles().isEmpty() ? null
+                : auction.getAsset().getAssetFiles().get(0).getUrl();
         this.auctionTypeName = auction.getAuctionType().getName();
         this.conductor = auction.getConductor();
         this.startDate = auction.getStartDate();

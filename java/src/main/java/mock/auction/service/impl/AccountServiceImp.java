@@ -49,6 +49,8 @@ public class AccountServiceImp extends AbstractService<AccountDto, AccountEntity
         this.cloudinaryUtil = cloudinaryUtil;
     }
 
+
+
     @Override
     public AccountEntity transformDtoToEntity(AccountDto accountDto) {
         Integer accountId = accountDto.getId();
@@ -88,7 +90,9 @@ public class AccountServiceImp extends AbstractService<AccountDto, AccountEntity
 
     private AccountEntity createNewAccount(AccountDto accountDto) {
         accountDto.setPassWord(passwordEncoder.encode(accountDto.getPassWord()));
-        return modelMapper.map(accountDto, AccountEntity.class);
+        AccountEntity accountEntity = modelMapper.map(accountDto, AccountEntity.class);
+        accountEntity.setStatus("active");
+        return accountEntity;
     }
 
     private AccountEntity updateExistingAccount(AccountDto accountDto) {
@@ -99,6 +103,9 @@ public class AccountServiceImp extends AbstractService<AccountDto, AccountEntity
             accountDto.setPassWord(passwordEncoder.encode(accountDto.getPassWord()));
         } else {
             accountDto.setPassWord(accountEntity.getPassWord());
+        }
+        if(accountDto.getStatus()==null){
+            accountDto.setStatus(accountEntity.getStatus());
         }
 
         return modelMapper.map(accountDto, AccountEntity.class);
@@ -111,7 +118,7 @@ public class AccountServiceImp extends AbstractService<AccountDto, AccountEntity
 
 
     @Override
-    public BaseResponse acceptOrReject(SlipConfirm slipConfirm) {
+    public BaseResponse enableDOrDisabled(SlipConfirm slipConfirm) {
         try {
             Integer idAccount = slipConfirm.getIdAccount();
             String type = slipConfirm.getType();
@@ -120,12 +127,12 @@ public class AccountServiceImp extends AbstractService<AccountDto, AccountEntity
                         .orElseThrow(()->new ResourceNotFoundException(AccountEntity.class.getName()
                                 ,"id",idAccount.toString()));
                 switch (type){
-                    case "accept" : {
+                    case "enable" : {
                         accountEntity.setStatus("active");
                         accountRepository.save(accountEntity);
                     }
                         return new BaseResponse(200,"accept success");
-                    case "reject" : {
+                    case "disable" : {
                         accountRepository.deleteById(idAccount);
                     }
                         return new BaseResponse(200,"reject success");

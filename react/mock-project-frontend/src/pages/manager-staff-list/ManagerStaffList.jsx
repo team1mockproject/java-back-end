@@ -1,42 +1,156 @@
 import { Button, Col, ConfigProvider, DatePicker, Form, Input, Modal, Pagination, Popconfirm, Radio, Row, Select, Table } from "antd"
 import { IoSearch } from "react-icons/io5";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ResponsiveContext } from "../../context/responsive-context/ResponsiveContext";
 import { FaPlusCircle } from "react-icons/fa";
 import { FaXmark } from "react-icons/fa6";
+import { createAccount, deleteAccount, getAllStaff, updateAccount } from "../../services/AccountService";
+import moment from "moment";
+import { toast } from "react-toastify";
+
 const ManagerStaffList = () => {
+    const [staffData, setStaffData] = useState([]);
     const [staffKey, setStaffKey] = useState()
     const [isStaffCreateOpen, setIsStaffCreateOpen] = useState(false)
     const [isStaffUpdateOpen, setIsStaffUpdateOpen] = useState(false)
     const [isConfirmOpen, setIsConfirmOpen] = useState(false)
-    const [pageCurrent, setPageCurrent] = useState(1)
     const [confirmStatus, setConfirmStatus] = useState('')
+    const [pageCurrent, setPageCurrent] = useState(1)
+    const [totalItems, setTotalItems] = useState(0);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const [createForm] = Form.useForm()
     const [updateForm] = Form.useForm()
 
     const { isMobile, isTablet, isDesktop } = useContext(ResponsiveContext)
 
+    const [email, setEmail] = useState('');
+    const [fullName, setFullName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [age, setAge] = useState();
+    const [gender, setGender] = useState();
+    const [status, setStatus] = useState('active');
+    const [roleIds, setRoleIds] = useState(2)
+    const [birthday, setBirthday] = useState(null);
+
+    const [pwdUpdate, setPwdUpdate] = useState('')
+
+    useEffect(() => {
+        fetchStaffData(pageCurrent, searchTerm);
+    }, [pageCurrent, searchTerm]);
+
+    const fetchStaffData = async () => {
+        try {
+            const response = await getAllStaff(pageCurrent, searchTerm);
+            setTotalItems(response.data.totalElements)
+            setStaffData(response.data.content);
+        } catch (error) {
+            console.error('Failed to fetch staff data:', error);
+        }
+    };
+
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
+        setPageCurrent(1); // Reset to first page on search
+    };
+
+
+    const calculateAge = (birthDateString) => {
+        const b = new Date(birthDateString);
+        const currentDate = new Date();
+
+        let age = currentDate.getFullYear() - b.getFullYear();
+        const monthDifference = currentDate.getMonth() - b.getMonth();
+        const dayDifference = currentDate.getDate() - b.getDate();
+
+        if (monthDifference < 0 || (monthDifference === 0 && dayDifference < 0)) {
+            age--;
+        }
+
+        return age;
+    };
+
     const validateCreateForm = () => {
         createForm.validateFields()
-            .then(() => {
-                createForm.submit()
-                setIsStaffCreateOpen(false)
+            .then(values => {
+                const age = calculateAge(values.birthday);
+                const accountDto = {
+                    email: values.email,
+                    fullName: values.name,
+                    phone: values.phone,
+                    age: age,
+                    gender: values.gender,
+                    status: values.status,
+                    roleIds: [roleIds],
+                    passWord: values.password,
+                    location: {
+                        address: values.address
+                    }
+                };
+
+                createAccount(accountDto)
+                    .then(() => {
+                        fetchStaffData(pageCurrent, searchTerm); // Refresh the table data
+                        setIsStaffCreateOpen(false);
+                        toast.success('Create Success!')
+                        createForm.resetFields(); // Clear the form fields
+                    })
+                    .catch(error => {
+                        toast.error('Create Failed!')
+                    });
             })
-            .catch(() => {
-                setIsStaffCreateOpen(true)
-            })
-    }
+            .catch(errorInfo => {
+                console.error('Failed to validate form:', errorInfo);
+            });
+    };
+
 
     const validateUpdateForm = () => {
         updateForm.validateFields()
-            .then(() => {
-                setIsConfirmOpen(true)
+            .then(values => {
+                const accountDto = {
+                    id: values.id,
+                    email: values.email,
+                    fullName: values.name,
+                    phone: values.phone,
+                    age: values.age,
+                    gender: values.gender,
+                    status: values.status,
+                    roleIds: [roleIds],
+                    passWord: pwdUpdate === '' ? null : pwdUpdate,
+                    location: {
+                        locationId: values.locationId,
+                        address: values.address
+                    }
+                };
+
+                updateAccount(accountDto)
+                    .then(() => {
+                        fetchStaffData(pageCurrent, searchTerm); // Refresh the table data
+                        setPwdUpdate('')
+                        setIsStaffUpdateOpen(false);
+                        toast.success('Update Success!')
+                        createForm.resetFields(); // Clear the form fields
+                    })
+                    .catch(error => {
+                        toast.error('Update Failed!')
+                    });
             })
-            .catch(() => {
-                setIsStaffUpdateOpen(true)
-            })
+            .catch(errorInfo => {
+                console.error('Failed to validate form:', errorInfo);
+            });
     }
+
+    const handleDelete = async (id) => {
+        try {
+            await deleteAccount(id);
+            setPageCurrent(1)
+            setSearchTerm('')
+            fetchStaffData(); // Refresh the data after deletion
+        } catch (error) {
+            console.error('Failed to delete staff:', error);
+        }
+    };
 
     const onChangeDesktop = (pagination, filter, sorter, extra) => {
         setPageCurrent(pagination.current)
@@ -58,13 +172,8 @@ const ManagerStaffList = () => {
         },
         {
             title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
-        },
-        {
-            title: 'Code',
-            dataIndex: 'code',
-            key: 'code',
+            dataIndex: 'fullName',
+            key: 'fullName',
         },
         {
             title: 'Phone',
@@ -77,12 +186,17 @@ const ManagerStaffList = () => {
             key: 'email',
         },
         {
+            title: 'Age',
+            dataIndex: 'age',
+            key: 'age',
+        },
+        {
             title: 'Status',
             dataIndex: 'status',
             key: 'status',
             render: (_, record) => {
                 return (
-                    <span className={`${record.status === 'Active' ? 'text-blue-500' : (record.status === 'Inactive' ? 'text-red-500' : '')}`}>{record.status}</span>
+                    <span className={`${record.status === 'active' ? 'text-blue-500' : (record.status === 'inactive' ? 'text-red-500' : '')}`}>{record.status}</span>
                 )
             }
         },
@@ -97,19 +211,27 @@ const ManagerStaffList = () => {
                                 setIsStaffUpdateOpen(true)
                                 setStaffKey(record.key)
                                 updateForm.setFieldsValue({
-                                    name: record.name,
+                                    name: record.fullName,
                                     email: record.email,
-                                    code: record.code,
+                                    id: record.id,
+                                    password: record.passWord,
                                     phone: record.phone,
+                                    address: record.location.address,
                                     status: record.status,
+                                    gender: record.gender,
+                                    age: record.age,
+                                    locationId: record.location.locationId
                                 })
                             }}
                         >
                             Edit
                         </span>
                         <Popconfirm
-                            id="staff"
+                            id=""
                             placement="left"
+                            onConfirm={() => {
+                                handleDelete(record.id)
+                            }}
                             title='Delete staff'
                             description={<span>Are you sure to <span className="font-semibold text-red-500">delete</span> this staff?</span>}
                             okText='Yes'
@@ -126,266 +248,6 @@ const ManagerStaffList = () => {
         {
             key: '1',
             name: 'John Brown',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Active',
-        },
-        {
-            key: '2',
-            name: 'Jim Green',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Active',
-        },
-        {
-            key: '3',
-            name: 'Joe Black',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Inactive',
-        },
-        {
-            key: '4',
-            name: 'Joe Black',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Active',
-        },
-        {
-            key: '5',
-            name: 'Joe Black',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Active',
-        },
-        {
-            key: '6',
-            name: 'Joe Black',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Active',
-        },
-        {
-            key: '7',
-            name: 'Joe Black',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Inactive',
-        },
-        {
-            key: '8',
-            name: 'Joe Black',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Inactive',
-        },
-        {
-            key: '9',
-            name: 'Joe Black',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Active',
-        },
-        {
-            key: '10',
-            name: 'Joe Black',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Active',
-        },
-        {
-            key: '11',
-            name: 'Joe Black',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Active',
-        },
-        {
-            key: '12',
-            name: 'Joe Black',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Active',
-        },
-        {
-            key: '13',
-            name: 'Joe Black',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Inactive',
-        },
-        {
-            key: '14',
-            name: 'Joe Black',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Active',
-        },
-        {
-            key: '15',
-            name: 'Joe Black',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Active',
-        },
-        {
-            key: '16',
-            name: 'Joe Black',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Active',
-        },
-        {
-            key: '17',
-            name: 'Joe Black',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Active',
-        },
-        {
-            key: '18',
-            name: 'Joe Black',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Inactive',
-        },
-        {
-            key: '19',
-            name: 'Joe Black',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Inactive',
-        },
-        {
-            key: '20',
-            name: 'Joe Black',
-            code: 'S123',
-            phone: '+1 123 456 7890',
-            email: 'abc@gmail.com',
-            password: '123456',
-            birthday: '07/07/1995',
-            gender: 'male',
-            address: 'New York',
-            position: 'staff',
-            status: 'Active',
-        },
-        {
-            key: '21',
-            name: 'Joe Black',
             code: 'S123',
             phone: '+1 123 456 7890',
             email: 'abc@gmail.com',
@@ -427,8 +289,8 @@ const ManagerStaffList = () => {
                             <Row justify={"space-between"}>
                                 {/* Search Component */}
                                 <Col xs={20} className="flex">
-                                    <Input className="h-full rounded-tr-none rounded-br-none" />
-                                    <Button className="h-full rounded-tl-none rounded-bl-none">
+                                    <Input onChange={e => setSearchTerm(e.target.value)} className="h-full rounded-tr-none rounded-br-none" />
+                                    <Button onClick={handleSearch} className="h-full rounded-tl-none rounded-bl-none">
                                         <IoSearch className="text-xl" />
                                     </Button>
                                 </Col>
@@ -448,13 +310,15 @@ const ManagerStaffList = () => {
                             <Table
                                 className="staff-table mt-4 cursor-pointer"
                                 columns={columns}
-                                dataSource={data}
+                                dataSource={staffData}
                                 rowHoverable={false}
                                 pagination={{
-                                    defaultCurrent: 1,
-                                    defaultPageSize: 10,
+                                    current: pageCurrent,
+                                    pageSize: 8,
+                                    total: totalItems,
+                                    showSizeChanger: false,
+                                    // pageSizeOptions: ['10', '20', '50', '100'],
                                     position: ["bottomCenter"],
-
                                 }}
                                 onChange={onChangeDesktop}
                             />
@@ -532,18 +396,7 @@ const ManagerStaffList = () => {
                                             >
                                                 <Input />
                                             </Form.Item>
-                                            <Form.Item
-                                                label='Code'
-                                                name={'code'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff code!'
-                                                    }
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
+
                                         </Col>
                                         <Col span={12}>
                                             <Form.Item
@@ -581,26 +434,20 @@ const ManagerStaffList = () => {
                                                 name={'gender'}
                                             >
                                                 <Radio.Group>
-                                                    <Radio value="male">Male</Radio>
-                                                    <Radio value="female">Female</Radio>
+                                                    <Radio value="M">Male</Radio>
+                                                    <Radio value="F">Female</Radio>
                                                 </Radio.Group>
                                             </Form.Item>
 
                                             <Form.Item
-                                                label='Position'
-                                                name={'position'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please select position!',
-                                                    },
-                                                ]}
+                                                label='Status'
+                                                name={'status'}
+
                                             >
-                                                <Select placeholder="Select a position">
-                                                    <Select.Option value="staff">Staff</Select.Option>
-                                                    <Select.Option value="manager">Manager</Select.Option>
-                                                    <Select.Option value="director">Director</Select.Option>
-                                                    <Select.Option value="intern">Intern</Select.Option>
+                                                <Select>
+                                                    <Option value="active">Active</Option>
+                                                    <Option value="inactive">Inactive</Option>
+
                                                 </Select>
                                             </Form.Item>
                                         </Col>
@@ -610,9 +457,7 @@ const ManagerStaffList = () => {
 
 
                                     <Row justify={"end"} className="mt-8">
-                                        <Button className="bg-blue-500 border border-blue-500 text-white cursor-pointer" onClick={() => {
-                                            validateCreateForm()
-                                        }}>Create</Button>
+                                        <Button className="bg-blue-500 border border-blue-500 text-white cursor-pointer" onClick={validateCreateForm}>Save</Button>
                                         <Button
                                             className="ml-2 bg-red-500 border border-red-500 text-white cursor-pointer hover:bg-white hover:!text-red-500 hover:!border-red-500"
                                             onClick={() => { setIsStaffCreateOpen(false) }}
@@ -669,10 +514,10 @@ const ManagerStaffList = () => {
                                                 <Input />
                                             </Form.Item>
                                             <Form.Item
-                                                label='Birthday'
-                                                name={'birthday'}
+                                                label='Age'
+                                                name={'age'}
                                             >
-                                                <DatePicker format="DD-MM-YYYY" />
+                                                <Input />
                                             </Form.Item>
                                             <Form.Item
                                                 label='Address'
@@ -682,16 +527,20 @@ const ManagerStaffList = () => {
                                             </Form.Item>
                                             <Form.Item
                                                 label='Code'
-                                                name={'code'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff code!'
-                                                    }
-                                                ]}
+                                                name={'id'}
+
                                             >
-                                                <Input />
+                                                <Input disabled />
                                             </Form.Item>
+
+                                            <Form.Item
+                                                label='locationId'
+                                                name={'locationId'}
+
+                                            >
+                                                <Input hidden />
+                                            </Form.Item>
+
                                         </Col>
                                         <Col span={12}>
                                             <Form.Item
@@ -714,14 +563,9 @@ const ManagerStaffList = () => {
                                             <Form.Item
                                                 label='Password'
                                                 name={'password'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff password!'
-                                                    }
-                                                ]}
+
                                             >
-                                                <Input.Password />
+                                                <Input.Password onChange={e => setPwdUpdate(e.target.value)} />
                                             </Form.Item>
 
                                             <Form.Item
@@ -729,26 +573,19 @@ const ManagerStaffList = () => {
                                                 name={'gender'}
                                             >
                                                 <Radio.Group>
-                                                    <Radio value="male">Male</Radio>
-                                                    <Radio value="female">Female</Radio>
+                                                    <Radio value="M">Male</Radio>
+                                                    <Radio value="F">Female</Radio>
                                                 </Radio.Group>
                                             </Form.Item>
 
                                             <Form.Item
-                                                label='Position'
-                                                name={'position'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please select position!',
-                                                    },
-                                                ]}
+                                                label='Status'
+                                                name={'status'}
+
                                             >
-                                                <Select placeholder="Select a position">
-                                                    <Select.Option value="staff">Staff</Select.Option>
-                                                    <Select.Option value="manager">Manager</Select.Option>
-                                                    <Select.Option value="director">Director</Select.Option>
-                                                    <Select.Option value="intern">Intern</Select.Option>
+                                                <Select >
+                                                    <Option value="active">Active</Option>
+                                                    <Option value="inactive">Inactive</Option>
                                                 </Select>
                                             </Form.Item>
                                         </Col>
@@ -758,13 +595,13 @@ const ManagerStaffList = () => {
 
 
                                     <Row justify={"end"} className="mt-8">
-                                        <Button className="bg-blue-500 border border-blue-500 text-white cursor-pointer" onClick={() => {
-                                            setConfirmStatus('Update')
-                                            validateUpdateForm()
-                                        }}>Save</Button>
+                                        <Button className="bg-blue-500 border border-blue-500 text-white cursor-pointer"
+                                            onClick={() => {
+                                                validateUpdateForm()
+                                            }}>Save</Button>
                                         <Button
                                             className="ml-2 bg-red-500 border border-red-500 text-white cursor-pointer hover:bg-white hover:!text-red-500 hover:!border-red-500"
-                                            onClick={() => { setIsStaffCreateOpen(false) }}
+                                            onClick={() => { setIsStaffUpdateOpen(false) }}
                                         >
                                             Cancel
                                         </Button>
@@ -822,17 +659,7 @@ const ManagerStaffList = () => {
                                         <IoSearch className="text-xl" />
                                     </Button>
                                 </Col>
-                                {/* Create Modal Component */}
-                                <Col xs={4} className="flex items-center justify-end">
-                                    <Button className="bg-blue-500 text-white !py-2 h-fit text-base hover:!border-blue-500 hover:!text-blue-500"
-                                        onClick={() => {
-                                            setIsStaffCreateOpen(true)
-                                            createForm.resetFields()
-                                        }}
-                                    >
-                                        Create <FaPlusCircle />
-                                    </Button>
-                                </Col>
+
                             </Row>
                         </ConfigProvider>
                         {/* Table Component */}
@@ -906,303 +733,6 @@ const ManagerStaffList = () => {
                                 }
                             }}
                         >
-                            {/* Modal Create */}
-                            <div className={`absolute z-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-md p-4 w-[500px] transition-all scale-0 rounded-md
-                        ${isStaffCreateOpen ? 'scale-100' : ''}
-                        `}>
-                                <span className="flex justify-end">
-                                    <FaXmark className='text-2xl text-red-500 cursor-pointer bg-white transition-all hover:bg-red-200'
-                                        onClick={() => {
-                                            setIsStaffCreateOpen(false)
-                                        }}
-                                    />
-                                </span>
-                                <h3 className="text-xl text-center font-semibold">Create staff</h3>
-                                <Form
-                                    layout="vertical"
-                                    form={createForm}
-                                >
-                                    <span className="font-semibold">Personal information </span>
-                                    <Row gutter={16}>
-                                        <Col span={12}>
-                                            <Form.Item
-                                                label='Name'
-                                                name={'name'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff name!'
-                                                    }
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label='Email'
-                                                name={'email'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff email!'
-                                                    },
-                                                    {
-                                                        type: 'email',
-                                                        message: 'Wrong email format!'
-                                                    }
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label='Birthday'
-                                                name={'birthday'}
-                                            >
-                                                <DatePicker format="DD-MM-YYYY" />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label='Address'
-                                                name={'address'}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label='Code'
-                                                name={'code'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff code!'
-                                                    }
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                        </Col>
-                                        <Col span={12}>
-                                            <Form.Item
-                                                label='Phone Number'
-                                                name={'phone'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff phone!'
-                                                    },
-                                                    // {
-                                                    //     pattern: /^(\(\d{3}\)\s?|\d{3}[-.\s]?)?\d{3}[-.\s]?\d{4}$/,
-                                                    //     message: 'Wrong US phone number format!'
-                                                    // }
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-
-                                            <Form.Item
-                                                label='Password'
-                                                name={'password'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff password!'
-                                                    }
-                                                ]}
-                                            >
-                                                <Input.Password />
-                                            </Form.Item>
-
-                                            <Form.Item
-                                                label='Gender'
-                                                name={'gender'}
-                                            >
-                                                <Radio.Group>
-                                                    <Radio value="male">Male</Radio>
-                                                    <Radio value="female">Female</Radio>
-                                                </Radio.Group>
-                                            </Form.Item>
-
-                                            <Form.Item
-                                                label='Position'
-                                                name={'position'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please select position!',
-                                                    },
-                                                ]}
-                                            >
-                                                <Select placeholder="Select a position">
-                                                    <Select.Option value="staff">Staff</Select.Option>
-                                                    <Select.Option value="manager">Manager</Select.Option>
-                                                    <Select.Option value="director">Director</Select.Option>
-                                                    <Select.Option value="intern">Intern</Select.Option>
-                                                </Select>
-                                            </Form.Item>
-                                        </Col>
-                                    </Row>
-                                    <Row justify={"end"} className="mt-8">
-                                        <Button className="bg-blue-500 border border-blue-500 text-white cursor-pointer" onClick={() => {
-                                            validateCreateForm()
-                                        }}>Create</Button>
-                                        <Button
-                                            className="ml-2 bg-red-500 border border-red-500 text-white cursor-pointer hover:bg-white hover:!text-red-500 hover:!border-red-500"
-                                            onClick={() => { setIsStaffCreateOpen(false) }}
-                                        >
-                                            Cancel
-                                        </Button>
-                                    </Row>
-                                </Form>
-                            </div>
-                            {/* Modal update and delete */}
-                            <div className={`absolute z-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-md p-4 w-[500px] transition-all scale-0 rounded-md
-                        ${isStaffUpdateOpen ? 'scale-100' : ''}
-                        `}>
-                                <span className="flex justify-end">
-                                    <FaXmark className='text-2xl text-red-500 cursor-pointer bg-white transition-all hover:bg-red-200'
-                                        onClick={() => { setIsStaffUpdateOpen(false) }}
-                                    />
-                                </span>
-                                <h3 className="text-xl text-center font-semibold">Update staff</h3>
-                                <Form
-                                    className="p-2"
-                                    layout="vertical"
-                                    form={updateForm}
-                                >
-                                    <span className="font-semibold">Personal information </span>
-                                    <Row gutter={16}>
-                                        <Col span={12}>
-                                            <Form.Item
-                                                label='Name'
-                                                name={'name'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff name!'
-                                                    }
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label='Email'
-                                                name={'email'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff email!'
-                                                    },
-                                                    {
-                                                        type: 'email',
-                                                        message: 'Wrong email format!'
-                                                    }
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label='Birthday'
-                                                name={'birthday'}
-                                            >
-                                                <DatePicker format="DD-MM-YYYY" />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label='Address'
-                                                name={'address'}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label='Code'
-                                                name={'code'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff code!'
-                                                    }
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                        </Col>
-                                        <Col span={12}>
-                                            <Form.Item
-                                                label='Phone Number'
-                                                name={'phone'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff phone!'
-                                                    },
-                                                    // {
-                                                    //     pattern: /^(\(\d{3}\)\s?|\d{3}[-.\s]?)?\d{3}[-.\s]?\d{4}$/,
-                                                    //     message: 'Wrong US phone number format!'
-                                                    // }
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-
-                                            <Form.Item
-                                                label='Password'
-                                                name={'password'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff password!'
-                                                    }
-                                                ]}
-                                            >
-                                                <Input.Password />
-                                            </Form.Item>
-
-                                            <Form.Item
-                                                label='Gender'
-                                                name={'gender'}
-                                            >
-                                                <Radio.Group>
-                                                    <Radio value="male">Male</Radio>
-                                                    <Radio value="female">Female</Radio>
-                                                </Radio.Group>
-                                            </Form.Item>
-
-                                            <Form.Item
-                                                label='Position'
-                                                name={'position'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please select position!',
-                                                    },
-                                                ]}
-                                            >
-                                                <Select placeholder="Select a position">
-                                                    <Select.Option value="staff">Staff</Select.Option>
-                                                    <Select.Option value="manager">Manager</Select.Option>
-                                                    <Select.Option value="director">Director</Select.Option>
-                                                    <Select.Option value="intern">Intern</Select.Option>
-                                                </Select>
-                                            </Form.Item>
-                                        </Col>
-                                    </Row>
-
-
-
-
-                                    <Row justify={"space-between"} className="mt-8">
-                                        <Button className="bg-blue-500 border border-blue-500 text-white cursor-pointer" onClick={() => {
-                                            setConfirmStatus('Update')
-                                            validateUpdateForm()
-                                        }}>Update</Button>
-                                        <Button
-                                            className="ml-2 bg-red-500 border border-red-500 text-white cursor-pointer hover:bg-white hover:!text-red-500 hover:!border-red-500"
-                                            onClick={() => {
-                                                setConfirmStatus('Delete')
-                                                setIsConfirmOpen(true)
-                                            }}
-                                        >
-                                            Cancel
-                                        </Button>
-                                    </Row>
-                                </Form>
-                            </div>
                         </ConfigProvider>
                         <Modal
                             title={`${confirmStatus === 'Update' ? 'Confirm change staff information' : 'Confirm delete staff'}`}
@@ -1219,6 +749,7 @@ const ManagerStaffList = () => {
                                 setIsConfirmOpen(false)
                             }}
                         >
+                            console.log(record.id)
                             <p className="text-base">Do you want to <span className={`${confirmStatus === 'Update' ? 'text-blue-500' : 'text-red-500'}`}>{confirmStatus.toLowerCase()}</span> this staff?</p>
                         </Modal>
                     </>
@@ -1252,17 +783,6 @@ const ManagerStaffList = () => {
                                     <Input className="h-full rounded-tr-none rounded-br-none py-2" />
                                     <Button className="h-full rounded-tl-none rounded-bl-none">
                                         <IoSearch className="text-xl" />
-                                    </Button>
-                                </Col>
-                                {/* Create Modal Component */}
-                                <Col xs={24} className="flex items-center justify-end mt-2">
-                                    <Button className="bg-blue-500 text-white !py-2 h-fit text-base hover:!border-blue-500 hover:!text-blue-500"
-                                        onClick={() => {
-                                            setIsStaffCreateOpen(true)
-                                            createForm.resetFields()
-                                        }}
-                                    >
-                                        Create <FaPlusCircle />
                                     </Button>
                                 </Col>
                             </Row>
@@ -1338,326 +858,8 @@ const ManagerStaffList = () => {
                                 }
                             }}
                         >
-                            {/* Modal Create */}
-                            <div className={`absolute z-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-md p-4 w-[300px] transition-all scale-0 rounded-md
-                    ${isStaffCreateOpen ? 'scale-100' : ''}
-                    `}>
-                                <span className="flex justify-end">
-                                    <FaXmark className='text-2xl text-red-500 cursor-pointer bg-white transition-all hover:bg-red-200'
-                                        onClick={() => {
-                                            setIsStaffCreateOpen(false)
-                                        }}
-                                    />
-                                </span>
-                                <h3 className="text-xl text-center font-semibold">Create staff</h3>
-                                <Form
-                                    className="p-2"
-                                    layout="vertical"
-                                    form={createForm}
-                                >
-                                    <span className="font-semibold">Personal information </span>
-                                    <Row gutter={16}>
-                                        <Col span={12}>
-                                            <Form.Item
-                                                label='Name'
-                                                name={'name'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff name!'
-                                                    }
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label='Email'
-                                                name={'email'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff email!'
-                                                    },
-                                                    {
-                                                        type: 'email',
-                                                        message: 'Wrong email format!'
-                                                    }
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label='Birthday'
-                                                name={'birthday'}
-                                            >
-                                                <DatePicker format="DD-MM-YYYY" />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label='Address'
-                                                name={'address'}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label='Code'
-                                                name={'code'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff code!'
-                                                    }
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                        </Col>
-                                        <Col span={12}>
-                                            <Form.Item
-                                                label='Phone Number'
-                                                name={'phone'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff phone!'
-                                                    },
-                                                    // {
-                                                    //     pattern: /^(\(\d{3}\)\s?|\d{3}[-.\s]?)?\d{3}[-.\s]?\d{4}$/,
-                                                    //     message: 'Wrong US phone number format!'
-                                                    // }
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-
-                                            <Form.Item
-                                                label='Password'
-                                                name={'password'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff password!'
-                                                    }
-                                                ]}
-                                            >
-                                                <Input.Password />
-                                            </Form.Item>
-
-                                            <Form.Item
-                                                label='Gender'
-                                                name={'gender'}
-                                            >
-                                                <Radio.Group>
-                                                    <Radio value="male">Male</Radio>
-                                                    <Radio value="female">Female</Radio>
-                                                </Radio.Group>
-                                            </Form.Item>
-
-                                            <Form.Item
-                                                label='Position'
-                                                name={'position'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please select position!',
-                                                    },
-                                                ]}
-                                            >
-                                                <Select placeholder="Select a position">
-                                                    <Select.Option value="staff">Staff</Select.Option>
-                                                    <Select.Option value="manager">Manager</Select.Option>
-                                                    <Select.Option value="director">Director</Select.Option>
-                                                    <Select.Option value="intern">Intern</Select.Option>
-                                                </Select>
-                                            </Form.Item>
-                                        </Col>
-                                    </Row>
-
-
-
-
-                                    <Row justify={"end"} className="mt-8">
-                                        <Button className="bg-blue-500 border border-blue-500 text-white cursor-pointer" onClick={() => {
-                                            validateCreateForm()
-                                        }}>Create</Button>
-                                        <Button
-                                            className="ml-2 bg-red-500 border border-red-500 text-white cursor-pointer hover:bg-white hover:!text-red-500 hover:!border-red-500"
-                                            onClick={() => { setIsStaffCreateOpen(false) }}
-                                        >
-                                            Cancel
-                                        </Button>
-                                    </Row>
-                                </Form>
-                            </div>
-                            {/* Modal update and delete */}
-                            <div className={`absolute z-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-md p-4 w-[300px] transition-all scale-0 rounded-md
-                    ${isStaffUpdateOpen ? 'scale-100' : ''}
-                    `}>
-                                <span className="flex justify-end">
-                                    <FaXmark className='text-2xl text-red-500 cursor-pointer bg-white transition-all hover:bg-red-200'
-                                        onClick={() => { setIsStaffUpdateOpen(false) }}
-                                    />
-                                </span>
-                                <h3 className="text-xl text-center font-semibold">Update staff</h3>
-                                <Form
-                                    className="p-2"
-                                    layout="vertical"
-                                    form={updateForm}
-                                >
-                                    <span className="font-semibold">Personal information </span>
-                                    <Row gutter={16}>
-                                        <Col span={12}>
-                                            <Form.Item
-                                                label='Name'
-                                                name={'name'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff name!'
-                                                    }
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label='Email'
-                                                name={'email'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff email!'
-                                                    },
-                                                    {
-                                                        type: 'email',
-                                                        message: 'Wrong email format!'
-                                                    }
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label='Birthday'
-                                                name={'birthday'}
-                                            >
-                                                <DatePicker format="DD-MM-YYYY" />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label='Address'
-                                                name={'address'}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label='Code'
-                                                name={'code'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff code!'
-                                                    }
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                        </Col>
-                                        <Col span={12}>
-                                            <Form.Item
-                                                label='Phone Number'
-                                                name={'phone'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff phone!'
-                                                    },
-                                                    // {
-                                                    //     pattern: /^(\(\d{3}\)\s?|\d{3}[-.\s]?)?\d{3}[-.\s]?\d{4}$/,
-                                                    //     message: 'Wrong US phone number format!'
-                                                    // }
-                                                ]}
-                                            >
-                                                <Input />
-                                            </Form.Item>
-
-                                            <Form.Item
-                                                label='Password'
-                                                name={'password'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please enter staff password!'
-                                                    }
-                                                ]}
-                                            >
-                                                <Input.Password />
-                                            </Form.Item>
-
-                                            <Form.Item
-                                                label='Gender'
-                                                name={'gender'}
-                                            >
-                                                <Radio.Group>
-                                                    <Radio value="male">Male</Radio>
-                                                    <Radio value="female">Female</Radio>
-                                                </Radio.Group>
-                                            </Form.Item>
-
-                                            <Form.Item
-                                                label='Position'
-                                                name={'position'}
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please select position!',
-                                                    },
-                                                ]}
-                                            >
-                                                <Select placeholder="Select a position">
-                                                    <Select.Option value="staff">Staff</Select.Option>
-                                                    <Select.Option value="manager">Manager</Select.Option>
-                                                    <Select.Option value="director">Director</Select.Option>
-                                                    <Select.Option value="intern">Intern</Select.Option>
-                                                </Select>
-                                            </Form.Item>
-                                        </Col>
-                                    </Row>
-
-
-
-
-                                    <Row justify={"space-between"} className="mt-8">
-                                        <Button className="bg-blue-500 border border-blue-500 text-white cursor-pointer" onClick={() => {
-                                            setConfirmStatus('Update')
-                                            validateUpdateForm()
-                                        }}>Update</Button>
-                                        <Button
-                                            className="ml-2 bg-red-500 border border-red-500 text-white cursor-pointer hover:bg-white hover:!text-red-500 hover:!border-red-500"
-                                            onClick={() => {
-                                                setConfirmStatus('Delete')
-                                                setIsConfirmOpen(true)
-                                            }}
-                                        >
-                                            Cancel
-                                        </Button>
-                                    </Row>
-                                </Form>
-                            </div>
                         </ConfigProvider>
-                        <Modal
-                            title={`${confirmStatus === 'Update' ? 'Confirm change staff information' : 'Confirm delete staff'}`}
-                            open={isConfirmOpen}
-                            centered={true}
-                            width={600}
-                            onOk={() => {
-                                updateForm.submit()
-                                setIsConfirmOpen(false)
-                                setIsStaffUpdateOpen(false)
-                            }}
-                            // confirmLoading={confirmLoading}
-                            onCancel={() => {
-                                setIsConfirmOpen(false)
-                            }}
-                        >
-                            <p className="text-base">Do you want to <span className={`${confirmStatus === 'Update' ? 'text-blue-500' : 'text-red-500'}`}>{confirmStatus.toLowerCase()}</span> this staff?</p>
-                        </Modal>
+
                     </>
                 }
             </div>

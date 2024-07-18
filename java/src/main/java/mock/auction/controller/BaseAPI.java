@@ -6,16 +6,19 @@ import mock.auction.model.BaseResponse;
 import mock.auction.model.ListResponse;
 import mock.auction.service.GenericService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-public class BaseAPI <TDto ,TEntity >{
-    private GenericService<TDto,TEntity> service;
-    public BaseAPI(GenericService<TDto,TEntity> service){
+public class BaseAPI<TDto, TEntity> {
+    private GenericService<TDto, TEntity> service;
+
+    public BaseAPI(GenericService<TDto, TEntity> service) {
         this.service = service;
     }
-    public ResponseEntity<?> create(@RequestBody TDto dto){
+
+    public ResponseEntity<?> create(@RequestBody TDto dto, BindingResult bindingResult) {
         return ResponseEntity.ok(service.save(dto));
     }
 
@@ -25,28 +28,26 @@ public class BaseAPI <TDto ,TEntity >{
             @RequestParam(name = "sort", defaultValue = AppConstants.DEFAULT_SORT) String sort,
             @RequestParam(name = "filter", required = false) @Nullable String filter,
             @RequestParam(name = "search", required = false) @Nullable String search,
-            @RequestParam(name = "all", required = false) boolean all
-    ) {
+            @RequestParam(name = "all", required = false) boolean all) {
         return ResponseEntity.ok(
-                service.findAll(page, size, sort, filter, search, all)
-        );
+                service.findAll(page, size, sort, filter, search, all));
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<TDto> getResource(@PathVariable("id") Integer id){
+    public ResponseEntity<TDto> getResource(@PathVariable("id") Integer id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<BaseResponse> deleteResource(@PathVariable("id") Integer id) {
         service.delete(id);
-        return ResponseEntity.ok(new BaseResponse(200,"delete success"));
+        return ResponseEntity.ok(new BaseResponse(200, "delete success", null));
     }
 
     @DeleteMapping
     public ResponseEntity<BaseResponse> deleteResources(@RequestBody List<Integer> ids) {
         service.delete(ids);
-        return ResponseEntity.ok(new BaseResponse(200,"delete success"));
+        return ResponseEntity.ok(new BaseResponse(200, "delete success", null));
     }
 
 

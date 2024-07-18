@@ -17,15 +17,16 @@ public class AuthServiceImpl implements AuthService {
     private JwtTokenUtil jwtTokenUtil;
     private UserDetailsServiceImpl userDetailService;
     private PasswordEncoder passwordEncoder;
+
     @Override
     public AuthRespone authenticateAndGenerateToken(String userName, String passWord) {
-        UserDetails userDetails =  userDetailService.loadUserByUsername(userName);
+        UserDetails userDetails = userDetailService.loadUserByUsername(userName);
         //check password
-        if (!passwordEncoder.matches(passWord,userDetails.getPassword())){
-            throw  new BadCredentialsException("Login information is incorrect!");
+        if (!passwordEncoder.matches(passWord, userDetails.getPassword())) {
+            throw new BadCredentialsException("Login information is incorrect!");
         }
         //check status account
-        if(!userDetails.isEnabled()){
+        if (!userDetails.isEnabled()) {
             throw new DisableAccountException("Account disable!");
         }
         String accessToken = jwtTokenUtil.generateToken(userDetails);

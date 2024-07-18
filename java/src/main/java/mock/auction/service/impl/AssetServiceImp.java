@@ -1,22 +1,16 @@
 package mock.auction.service.impl;
 
-import mock.auction.constants.AppConstants;
 import mock.auction.constants.SearchFields;
 import mock.auction.entity.*;
 import mock.auction.exception.ComponentException;
 import mock.auction.exception.ResourceNotFoundException;
-import mock.auction.model.ListResponse;
 import mock.auction.model.asset.AssetDto;
-import mock.auction.model.asset.AssetImg;
 import mock.auction.repository.*;
 import mock.auction.service.AssetService;
 import mock.auction.utils.CloudinaryUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,14 +28,15 @@ public class AssetServiceImp extends AbstractService<AssetDto, AssetEntity> impl
     private AssetFileRepository assetFileRepository;
 
     public AssetServiceImp(AssetRepository assetRepository,
-                           ModelMapper modelMapper,
-                           AccountRepository accountRepository,
-                           AssessorRepository assessorRepository,
-                           WarehouseRepository warehouseRepository,
-                           CloudinaryUtil cloudinaryUtil,
-                           CategoryAssetRepository categoryAssetRepository,
-                           AssetFileRepository assetFileRepository) {
-        super(assetRepository, AssetDto.class, AssetEntity.class, modelMapper, SearchFields.ASSET_FIELD_TYPES,cloudinaryUtil);
+            ModelMapper modelMapper,
+            AccountRepository accountRepository,
+            AssessorRepository assessorRepository,
+            WarehouseRepository warehouseRepository,
+            CloudinaryUtil cloudinaryUtil,
+            CategoryAssetRepository categoryAssetRepository,
+            AssetFileRepository assetFileRepository) {
+        super(assetRepository, AssetDto.class, AssetEntity.class, modelMapper, SearchFields.ASSET_FIELD_TYPES,
+                cloudinaryUtil);
         this.assetRepository = assetRepository;
         this.modelMapper = modelMapper;
         this.accountRepository = accountRepository;
@@ -62,9 +57,8 @@ public class AssetServiceImp extends AbstractService<AssetDto, AssetEntity> impl
 
         CategoryAssetEntity category = fetchCategory(categoryId);
 
-        AssetEntity assetEntity = (assetId == null) ?
-                createNewAssetEntity(assetDto, sellerId, category) :
-                updateExistingAssetEntity(assetDto, assetId, assessorId, warehouseId, category);
+        AssetEntity assetEntity = (assetId == null) ? createNewAssetEntity(assetDto, sellerId, category)
+                : updateExistingAssetEntity(assetDto, assetId, assessorId, warehouseId, category);
 
         return assetEntity;
     }
@@ -77,22 +71,26 @@ public class AssetServiceImp extends AbstractService<AssetDto, AssetEntity> impl
 
     private CategoryAssetEntity fetchCategory(Integer categoryId) {
         return categoryAssetRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException(CategoryAssetEntity.class.getName(), "id", categoryId.toString()));
+                .orElseThrow(() -> new ResourceNotFoundException(CategoryAssetEntity.class.getName(), "id",
+                        categoryId.toString()));
     }
 
     private AccountEntity fetchSeller(Integer sellerId) {
         return accountRepository.findById(sellerId)
-                .orElseThrow(() -> new ResourceNotFoundException(AccountEntity.class.getName(), "id", sellerId.toString()));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(AccountEntity.class.getName(), "id", sellerId.toString()));
     }
 
     private AssessorEntity fetchAssessor(Integer assessorId) {
         return assessorRepository.findById(assessorId)
-                .orElseThrow(() -> new ResourceNotFoundException(AssessorEntity.class.getName(), "id", assessorId.toString()));
+                .orElseThrow(() -> new ResourceNotFoundException(AssessorEntity.class.getName(), "id",
+                        assessorId.toString()));
     }
 
     private WarehouseEntity fetchWarehouse(Integer warehouseId) {
         return warehouseRepository.findById(warehouseId)
-                .orElseThrow(() -> new ResourceNotFoundException(WarehouseEntity.class.getName(), "id", warehouseId.toString()));
+                .orElseThrow(() -> new ResourceNotFoundException(WarehouseEntity.class.getName(), "id",
+                        warehouseId.toString()));
     }
 
     private AssetEntity createNewAssetEntity(AssetDto assetDto, Integer sellerId, CategoryAssetEntity category) {
@@ -122,9 +120,11 @@ public class AssetServiceImp extends AbstractService<AssetDto, AssetEntity> impl
         }
     }
 
-    private AssetEntity updateExistingAssetEntity(AssetDto assetDto, Integer assetId, Integer assessorId, Integer warehouseId, CategoryAssetEntity category) {
+    private AssetEntity updateExistingAssetEntity(AssetDto assetDto, Integer assetId, Integer assessorId,
+            Integer warehouseId, CategoryAssetEntity category) {
         AssetEntity assetInDb = assetRepository.findById(assetId)
-                .orElseThrow(() -> new ResourceNotFoundException(AssetEntity.class.getName(), "id", assetId.toString()));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(AssetEntity.class.getName(), "id", assetId.toString()));
 
         if (assessorId != null) {
             AssessorEntity assessor = fetchAssessor(assessorId);
@@ -179,6 +179,5 @@ public class AssetServiceImp extends AbstractService<AssetDto, AssetEntity> impl
     private String determineLegalStatus(AssetDto assetDto, Integer assessorId) {
         return (assessorId != null) ? assetDto.getLegalStatus() : "illegal";
     }
-
 
 }

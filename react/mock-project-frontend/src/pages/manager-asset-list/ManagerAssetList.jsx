@@ -26,6 +26,10 @@ const ManagerAssetList = () => {
 
     const { modalState, setModalState } = useContext(ModalStateContext)
 
+    // useEffect(() => {
+    //     console.log(serviceSelected)
+    // }, [serviceSelected])
+
     const [form] = Form.useForm()
 
     const validateUpdateForm = () => {
@@ -47,7 +51,7 @@ const ManagerAssetList = () => {
     }
 
     const onChangeSelected = (event, key) => {
-
+        // let serviceList = (typeof modalServiceSelected === 'undefined' ? [] : [...modalServiceSelected])
         let serviceList = [...modalServiceSelected]
         if (event.target.checked) {
             serviceList.push(key)
@@ -134,6 +138,14 @@ const ManagerAssetList = () => {
                         <span className="border-r border-gray-300 px-3 hover:text-blue-500 cursor-pointer transition-all"
                             onClick={(event) => {
                                 event.stopPropagation()
+                                let services = []
+                                record.primaryServices.forEach(service => {
+                                    economyServicesData.forEach(eService => {
+                                        if (eService.key === service) {
+                                            services.push(eService.name)
+                                        }
+                                    })
+                                })
                                 setIsViewMode(false)
                                 form.setFieldsValue({
                                     key: record.key,
@@ -156,7 +168,7 @@ const ManagerAssetList = () => {
                                     commissionFee: record.commissionFee.toLocaleString(),
                                     deliveryFee: record.deliveryFee.toLocaleString(),
                                     listingDate: record.listingDate,
-                                    primaryServices: record.primaryServices,
+                                    primaryServices: services.join(', '),
                                 })
                                 setModalState(true)
                                 setIsModalOpen(true)
@@ -974,7 +986,16 @@ const ManagerAssetList = () => {
                                     onRow={(record) => {
                                         return {
                                             onClick: () => {
+                                                let services = []
+                                                record.primaryServices.forEach(service => {
+                                                    economyServicesData.forEach(eService => {
+                                                        if (eService.key === service) {
+                                                            services.push(eService.name)
+                                                        }
+                                                    })
+                                                })
                                                 setModalState(true)
+                                                setAssetKey(record.key)
                                                 setIsViewMode(true)
                                                 setIsCreateMode(false)
                                                 form.setFieldsValue({
@@ -998,7 +1019,7 @@ const ManagerAssetList = () => {
                                                     commissionFee: record.commissionFee.toLocaleString(),
                                                     deliveryFee: record.deliveryFee.toLocaleString(),
                                                     listingDate: record.listingDate,
-                                                    primaryServices: record.primaryServices,
+                                                    primaryServices: services.join(', '),
                                                 })
                                                 setIsModalOpen(true)
                                             }
@@ -1040,7 +1061,7 @@ const ManagerAssetList = () => {
                                     <HiXMark className="text-2xl cursor-pointer transition-all hover:bg-[#d9d9d9]" />
                                 </div>
                                 <h1 className="text-center text-3xl font-semibold">Asset Information</h1>
-                                <p className="italic text-center mt-3 pb-3 text-lg font-normal"><span className="font-medium">Id:</span> {form.getFieldValue('key')}</p>
+                                <p className="italic text-center mt-3 pb-3 text-lg font-normal"><span className="font-medium">Id:</span> {assetKey}</p>
                                 <div className="h-[450px] overflow-y-auto overflow-x-hidden">
                                     <Row justify={"space-between"} className="my-3 px-2">
                                         <Col xs={15}>
@@ -1198,9 +1219,7 @@ const ManagerAssetList = () => {
                                                     <span className="font-semibold flex items-center"><span className="text-red-500 inline-block mr-1 text-lg">*</span>Appraisal Document</span>
                                                     <Form.Item
                                                         name='appraisalDocument'
-                                                    // label={<label className="border border-[#d9d9d9] px-6 py-2 rounded-md cursor-pointer" htmlFor="appraisalDocument">Choose file</label>}
                                                     >
-                                                        {/* <Input readOnly={true} id="appraisalDocument" type="file" className="!hidden" /> */}
                                                         <Upload {...uploadProps}>
                                                             {uploadStatus === 'No upload' ? <Button disabled={isViewMode}>Choose file</Button> : ''}
                                                         </Upload>
@@ -1284,14 +1303,13 @@ const ManagerAssetList = () => {
                                                     }}
                                                 >
                                                     <div className="flex justify-between">
-                                                        {form.getFieldValue('assetImages') &&
-                                                            form.getFieldValue('assetImages').map(image => {
-                                                                return (
-                                                                    <div key={image} className="w-[100px] h-[100px] border border-[#d9d9d9]">
-                                                                        <Image className="p-3" width={100} height={100} src={`${image}`} />
-                                                                    </div>
-                                                                )
-                                                            })
+                                                        {form.getFieldValue('assetImages')?.map(image => {
+                                                            return (
+                                                                <div key={image} className="w-[100px] h-[100px] border border-[#d9d9d9]">
+                                                                    <Image className="p-3" width={100} height={100} src={`${image}`} />
+                                                                </div>
+                                                            )
+                                                        })
                                                         }
                                                     </div>
                                                 </Image.PreviewGroup>
@@ -1392,14 +1410,15 @@ const ManagerAssetList = () => {
                                             <Form.Item
                                                 name='primaryServices'
                                             >
-                                                <Input readOnly={true} id="primaryServices" className="border-none px-0 py-0 -mt-1" />
+                                                <TextArea readOnly={true} id="primaryServices" className="border-none px-0 py-0 -mt-1" autoSize={true} />
                                             </Form.Item>
                                             <Button
                                                 disabled={isViewMode}
                                                 className="-mt-1"
                                                 onClick={() => {
-                                                    setServiceSelected(form.getFieldValue('primaryServices'))
-                                                    setModalServiceSelected(form.getFieldValue('primaryServices'))
+                                                    let dataRow = data.filter(value => form.getFieldValue('key') === value.key)
+                                                    setServiceSelected(dataRow[0].primaryServices)
+                                                    setModalServiceSelected(dataRow[0].primaryServices)
                                                     setIsServiceModalOpen(true)
                                                 }}>+ Add primary service</Button>
                                         </Col>
@@ -1471,7 +1490,15 @@ const ManagerAssetList = () => {
                                     setModalState(false)
                                 }}
                                 onOk={() => {
-                                    form.setFieldValue('primaryServices', modalServiceSelected)
+                                    let services = []
+                                    modalServiceSelected.forEach(service => {
+                                        economyServicesData.forEach(eService => {
+                                            if (eService.key === service) {
+                                                services.push(eService.name)
+                                            }
+                                        })
+                                    })
+                                    form.setFieldValue('primaryServices', services.join(', '))
                                     setServiceSelected(modalServiceSelected)
                                     setIsServiceModalOpen(false)
                                 }}
@@ -1485,7 +1512,6 @@ const ManagerAssetList = () => {
                                             <div key={service.key} className="mb-2 flex items-start gap-2">
                                                 <Checkbox
                                                     id={`service${service.key}`}
-
                                                     onChange={(event) => { onChangeSelected(event, service.key) }}
                                                     defaultChecked={serviceSelected.includes(service.key)}
                                                 />
@@ -1633,6 +1659,14 @@ const ManagerAssetList = () => {
                                                     <tr className={`${index % 2 === 0 ? 'bg-gray-200' : ''} border border-gray-400`}
                                                         key={index}
                                                         onClick={() => {
+                                                            let services = []
+                                                            asset.primaryServices.forEach(service => {
+                                                                economyServicesData.forEach(eService => {
+                                                                    if (eService.key === service) {
+                                                                        services.push(eService.name)
+                                                                    }
+                                                                })
+                                                            })
                                                             setAssetKey(asset.key)
                                                             setIsViewMode(false)
                                                             setIsCreateMode(false)
@@ -1659,7 +1693,7 @@ const ManagerAssetList = () => {
                                                                 commissionFee: asset.commissionFee.toLocaleString(),
                                                                 deliveryFee: asset.deliveryFee.toLocaleString(),
                                                                 listingDate: asset.listingDate,
-                                                                primaryServices: asset.primaryServices,
+                                                                primaryServices: services.join(', '),
                                                             })
                                                         }}
                                                     >
@@ -2082,14 +2116,16 @@ const ManagerAssetList = () => {
                                             <Form.Item
                                                 name='primaryServices'
                                             >
-                                                <Input readOnly={true} id="primaryServices" className="border-none px-0 py-0 -mt-1" />
+                                                <TextArea readOnly={true} id="primaryServices" className="border-none px-0 py-0 -mt-1" autoSize={true} />
                                             </Form.Item>
                                             <Button
                                                 disabled={isViewMode}
                                                 className="-mt-1"
                                                 onClick={() => {
-                                                    setServiceSelected(form.getFieldValue('primaryServices'))
-                                                    setModalServiceSelected(form.getFieldValue('primaryServices'))
+                                                    let dataRow = data.filter(value => form.getFieldValue('key') === value.key)
+                                                    setServiceSelected(dataRow[0].primaryServices)
+                                                    setModalServiceSelected(dataRow[0].primaryServices)
+                                                    console.log(data[0])
                                                     setIsServiceModalOpen(true)
                                                 }}>+ Add primary service</Button>
                                         </Col>
@@ -2163,7 +2199,15 @@ const ManagerAssetList = () => {
                                     setIsServiceModalOpen(false)
                                 }}
                                 onOk={() => {
-                                    form.setFieldValue('primaryServices', modalServiceSelected)
+                                    let services = []
+                                    modalServiceSelected.forEach(service => {
+                                        economyServicesData.forEach(eService => {
+                                            if (eService.key === service) {
+                                                services.push(eService.name)
+                                            }
+                                        })
+                                    })
+                                    form.setFieldValue('primaryServices', services.join(', '))
                                     setServiceSelected(modalServiceSelected)
                                     setIsServiceModalOpen(false)
                                 }}
@@ -2177,7 +2221,6 @@ const ManagerAssetList = () => {
                                             <div key={service.key} className="mb-2 flex items-start gap-2">
                                                 <Checkbox
                                                     id={`service${service.key}`}
-
                                                     onChange={(event) => { onChangeSelected(event, service.key) }}
                                                     defaultChecked={serviceSelected.includes(service.key)}
                                                 />
@@ -2323,6 +2366,14 @@ const ManagerAssetList = () => {
                                                     <tr className={`${index % 2 === 0 ? 'bg-gray-200' : ''} border border-gray-400`}
                                                         key={index}
                                                         onClick={() => {
+                                                            let services = []
+                                                            asset.primaryServices.forEach(service => {
+                                                                economyServicesData.forEach(eService => {
+                                                                    if (eService.key === service) {
+                                                                        services.push(eService.name)
+                                                                    }
+                                                                })
+                                                            })
                                                             setAssetKey(asset.key)
                                                             setIsViewMode(false)
                                                             setIsModalOpen(true)
@@ -2349,7 +2400,7 @@ const ManagerAssetList = () => {
                                                                 commissionFee: asset.commissionFee.toLocaleString(),
                                                                 deliveryFee: asset.deliveryFee.toLocaleString(),
                                                                 listingDate: asset.listingDate,
-                                                                primaryServices: asset.primaryServices,
+                                                                primaryServices: services.join(', '),
                                                             })
                                                         }}
                                                     >
@@ -2763,14 +2814,15 @@ const ManagerAssetList = () => {
                                             <Form.Item
                                                 name='primaryServices'
                                             >
-                                                <Input readOnly={true} id="primaryServices" className="border-none px-0 py-0 -mt-1" />
+                                                <TextArea readOnly={true} id="primaryServices" className="border-none px-0 py-0 -mt-1" autoSize={true} />
                                             </Form.Item>
                                             <Button
                                                 disabled={isViewMode}
                                                 className="-mt-1"
                                                 onClick={() => {
-                                                    setServiceSelected(form.getFieldValue('primaryServices'))
-                                                    setModalServiceSelected(form.getFieldValue('primaryServices'))
+                                                    let dataRow = data.filter(value => form.getFieldValue('key') === value.key)
+                                                    setServiceSelected(dataRow[0].primaryServices)
+                                                    setModalServiceSelected(dataRow[0].primaryServices)
                                                     setIsServiceModalOpen(true)
                                                 }}>+ Add primary service</Button>
                                         </Col>
@@ -2844,7 +2896,15 @@ const ManagerAssetList = () => {
                                     setIsServiceModalOpen(false)
                                 }}
                                 onOk={() => {
-                                    form.setFieldValue('primaryServices', modalServiceSelected)
+                                    let services = []
+                                    modalServiceSelected.forEach(service => {
+                                        economyServicesData.forEach(eService => {
+                                            if (eService.key === service) {
+                                                services.push(eService.name)
+                                            }
+                                        })
+                                    })
+                                    form.setFieldValue('primaryServices', services.join(', '))
                                     setServiceSelected(modalServiceSelected)
                                     setIsServiceModalOpen(false)
                                 }}

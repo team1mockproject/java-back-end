@@ -1,7 +1,6 @@
 package mock.auction.model.auth;
 
 import lombok.*;
-import org.springframework.http.ResponseCookie;
 
 @Builder
 @Setter

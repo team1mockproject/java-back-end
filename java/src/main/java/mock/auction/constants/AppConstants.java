@@ -9,4 +9,5 @@ public interface AppConstants {
     String ASSESSOR = "Assessor";
     String ACTIVE = "Active";
     String INACTIVE = "Inactive";
+    String ASSET_IMAGE_FOLDER = "Asset";
 }

@@ -7,18 +7,16 @@ import mock.auction.model.ListResponse;
 import mock.auction.model.account.AccountDto;
 import mock.auction.model.account.SlipConfirm;
 import mock.auction.service.AccountServiceInterface;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/authenticate/account")
-public class AccountAPI extends BaseAPI<AccountDto, AccountEntity> {
-    private AccountServiceInterface accountService;
-
-    public AccountAPI(AccountServiceInterface accountService) {
-        super(accountService);
+@RequestMapping("/api/account/")
+public class AccountAPI extends BaseAPI<AccountDto,AccountEntity>{
+    private AccountService accountService;
+    public AccountAPI(AccountServiceInterface accountService){
+        super(accountServiceImp);
         this.accountService = accountService;
     }
 
@@ -43,6 +41,11 @@ public class AccountAPI extends BaseAPI<AccountDto, AccountEntity> {
 
     @PostMapping("/confirm")
     public ResponseEntity<BaseResponse> confirm(@RequestBody SlipConfirm slipConfirm) {
+        return ResponseEntity.ok(accountService.acceptOrReject(slipConfirm));
+    }
+
+    @PostMapping("/confirm")
+    public ResponseEntity<BaseResponse> confirm(@RequestBody SlipConfirm slipConfirm){
         return ResponseEntity.ok(accountService.acceptOrReject(slipConfirm));
     }
 }

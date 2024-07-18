@@ -2,6 +2,7 @@ package mock.auction.service.impl;
 
 import io.github.perplexhub.rsql.RSQLJPASupport;
 import lombok.AllArgsConstructor;
+import mock.auction.constants.AppConstants;
 import mock.auction.exception.ComponentException;
 import mock.auction.exception.ResourceNotFoundException;
 import mock.auction.model.BaseResponse;
@@ -17,10 +18,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -56,6 +60,7 @@ public abstract class AbstractService<TDto, TEntity> implements GenericService<T
     }
 
     @Override
+    @Transactional
     public BaseResponse save(TDto dto) {
         try {
             TEntity entity = this.transformDtoToEntity(dto);
@@ -80,4 +85,12 @@ public abstract class AbstractService<TDto, TEntity> implements GenericService<T
     public void delete(List<Integer> ids) {
         repository.deleteAllById(ids);
     }
+
+    @Override
+    public List<String> uploadFiles(List<MultipartFile> files, String folder) {
+        return files.stream()
+                .map(file -> cloudinaryUtil.upload(file, folder))
+                .collect(Collectors.toList());
+    }
+
 }

@@ -2,6 +2,7 @@ package mock.auction.service;
 
 import mock.auction.model.BaseResponse;
 import mock.auction.model.ListResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,5 +18,5 @@ public interface GenericService<TDto, TEntity> {
     void delete(Integer id);
 
     void delete(List<Integer> ids);
-
+    List<String> uploadFiles(List<MultipartFile> files,String folder);
 }

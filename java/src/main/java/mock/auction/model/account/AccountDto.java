@@ -2,6 +2,7 @@ package mock.auction.model.account;
 
 import lombok.Getter;
 import lombok.Setter;
+import mock.auction.entity.AssetEntity;
 import mock.auction.model.location.LocationDto;
 import mock.auction.model.role.RoleDto;
 
@@ -19,7 +20,6 @@ public class AccountDto {
     private String phone;
     private char gender;
     private int age;
-    private Integer locationId;
     private LocationDto location;
     private String career;
     private int countSpam;

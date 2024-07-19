@@ -9,7 +9,6 @@ import mock.auction.entity.AccountEntity;
 import mock.auction.service.AccountServiceInterface;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/authenticate/staff")
@@ -23,8 +22,7 @@ public class AccountController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<AccountEntity> addUser(@Valid @RequestBody AccountEntity accountEntity,
-            @RequestParam Set<Integer> roleIds) {
+    public ResponseEntity<AccountEntity> addUser(@Valid @RequestBody AccountEntity accountEntity) {
         AccountEntity newStaff = accountService.addStaff(accountEntity);
         return ResponseEntity.ok(newStaff);
     }

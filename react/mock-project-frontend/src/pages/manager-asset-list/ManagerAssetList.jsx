@@ -9,11 +9,11 @@ import TextArea from "antd/es/input/TextArea"
 import Search from "antd/es/input/Search"
 import { HiXMark } from "react-icons/hi2"
 import ModalStateContext from "../../context/modal-state-context"
+import { getAllAsset } from "../../services/AssetService"
 
 const ManagerAssetList = () => {
     const { isMobile, isTablet, isDesktop } = useContext(ResponsiveContext)
     const [assetKey, setAssetKey] = useState()
-    const [pageCurrent, setPageCurrent] = useState(1)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isServiceModalOpen, setIsServiceModalOpen] = useState(false)
     const [isViewMode, setIsViewMode] = useState(true)
@@ -23,10 +23,35 @@ const ManagerAssetList = () => {
     const [isConfirmOpen, setIsConfirmOpen] = useState(false)
     const [modalServiceSelected, setModalServiceSelected] = useState([])
     const [uploadStatus, setUploadStatus] = useState('No upload')
+    const [dataAsset, setDataAsset] = useState([])
+
+    const [pageCurrent, setPageCurrent] = useState(1)
+    const [totalItems, setTotalItems] = useState(0);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const { modalState, setModalState } = useContext(ModalStateContext)
 
     const [form] = Form.useForm()
+
+
+    const fetchAssets = async () => {
+        try {
+            const response = await getAllAsset(pageCurrent, searchTerm);
+            setTotalItems(response.data.totalElements)
+            setDataAsset(response.data.content);
+        } catch (error) {
+            console.error("Error fetching assets:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchAssets(pageCurrent, searchTerm);
+    }, [pageCurrent, searchTerm]);
+
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
+        setPageCurrent(1); // Reset to first page on search
+    };
 
     const validateUpdateForm = () => {
         form.validateFields()
@@ -97,18 +122,19 @@ const ManagerAssetList = () => {
         },
         {
             title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
+            dataIndex: 'assetName',
+            key: 'assetName',
         },
         {
             title: 'Category',
-            dataIndex: 'category',
-            key: 'category',
+            dataIndex: 'categoryAsset',
+            key: 'categoryAsset',
+            render: (categoryAsset) => categoryAsset?.name || 'N/A',
         },
         {
-            title: 'Owner',
-            dataIndex: 'owner',
-            key: 'owner',
+            title: 'Origin',
+            dataIndex: 'origin',
+            key: 'origin',
         },
         {
             title: 'Market price',
@@ -117,13 +143,13 @@ const ManagerAssetList = () => {
         },
         {
             title: 'Status',
-            dataIndex: 'status',
-            key: 'status',
+            dataIndex: 'assetStatus',
+            key: 'assetStatus',
         },
         {
-            title: 'Inventory',
-            dataIndex: 'inventory',
-            key: 'inventory',
+            title: 'Legal Status',
+            dataIndex: 'legalStatus',
+            key: 'legalStatus',
         },
         {
             title: <span className="block text-center">Action</span>,
@@ -140,21 +166,21 @@ const ManagerAssetList = () => {
                                     name: record.name,
                                     category: record.category,
                                     owner: record.owner,
-                                    marketPrice: record.marketPrice.toLocaleString(),
+                                    marketPrice: record.marketPrice?.toLocaleString(),
                                     status: record.status,
                                     inventory: record.inventory,
                                     description: record.description,
                                     email: record.email,
                                     origin: record.origin,
                                     appraiser: record.appraiser,
-                                    valuation: record.valuation.toLocaleString(),
+                                    valuation: record.valuation?.toLocaleString(),
                                     // appraisalDocument: record.appraisalDocument,
                                     // legalDocument: record.legalDocument,
                                     assetImages: record.images,
-                                    listingFee: record.listingFee.toLocaleString(),
-                                    advertiseFee: record.advertiseFee.toLocaleString(),
-                                    commissionFee: record.commissionFee.toLocaleString(),
-                                    deliveryFee: record.deliveryFee.toLocaleString(),
+                                    listingFee: record.listingFee?.toLocaleString(),
+                                    advertiseFee: record.advertiseFee?.toLocaleString(),
+                                    commissionFee: record.commissionFee?.toLocaleString(),
+                                    deliveryFee: record.deliveryFee?.toLocaleString(),
                                     listingDate: record.listingDate,
                                     primaryServices: record.primaryServices,
                                 })
@@ -182,676 +208,13 @@ const ManagerAssetList = () => {
             }
         },
     ]
-    const data = [
-        {
-            key: '1',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: [],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '2',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '3',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '4',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '5',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '6',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '7',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '8',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '9',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '10',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '11',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '12',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '13',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '14',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '15',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '16',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '17',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '18',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '19',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '20',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-        {
-            key: '21',
-            name: 'John Brown',
-            category: 'Book',
-            owner: 'John',
-            marketPrice: 20000,
-            status: 'Waiting',
-            inventory: 'New York Library',
-            description: 'Sample Description',
-            email: 'email.sample@gmail.com',
-            origin: 'New York City',
-            appraiser: 'Cris White',
-            valuation: 30000,
-            appraisalDocument: 'https://youtube.com',
-            legalDocument: 'https://youtube.com',
-            images: [
-                'https://cdn.prod.website-files.com/5ebb0930dd82631397ddca92/5f4ffab32df9c90a2b23df54_NDA.svg',
-                'https://signaturely.com/wp-content/uploads/2022/08/property-management-agreement-uplead-791x1024.jpg',
-                'https://cdn.prod.website-files.com/62c67bbf65af22785775fee3/664caa2b6d9d87f0153c8ec2_Software-Design-Documentation.png'
-            ],
-            listingFee: 5000,
-            advertiseFee: 500,
-            commissionFee: 1000,
-            deliveryFee: 100,
-            primaryServices: ['1', '2'],
-            listingDate: '12/07/2024'
-        },
-    ]
+
     const economyServicesData = [
         {
             key: '1',
             name: 'USPS Media Mail',
             time: '2 - 8 business days',
-        },
-        {
-            key: '2',
-            name: 'FedEx Ground Economy',
-            time: '2 - 8 business days',
-        },
-        {
-            key: '3',
-            name: 'Economy Shipping',
-            time: '1 - 10 business days',
-        },
-        {
-            key: '4',
-            name: 'USP Surepost',
-            time: '1 - 6 business days',
-        },
-        {
-            key: '5',
-            name: 'USPS Media Mail',
-            time: '2 - 8 business days',
-        },
-        {
-            key: '6',
-            name: 'USPS Media Mail',
-            time: '2 - 8 business days',
-        },
-        {
-            key: '7',
-            name: 'USPS Media Mail',
-            time: '2 - 8 business days',
-        },
-        {
-            key: '8',
-            name: 'USPS Media Mail',
-            time: '2 - 8 business days',
-        },
-        {
-            key: '9',
-            name: 'USPS Media Mail',
-            time: '2 - 8 business days',
-        },
-        {
-            key: '10',
-            name: 'USPS Media Mail',
-            time: '2 - 8 business days',
-        },
-        {
-            key: '11',
-            name: 'USPS Media Mail',
-            time: '2 - 8 business days',
-        },
-        {
-            key: '12',
-            name: 'USPS Media Mail',
-            time: '2 - 8 business days',
-        },
-        {
-            key: '13',
-            name: 'USPS Media Mail',
-            time: '2 - 8 business days',
-        },
-        {
-            key: '14',
-            name: 'USPS Media Mail',
-            time: '2 - 8 business days',
-        },
-        {
-            key: '15',
-            name: 'USPS Media Mail',
-            time: '2 - 8 business days',
-        },
-        {
-            key: '16',
-            name: 'USPS Media Mail',
-            time: '2 - 8 business days',
-        },
-        {
-            key: '17',
-            name: 'USPS Media Mail',
-            time: '2 - 8 business days',
-        },
-        {
-            key: '18',
-            name: 'USPS Media Mail',
-            time: '2 - 8 business days',
-        },
-        {
-            key: '19',
-            name: 'USPS Media Mail',
-            time: '2 - 8 business days',
-        },
-        {
-            key: '20',
-            name: 'USPS Media Mail',
-            time: '2 - 8 business days',
-        },
+        }
     ]
     return (
         <>
@@ -884,8 +247,8 @@ const ManagerAssetList = () => {
                                 <Row justify={"space-between"}>
                                     {/* Search Component */}
                                     <Col xs={19} className="flex">
-                                        <Input className="h-full rounded-tr-none rounded-br-none" placeholder="Search for asset" />
-                                        <Button className="h-full rounded-tl-none rounded-bl-none">
+                                        <Input onChange={e => setSearchTerm(e.target.value)} className="h-full rounded-tr-none rounded-br-none" placeholder="Search for asset" />
+                                        <Button onClick={handleSearch} className="h-full rounded-tl-none rounded-bl-none">
                                             <IoSearch className="text-xl" />
                                         </Button>
                                     </Col>
@@ -895,7 +258,7 @@ const ManagerAssetList = () => {
                                             onClick={() => {
                                                 form.resetFields()
                                                 form.setFieldValue('listingDate', `${String(new Date().getDate()).length === 1 ? '0' + String(new Date().getDate()) : String(new Date().getDate())}/${String(new Date().getMonth() + 1).length === 1 ? '0' + String(new Date().getMonth() + 1) : String(new Date().getMonth() + 1)}/${new Date().getFullYear()}`)
-                                                form.setFieldValue('key', data.length + 1)
+                                                form.setFieldValue('key', dataAsset.length + 1)
                                                 setIsModalOpen(true)
                                                 setIsViewMode(false)
                                                 setModalState(true)
@@ -963,10 +326,13 @@ const ManagerAssetList = () => {
                                 <Table
                                     className="manager-asset-table mt-4 cursor-pointer"
                                     columns={columns}
-                                    dataSource={data}
+                                    dataSource={dataAsset}
                                     pagination={{
-                                        defaultCurrent: 1,
-                                        defaultPageSize: 10,
+                                        current: pageCurrent,
+                                        pageSize: 8,
+                                        total: totalItems,
+                                        showSizeChanger: false,
+                                        // pageSizeOptions: ['10', '20', '50', '100'],
                                         position: ["bottomCenter"],
 
                                     }}
@@ -982,14 +348,14 @@ const ManagerAssetList = () => {
                                                     name: record.name,
                                                     category: record.category,
                                                     owner: record.owner,
-                                                    marketPrice: record.marketPrice.toLocaleString(),
+                                                    marketPrice: record.marketPrice?.toLocaleString(),
                                                     status: record.status,
                                                     inventory: record.inventory,
                                                     description: record.description,
                                                     email: record.email,
                                                     origin: record.origin,
                                                     appraiser: record.appraiser,
-                                                    valuation: record.valuation.toLocaleString(),
+                                                    valuation: record.valuation?.toLocaleString(),
                                                     // appraisalDocument: record.appraisalDocument,
                                                     // legalDocument: record.legalDocument,
                                                     assetImages: record.images,
@@ -1487,7 +853,7 @@ const ManagerAssetList = () => {
                                                     id={`service${service.key}`}
 
                                                     onChange={(event) => { onChangeSelected(event, service.key) }}
-                                                    defaultChecked={serviceSelected.includes(service.key)}
+                                                    defaultChecked={serviceSelected?.includes(service.key)}
                                                 />
                                                 <label htmlFor={`service${service.key}`}>
                                                     <span className="block">{service.name}</span>

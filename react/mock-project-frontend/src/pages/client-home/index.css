@@ -1,0 +1,36 @@
+.scos__sliders {
+  transform: translateX(0);
+}
+
+.scos__sliders .flickity-button {
+  background: #0e1317;
+  opacity: 0.8;
+  color: #b68c2d;
+}
+
+.scos__sliders-item {
+  position: fixed;
+  margin-right: 54px;
+}
+
+.scos__sliders-item img {
+  z-index: -1 !important;
+}
+
+.auction-slider {
+  transform: translateX(0);
+}
+
+.auction-slider .flickity-button {
+  background: #0e1317;
+  opacity: 0.8;
+  color: #b68c2d;
+}
+
+.auction-slider .flickity-prev-next-button.previous {
+  left: 10px;
+}
+
+.auction-slider .flickity-prev-next-button.next {
+  right: 10px;
+}

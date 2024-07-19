@@ -34,3 +34,7 @@
 .auction-slider .flickity-prev-next-button.next {
   right: 10px;
 }
+
+.submit-form .ant-button:hover {
+  background: slategray;
+}

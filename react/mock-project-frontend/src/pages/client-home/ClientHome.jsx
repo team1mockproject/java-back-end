@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
+import { Form, Input } from 'antd';
 import Flickity from 'flickity';
 import './flickity.css';
 import './index.css';
 
 import auctionImage from "../../assets/auction/auction.png";
-import { Col, Row } from 'antd';
 const imgSlide = () => {
     const img = document.querySelector('.scos__sliders');
     const slide = document.querySelector('.auction-slider');
@@ -148,6 +148,9 @@ const ClientHome = () => {
             time: "6d 10h 2m",
         },
     ];
+    const onFinish = (values) => {
+        console.log('Received values of form: ', values);
+    };
     useEffect(() => {
         const handleLoad = () => {
             imgSlide();
@@ -206,6 +209,61 @@ const ClientHome = () => {
                         </div>
                     </div>
                 </div>
+            </section>
+            <section className='submit-form max-w-lg mx-auto p-6 border border-gray-300 rounded-lg shadow-lg'>
+                <h2 className="text-2xl font-semibold mb-4">Stay informed with us</h2>
+                <p className="mb-6">Receive the best from our delivered to your inbox</p>
+                <Form
+                    name="stay_informed"
+                    layout="vertical"
+                    onFinish={onFinish}
+                    className="space-y-4"
+                >
+                    <Form.Item
+                        name="email"
+                        label="Email"
+                        rules={[{ required: true, message: 'Please input your email!', type: 'email' }]}
+                        className="mb-4"
+                        style={{ fontSize: '14px', fontWeight: '500' }}
+                    >
+                        <Input placeholder="Email" className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+                    </Form.Item>
+                    <Form.Item
+                        name="title"
+                        label="Title"
+                        rules={[{ required: false, message: 'Please select your title!' }]}
+                        className="mb-4"
+                        style={{ fontSize: '14px', fontWeight: '500' }}
+                    >
+                        <Input placeholder="title" className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="firstname"
+                        label="First Name"
+                        rules={[{ required: false, message: 'Please input your first name!' }]}
+                        className="mb-4"
+                        style={{ fontSize: '14px', fontWeight: '500' }}
+                    >
+                        <Input placeholder="First Name" className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="lastname"
+                        label="Last Name"
+                        rules={[{ required: false, message: 'Please input your last name!' }]}
+                        className="mb-4"
+                        style={{ fontSize: '14px', fontWeight: '500' }}
+                    >
+                        <Input placeholder="Last Name" className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+                    </Form.Item>
+
+                    <Form.Item>
+                        <button type="primary" htmlType="submit" className="w-full bg-slate-100 text-black py-2 rounded-lg hover:bg-slate-300">
+                            Submit
+                        </button>
+                    </Form.Item>
+                </Form>
             </section>
         </>
     );

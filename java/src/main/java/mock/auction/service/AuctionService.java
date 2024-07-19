@@ -1,7 +1,7 @@
 package mock.auction.service;
 
-import mock.auction.entity.Asset;
 import mock.auction.entity.Auction;
+import mock.auction.response.AssetResponse;
 import mock.auction.response.AuctionResponse;
 
 import java.time.LocalDateTime;
@@ -24,9 +24,9 @@ public interface AuctionService {
 	public List<AuctionResponse> filterAuction(LocalDateTime startDate, LocalDateTime endDate, Double minPrice,
 			Double maxPrice);
 
-	public Asset getAssetByAuctionId(Integer auctionId);
+	public AssetResponse getAssetByAuctionId(Integer auctionId);
 
-	public Auction closeAndFinalizeAuction(Integer auctionId, Integer winnerId, Double highestPrice,
+	public AuctionResponse closeAndFinalizeAuction(Integer auctionId, Integer winnerId, Double highestPrice,
 			String paymentMethod, LocalDateTime timeLimit);
 
 	public Page<AuctionResponse> searchAuctions(String auctionStatus, String sortOrder,

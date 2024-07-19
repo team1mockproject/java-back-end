@@ -20,7 +20,7 @@ public class AccountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "account_id")
-    private int id;
+    private Integer id;
     @Column(name = "is_personal_or_agency")
     private boolean personalOrAgency;
     private String email;

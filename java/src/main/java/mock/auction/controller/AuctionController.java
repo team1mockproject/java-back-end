@@ -1,7 +1,6 @@
 package mock.auction.controller;
 
 import jakarta.validation.Valid;
-import mock.auction.entity.Asset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import mock.auction.entity.Auction;
 import mock.auction.model.BaseResponse;
+import mock.auction.response.AssetResponse;
 import mock.auction.response.AuctionResponse;
 import mock.auction.service.AuctionService;
 
@@ -63,20 +63,20 @@ public class AuctionController {
     }
 
     @GetMapping("/{auctionId}/asset")
-    public ResponseEntity<Asset> getAssetByAuctionId(@PathVariable Integer auctionId) {
-        Asset asset = auctionService.getAssetByAuctionId(auctionId);
+    public ResponseEntity<AssetResponse> getAssetByAuctionId(@PathVariable Integer auctionId) {
+        AssetResponse asset = auctionService.getAssetByAuctionId(auctionId);
         return ResponseEntity.ok(asset);
     }
 
     // Create units when auction ends
     @PostMapping("/{auctionId}/finalize")
-    public ResponseEntity<Auction> finalizeAuction(
+    public ResponseEntity<AuctionResponse> finalizeAuction(
             @PathVariable(required = false) Integer auctionId,
             @RequestParam(required = false) Integer winnerId,
             @RequestParam(required = false) Double winningBid,
             @RequestParam(required = false) String paymentMethod,
             @RequestParam(required = false) LocalDateTime timeLimit) {
-        Auction auction = auctionService.closeAndFinalizeAuction(auctionId, winnerId, winningBid, paymentMethod,
+        AuctionResponse auction = auctionService.closeAndFinalizeAuction(auctionId, winnerId, winningBid, paymentMethod,
                 timeLimit);
         return ResponseEntity.ok(auction);
     }

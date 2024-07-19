@@ -6,6 +6,7 @@ import mock.auction.exception.EntityNotFoundException;
 import mock.auction.exception.ResourceNotFoundException;
 import mock.auction.repository.*;
 import mock.auction.repository.specifications.AuctionSpecification;
+import mock.auction.response.AssetResponse;
 import mock.auction.response.AuctionResponse;
 import mock.auction.service.AuctionService;
 
@@ -110,16 +111,16 @@ public class AuctionServiceImpl implements AuctionService {
     }
 
     @Override
-    public Asset getAssetByAuctionId(Integer auctionId) {
+    public AssetResponse getAssetByAuctionId(Integer auctionId) {
         Auction auction = auctionRepository.findAuctionWithAssetById(auctionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Auction not found with id: " + auctionId));
-        return auction.getAsset();
+        return AssetResponse.of(auction.getAsset());
     }
 
     //Create units when auction ends
     @Override
     @Transactional
-    public Auction closeAndFinalizeAuction(Integer auctionId, Integer winnerId, Double highestPrice,
+    public AuctionResponse closeAndFinalizeAuction(Integer auctionId, Integer winnerId, Double highestPrice,
             String paymentMethod, LocalDateTime timeLimit) {
         Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Auction not found with id: " + auctionId));
@@ -159,7 +160,8 @@ public class AuctionServiceImpl implements AuctionService {
         }
 
         assetRepository.save(asset); // Save asset status change
-        return auctionRepository.save(auction); // Save auction changes
+        auctionRepository.save(auction);
+        return AuctionResponse.of(auctionRepository.save(auction)); // Save auction changes
     }
 
     private void sendNotification(AccountEntity user, String message) {

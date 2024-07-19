@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import mock.auction.entity.AuctionEvent;
+import mock.auction.model.ResponseObject;
 import mock.auction.service.AuctionEventService;
 
 import java.util.List;
@@ -22,9 +23,21 @@ public class AuctionEventController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<AuctionEvent>> getAllAuctionEvent() {
-        List<AuctionEvent> allAuctionEvent = auctionEventService.geyAllAuctionEvent();
-        return ResponseEntity.ok(allAuctionEvent);
+    public ResponseEntity<ResponseObject> getAllAuctionEvent() {
+        try {
+            List<AuctionEvent> allAuctionEvent = auctionEventService.geyAllAuctionEvent();
+            return ResponseEntity.ok().body(ResponseObject.builder()
+                    .status(200)
+                    .message("successfully")
+                    .data(allAuctionEvent)
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ResponseObject.builder()
+                    .status(400)
+                    .message("failed")
+                    .data(e.getMessage())
+                    .build());
+        }
     }
 
     @PostMapping("/add")

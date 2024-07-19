@@ -1,8 +1,15 @@
 package mock.auction.repository;
 
-import mock.auction.entity.AssessorEntity;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Repository
-public interface AssessorRepository extends AbstractRepository<AssessorEntity>{
+import mock.auction.entity.Assessor;
+
+public interface AssessorRepository extends JpaRepository<Assessor, Integer> {
+
+    boolean existsByEmail(String email);
+
+    Page<Assessor> findAll(Specification<Assessor> spec, Pageable pageable);
 }

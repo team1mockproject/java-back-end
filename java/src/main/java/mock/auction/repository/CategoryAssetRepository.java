@@ -1,8 +1,8 @@
 package mock.auction.repository;
 
-import mock.auction.entity.CategoryAssetEntity;
+import mock.auction.entity.CategoryAsset;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CategoryAssetRepository extends AbstractRepository<CategoryAssetEntity>{
+public interface CategoryAssetRepository extends AbstractRepository<CategoryAsset> {
 }

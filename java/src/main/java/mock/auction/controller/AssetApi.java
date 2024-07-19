@@ -2,10 +2,9 @@ package mock.auction.controller;
 
 import jakarta.annotation.Nullable;
 import mock.auction.constants.AppConstants;
-import mock.auction.entity.AssetEntity;
+import mock.auction.entity.Asset;
 import mock.auction.model.BaseResponse;
 import mock.auction.model.ListResponse;
-import mock.auction.model.account.AccountDto;
 import mock.auction.model.asset.AssetDto;
 import mock.auction.model.asset.AssetImg;
 import mock.auction.service.AssetService;
@@ -17,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/asset/")
-public class AssetApi extends BaseAPI<AssetDto, AssetEntity> {
+public class AssetApi extends BaseAPI<AssetDto, Asset> {
     private AssetService assetService;
 
     public AssetApi(AssetServiceImp assetService) {
@@ -27,10 +26,12 @@ public class AssetApi extends BaseAPI<AssetDto, AssetEntity> {
 
     @Override
     @GetMapping
-    public ResponseEntity<ListResponse<AssetDto>> getAllResources(int page, int size, String sort, @Nullable String filter, @Nullable String search, boolean all) {
+    public ResponseEntity<ListResponse<AssetDto>> getAllResources(int page, int size, String sort,
+            @Nullable String filter, @Nullable String search, boolean all) {
         return ResponseEntity.ok(
                 assetService.findAll(page, size, sort, filter, search, all));
     }
+
     @PostMapping
     public ResponseEntity<BaseResponse> create(@RequestBody AssetDto assetDto) {
         return ResponseEntity.ok(assetService.save(assetDto));

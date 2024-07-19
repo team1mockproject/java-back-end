@@ -6,40 +6,48 @@ import mock.auction.model.BaseResponse;
 import mock.auction.model.ListResponse;
 import mock.auction.model.account.AccountDto;
 import mock.auction.model.account.SlipConfirm;
-import mock.auction.service.AccountService;
-import mock.auction.service.impl.AccountServiceImp;
+import mock.auction.service.impl.AccountServiceImpl;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/account/")
-public class AccountAPI extends BaseAPI<AccountDto,AccountEntity>{
-    private AccountService accountService;
-    public AccountAPI(AccountServiceImp accountServiceImp){
-        super(accountServiceImp);
-        this.accountService = accountServiceImp;
+public class AccountAPI extends BaseAPI<AccountDto, AccountEntity> {
+    private AccountServiceImpl accountService;
+
+    public AccountAPI(AccountServiceImpl accountService) {
+        super(accountService);
+        this.accountService = accountService;
     }
 
     @Override
     @GetMapping
-    public ResponseEntity<ListResponse<AccountDto>> getAllResources(int page, int size, String sort, @Nullable String filter, @Nullable String search, boolean all) {
+    public ResponseEntity<ListResponse<AccountDto>> getAllResources(int page, int size, String sort,
+            @Nullable String filter, @Nullable String search, boolean all) {
         return ResponseEntity.ok(
                 accountService.findAll(page, size, sort, filter, search, all));
     }
 
     @Override
     @PostMapping("/register")
-    public ResponseEntity<BaseResponse> create(AccountDto accountDto) {
-        return ResponseEntity.ok(accountService.save(accountDto));
+    public ResponseEntity<BaseResponse> create(AccountDto accountDto, BindingResult bindingResult) {
+        try {
+            return ResponseEntity.ok(accountService.save(accountDto));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(BaseResponse.builder().code(400).data(e.getMessage()).message("register failed").build());
+        }
     }
 
     @PostMapping("/confirm")
-    public ResponseEntity<BaseResponse> confirm(@RequestBody SlipConfirm slipConfirm){
-        return ResponseEntity.ok(accountService.enableDOrDisabled(slipConfirm));
+    public ResponseEntity<BaseResponse> confirm(@RequestBody SlipConfirm slipConfirm) {
+        return ResponseEntity.ok(accountService.acceptOrReject(slipConfirm));
     }
 
     @PutMapping("/update")
-    public ResponseEntity<BaseResponse> update(@RequestBody AccountDto accountDto){
+    public ResponseEntity<BaseResponse> update(@RequestBody AccountDto accountDto) {
         return ResponseEntity.ok(accountService.save(accountDto));
     }
 }

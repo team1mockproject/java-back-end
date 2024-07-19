@@ -2,13 +2,11 @@ package mock.auction.model.account;
 
 import lombok.Getter;
 import lombok.Setter;
-import mock.auction.entity.AssetEntity;
 import mock.auction.model.location.LocationDto;
 import mock.auction.model.role.RoleDto;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter

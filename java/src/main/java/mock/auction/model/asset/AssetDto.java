@@ -2,12 +2,9 @@ package mock.auction.model.asset;
 
 import lombok.Getter;
 import lombok.Setter;
-import mock.auction.model.account.AccountDto;
 import mock.auction.model.assessor.AssessorDto;
 import mock.auction.model.categoryasset.CategoryAssetDto;
 import mock.auction.model.warehouse.WarehouseDto;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.time.LocalDateTime;
 import java.util.List;
 

@@ -1,18 +1,17 @@
 package mock.auction.utils;
+
 import io.github.perplexhub.rsql.RSQLJPASupport;
-import mock.auction.constants.SearchFields;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 public class SearchUtil {
     public static <T> Specification<T> pars(String search,
-                                            Map<String, String> fieldTypes) {
+            Map<String, String> fieldTypes) {
         if (search == null || search.isBlank() || fieldTypes == null || fieldTypes.isEmpty()) {
             return RSQLJPASupport.toSpecification("");
         }
-
 
         String rsqlQuery = fieldTypes.keySet().stream()
                 .map(field -> {
@@ -32,5 +31,6 @@ public class SearchUtil {
                 .filter(query -> !query.isEmpty())
                 .collect(Collectors.joining(","));
 
-        return RSQLJPASupport.toSpecification(rsqlQuery); }
+        return RSQLJPASupport.toSpecification(rsqlQuery);
+    }
 }

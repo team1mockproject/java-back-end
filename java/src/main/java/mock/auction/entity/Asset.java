@@ -2,9 +2,7 @@ package mock.auction.entity;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,9 +10,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "Asset")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Setter
+@Getter
 public class Asset {
 
     @Id
@@ -58,7 +55,7 @@ public class Asset {
     @JoinColumn(name = "warehouse_id")
     private Warehouse warehouse;
 
-    @OneToMany(mappedBy = "asset")
+    @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL)
     private List<AssetFee> assetFees;
 
     @OneToMany(mappedBy = "asset")
@@ -70,6 +67,6 @@ public class Asset {
     @OneToMany(mappedBy = "asset")
     private List<Auction> auctions;
 
-    @OneToMany(mappedBy = "asset")
+    @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL)
     private List<AssetFile> assetFiles;
 }

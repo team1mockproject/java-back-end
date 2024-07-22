@@ -11,7 +11,9 @@ import java.util.Collection;
 public class AssessorDto {
     private Integer assessorId;
     private LocationDto location;
+    private String name;
     private String email;
     private String phone;
-    private Collection<AssessorDto> assets;
+    private String status;
+//    private Collection<AssessorDto> assets;
 }

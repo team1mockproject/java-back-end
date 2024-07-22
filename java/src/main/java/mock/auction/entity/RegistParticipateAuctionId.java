@@ -3,7 +3,8 @@ package mock.auction.entity;
 import java.io.Serializable;
 import lombok.*;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegistParticipateAuctionId implements Serializable {

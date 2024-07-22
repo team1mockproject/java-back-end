@@ -7,7 +7,7 @@ public interface AppConstants {
     String DEFAULT_PAGE_SIZE = "5";
     String DEFAULT_SORT = "id,desc";
     String ASSESSOR = "Assessor";
-    String ACTIVE = "Active";
-    String INACTIVE = "Inactive";
+    String ACTIVE = "active";
+    String INACTIVE = "inactive";
     String ASSET_IMAGE_FOLDER = "Asset";
 }

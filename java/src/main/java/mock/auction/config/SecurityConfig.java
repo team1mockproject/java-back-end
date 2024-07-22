@@ -2,7 +2,7 @@ package mock.auction.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
-//import mock.auction.security.JwtRequestFilter;
+import mock.auction.security.JwtRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -23,7 +23,7 @@ import java.util.Collections;
 @EnableWebSecurity
 @AllArgsConstructor
 public class SecurityConfig {
-//    private JwtRequestFilter jwtRequestFilter;
+    private JwtRequestFilter jwtRequestFilter;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -41,7 +41,7 @@ public class SecurityConfig {
                     }
                 }))
                 .csrf(csrf->csrf.disable())
-//                .addFilterBefore(jwtRequestFilter, BasicAuthenticationFilter.class)
+                .addFilterBefore(jwtRequestFilter, BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize->authorize.requestMatchers("/api/authenticate/**","/api/account/**","/api/asset/**").permitAll())
                 .authorizeHttpRequests(authorize->authorize.anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())

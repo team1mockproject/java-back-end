@@ -6,16 +6,20 @@ import mock.auction.model.BaseResponse;
 import mock.auction.model.ListResponse;
 import mock.auction.model.account.AccountDto;
 import mock.auction.model.account.SlipConfirm;
+import mock.auction.service.AccountServiceInterface;
 import mock.auction.service.impl.AccountServiceImpl;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/account/")
 public class AccountAPI extends BaseAPI<AccountDto, AccountEntity> {
-    private AccountServiceImpl accountService;
+    private final AccountServiceInterface accountService;
 
     public AccountAPI(AccountServiceImpl accountService) {
         super(accountService);

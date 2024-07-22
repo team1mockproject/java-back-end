@@ -1,12 +1,16 @@
 package mock.auction.service.impl;
 
 import lombok.AllArgsConstructor;
+import mock.auction.exception.ComponentException;
 import mock.auction.exception.DisableAccountException;
 import mock.auction.model.auth.AuthRespone;
 import mock.auction.security.UserDetailsServiceImpl;
 import mock.auction.service.AuthService;
 import mock.auction.utils.JwtTokenUtil;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,9 +33,20 @@ public class AuthServiceImpl implements AuthService {
         if (!userDetails.isEnabled()) {
             throw new DisableAccountException("Account disable!");
         }
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         String accessToken = jwtTokenUtil.generateToken(userDetails);
         return AuthRespone.builder()
                 .accessToken(accessToken)
                 .build();
+    }
+
+    public UserDetails getCurrentUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            return userDetails;
+        }
+        return null;
     }
 }

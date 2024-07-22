@@ -9,7 +9,7 @@ import TextArea from "antd/es/input/TextArea"
 import Search from "antd/es/input/Search"
 import { HiXMark } from "react-icons/hi2"
 import ModalStateContext from "../../context/modal-state-context"
-import { getAllAsset } from "../../services/AssetService"
+import { getAllAsset, uploadAssetFiles } from "../../services/AssetService"
 
 const ManagerAssetList = () => {
     const { isMobile, isTablet, isDesktop } = useContext(ResponsiveContext)
@@ -24,10 +24,14 @@ const ManagerAssetList = () => {
     const [modalServiceSelected, setModalServiceSelected] = useState([])
     const [uploadStatus, setUploadStatus] = useState('No upload')
     const [dataAsset, setDataAsset] = useState([])
+    const [commissionFee, setCommissionFee] = useState(0)
+    const [fee, setFee] = useState([])
+    const [listingFee, setListingFee] = useState({ id: 2, amount: 0 });
 
     const [pageCurrent, setPageCurrent] = useState(1)
-    const [totalItems, setTotalItems] = useState(0);
+    const [totalItems, setTotalItems] = useState(0); 6
     const [searchTerm, setSearchTerm] = useState('');
+
 
     const { modalState, setModalState } = useContext(ModalStateContext)
 
@@ -56,6 +60,12 @@ const ManagerAssetList = () => {
         setSearchTerm(e.target.value);
         setPageCurrent(1); // Reset to first page on search
     };
+
+    const handleUploadFiles = async (files) => {
+        const response = await uploadAssetFiles(files)
+        console.log(response)
+
+    }
 
     const validateUpdateForm = () => {
         form.validateFields()
@@ -91,7 +101,7 @@ const ManagerAssetList = () => {
 
     const uploadProps = {
         name: 'file',
-        action: 'https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload', // URL server upload
+        action: '', // URL server upload
         headers: {
             authorization: 'authorization-text', // access_token
         },
@@ -165,7 +175,7 @@ const ManagerAssetList = () => {
                             onClick={(event) => {
                                 event.stopPropagation()
                                 let services = []
-                                record.primaryServices.forEach(service => {
+                                record.primaryServices?.forEach(service => {
                                     economyServicesData.forEach(eService => {
                                         if (eService.key === service) {
                                             services.push(eService.name)
@@ -173,25 +183,25 @@ const ManagerAssetList = () => {
                                     })
                                 })
                                 setIsViewMode(false)
+                                console.log(record)
                                 form.setFieldsValue({
                                     key: record.key,
-                                    name: record.name,
-                                    category: record.category,
-                                    owner: record.owner,
+                                    name: record.assetName,
+                                    category: record.categoryAsset.name,
+                                    email: record.seller.email,
                                     marketPrice: record.marketPrice?.toLocaleString(),
                                     status: record.status,
-                                    inventory: record.inventory,
+                                    warehouse: record.warehouse?.name,
                                     description: record.description,
-                                    email: record.email,
                                     origin: record.origin,
-                                    appraiser: record.appraiser,
+                                    appraiser: record.assessor?.name,
                                     valuation: record.valuation?.toLocaleString(),
                                     // appraisalDocument: record.appraisalDocument,
-                                    // legalDocument: record.legalDocument,
+                                    // legalDocument: record.assetFiles[1].url,
                                     assetImages: record.images,
                                     listingFee: record.listingFee?.toLocaleString(),
                                     advertiseFee: record.advertiseFee?.toLocaleString(),
-                                    commissionFee: record.commissionFee?.toLocaleString(),
+                                    commissionFee: (record.marketPrice * 0.2)?.toLocaleString(),
                                     deliveryFee: record.deliveryFee?.toLocaleString(),
                                     listingDate: record.listingDate,
                                     primaryServices: services.join(', '),
@@ -353,7 +363,7 @@ const ManagerAssetList = () => {
                                         return {
                                             onClick: () => {
                                                 let services = []
-                                                record.primaryServices.forEach(service => {
+                                                record.primaryServices?.forEach(service => {
                                                     economyServicesData.forEach(eService => {
                                                         if (eService.key === service) {
                                                             services.push(eService.name)
@@ -380,12 +390,12 @@ const ManagerAssetList = () => {
                                                     // appraisalDocument: record.appraisalDocument,
                                                     // legalDocument: record.legalDocument,
                                                     assetImages: record.images,
-                                                    listingFee: record.listingFee.toLocaleString(),
-                                                    advertiseFee: record.advertiseFee.toLocaleString(),
-                                                    commissionFee: record.commissionFee.toLocaleString(),
-                                                    deliveryFee: record.deliveryFee.toLocaleString(),
+                                                    listingFee: record.listingFee?.toLocaleString(),
+                                                    advertiseFee: record.advertiseFee?.toLocaleString(),
+                                                    commissionFee: record.commissionFee?.toLocaleString(),
+                                                    deliveryFee: record.deliveryFee?.toLocaleString(),
                                                     listingDate: record.listingDate,
-                                                    primaryServices: services.join(', '),
+                                                    primaryServices: services?.join(', '),
                                                 })
                                                 setIsModalOpen(true)
                                             }
@@ -516,13 +526,18 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input disabled={!isCreateMode} id="marketPrice" placeholder="Enter market price" suffix='USD' />
+                                                <Input disabled={!isCreateMode} id="marketPrice" placeholder="Enter market price" suffix='USD'
+                                                    onChange={(e) => {
+                                                        setCommissionFee(e.target.value * 0.2)
+                                                        form.setFieldValue("commissionFee", commissionFee)
+                                                    }}
+                                                />
                                             </Form.Item>
 
                                             {/* Asset email */}
                                             <Form.Item
                                                 name='email'
-                                                label={<span className="font-semibold">Owner</span>}
+                                                label={<span className="font-semibold">Email</span>}
                                                 rules={[
                                                     {
                                                         required: true,
@@ -562,7 +577,13 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="appraiser" placeholder="Enter appraiser" />
+                                                <Select readOnly={isViewMode} id="appraiser" placeholder="Enter appraiser"
+                                                // options={[
+                                                //     {
+                                                //         label
+                                                //     }
+                                                // ]}
+                                                />
                                             </Form.Item>
 
                                             {/* Asset valuation */}
@@ -600,7 +621,7 @@ const ManagerAssetList = () => {
                                                     // label={<label className="border border-[#d9d9d9] px-6 py-2 rounded-md cursor-pointer" htmlFor="legalDocument">Choose file</label>}
                                                     >
                                                         {/* <Input readOnly={true} id="legalDocument" type="file" className="!hidden" /> */}
-                                                        <Upload {...uploadProps}>
+                                                        <Upload {...uploadProps} onChange={(e) => { handleUploadFiles(e.fileList[0]) }}>
                                                             {uploadStatus === 'No upload' ? <Button disabled={isViewMode}>Choose file</Button> : ''}
                                                         </Upload>
                                                     </Form.Item>
@@ -692,7 +713,18 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="listingFee" placeholder="Enter listing fee" suffix='USD' />
+                                                <Input readOnly={isViewMode}
+                                                    id="listingFee" placeholder="Enter listing fee" suffix='USD'
+                                                    onChange={(e) => {
+                                                        setListingFee((prevState) => ({
+                                                            ...prevState,
+                                                            amount: e.target.value
+                                                        }
+                                                        ))
+                                                        console.log(listingFee)
+                                                    }
+                                                    }
+                                                />
                                             </Form.Item>
 
                                             {/* Asset advertise fee */}
@@ -706,7 +738,17 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="advertiseFee" placeholder="Enter advertise fee" suffix='USD' />
+                                                <Select readOnly={isViewMode} id="advertiseFee" placeholder="Enter advertise fee" suffix='USD'
+                                                    options={[{
+                                                        label: " 3$ for 1-2 day",
+                                                        value: 3
+                                                    },
+                                                    {
+                                                        label: " 5$ for 3-5 day",
+                                                        value: 5
+                                                    }
+                                                    ]}
+                                                />
                                             </Form.Item>
 
                                             {/* Commission fee */}
@@ -720,7 +762,7 @@ const ManagerAssetList = () => {
                                                     },
                                                 ]}
                                             >
-                                                <Input readOnly={isViewMode} id="commissionFee" placeholder="Enter commission fee" suffix='USD' />
+                                                <Input readOnly={true} id="commissionFee" suffix='USD' />
                                             </Form.Item>
 
                                             {/* Delivery fee */}
@@ -739,12 +781,12 @@ const ManagerAssetList = () => {
 
                                             {/* Inventory  */}
                                             <Form.Item
-                                                name='inventory'
-                                                label={<span className="font-semibold">Inventory</span>}
+                                                name='warehouse'
+                                                label={<span className="font-semibold">Warehouse</span>}
                                                 rules={[
                                                     {
                                                         required: true,
-                                                        message: 'Please choose category!'
+                                                        message: 'Please choose warehouse!'
                                                     }
                                                 ]}
                                             >
@@ -752,7 +794,7 @@ const ManagerAssetList = () => {
                                                     id="inventory"
                                                     className="w-full mt-1 h-10"
                                                     disabled={isViewMode}
-                                                    placeholder='Choose inventory'
+                                                    placeholder='Choose warehouse'
                                                     options={[
                                                         {
                                                             value: 'New York Library',
@@ -782,9 +824,9 @@ const ManagerAssetList = () => {
                                                 disabled={isViewMode}
                                                 className="-mt-1"
                                                 onClick={() => {
-                                                    let dataRow = data.filter(value => form.getFieldValue('key') === value.key)
-                                                    setServiceSelected(dataRow[0].primaryServices)
-                                                    setModalServiceSelected(dataRow[0].primaryServices)
+                                                    let dataRow = dataAsset.filter(value => form.getFieldValue('key') === value.key)
+                                                    setServiceSelected(dataRow[0]?.primaryServices)
+                                                    setModalServiceSelected(dataRow[0]?.primaryServices)
                                                     setIsServiceModalOpen(true)
                                                 }}>+ Add primary service</Button>
                                         </Col>
@@ -1309,6 +1351,7 @@ const ManagerAssetList = () => {
                                                         <Upload {...uploadProps}>
                                                             {uploadStatus === 'No upload' ? <Button disabled={isViewMode}>Choose file</Button> : ''}
                                                         </Upload>
+
                                                     </Form.Item>
                                                 </div>
                                             </div>

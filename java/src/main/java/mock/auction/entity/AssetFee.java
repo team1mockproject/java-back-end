@@ -4,27 +4,28 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "AssetFee")
-@IdClass(AssetFeeId.class)
+//@IdClass(AssetFeeId.class)
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class AssetFee {
-    @Id
-    @Column(name = "asset_id")
-    private Integer assetId;
-    @Id
-    @Column(name = "fee_id")
-    private Integer feeId;
+@Getter
+@Setter
+public class AssetFee{
+    @EmbeddedId
+    private AssetFeeId id;
 
     private double amount;
 
     @ManyToOne
-    @JoinColumn(name = "asset_id", insertable = false, updatable = false)
+    @MapsId("assetId")
+    @JoinColumn(name = "asset_id")
     private Asset asset;
 
     @ManyToOne
-    @JoinColumn(name = "fee_id", insertable = false, updatable = false)
+    @MapsId("feeId")
+    @JoinColumn(name = "fee_id")
     private Fee fee;
 }

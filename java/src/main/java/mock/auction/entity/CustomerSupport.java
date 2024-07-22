@@ -5,7 +5,8 @@ import jakarta.persistence.*;
 import java.sql.Date;
 import lombok.*;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity

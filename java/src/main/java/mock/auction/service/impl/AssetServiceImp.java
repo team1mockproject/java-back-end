@@ -1,16 +1,24 @@
 package mock.auction.service.impl;
 
+import jakarta.transaction.Transactional;
 import mock.auction.constants.SearchFields;
 import mock.auction.entity.*;
 import mock.auction.exception.ComponentException;
 import mock.auction.exception.ResourceNotFoundException;
+import mock.auction.model.account.AccountDto;
 import mock.auction.model.asset.AssetDto;
+import mock.auction.model.asset.AssetFeeDto;
+import mock.auction.model.asset.AssetFileDto;
 import mock.auction.repository.*;
 import mock.auction.service.AssetService;
 import mock.auction.utils.CloudinaryUtil;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,6 +35,12 @@ public class AssetServiceImp extends AbstractService<AssetDto, Asset> implements
     private CategoryAssetRepository categoryAssetRepository;
     private AssetFileRepository assetFileRepository;
 
+    @Autowired
+    private AuthServiceImpl authService;
+    @Autowired
+    private FeeRepository feeRepository;
+    @Autowired
+    private AssetFeeRepository assetFeeRepository;
     public AssetServiceImp(AssetRepository assetRepository,
             ModelMapper modelMapper,
             AccountRepository accountRepository,
@@ -47,126 +61,173 @@ public class AssetServiceImp extends AbstractService<AssetDto, Asset> implements
         this.assetFileRepository = assetFileRepository;
     }
 
+    @Transactional
     @Override
     public Asset transformDtoToEntity(AssetDto assetDto) {
         Integer assetId = assetDto.getAssetId();
-        Integer sellerId = assetDto.getAccountId();
-        Integer assessorId = assetDto.getAssessorId();
-        Integer warehouseId = assetDto.getWarehouseId();
-        Integer categoryId = assetDto.getCategoryAssetId();
+        CategoryAsset category = fetchCategory(assetDto.getCategoryAssetId());
 
-        CategoryAsset category = fetchCategory(categoryId);
-
-        Asset assetEntity = (assetId == null) ? createNewAssetEntity(assetDto, sellerId, category)
-                : updateExistingAssetEntity(assetDto, assetId, assessorId, warehouseId, category);
-
-        return assetEntity;
+        return assetId == null ? createNewAssetEntity(assetDto, category)
+                : updateExistingAssetEntity(assetDto, assetId, category);
     }
 
-    private boolean isSeller(AccountEntity account) {
+    private boolean hasRole(AccountEntity account, String role) {
         return account.getRoles().stream()
                 .map(RoleEntity::getName)
-                .anyMatch("seller"::equalsIgnoreCase);
+                .anyMatch(role::equalsIgnoreCase);
+    }
+
+    private boolean isStaff(UserDetails userDetails) {
+        return userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch("Staff"::equalsIgnoreCase);
     }
 
     private CategoryAsset fetchCategory(Integer categoryId) {
         return categoryAssetRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException(CategoryAsset.class.getName(), "id",
-                        categoryId.toString()));
+                .orElseThrow(() -> new ResourceNotFoundException(CategoryAsset.class.getName(), "id", categoryId.toString()));
     }
 
-    private AccountEntity fetchSeller(Integer sellerId) {
-        return accountRepository.findById(sellerId)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException(AccountEntity.class.getName(), "id", sellerId.toString()));
+    private AccountEntity fetchAccount(Integer accountId) {
+        return accountRepository.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException(AccountEntity.class.getName(), "id", accountId.toString()));
     }
 
     private Assessor fetchAssessor(Integer assessorId) {
         return assessorRepository.findById(assessorId)
-                .orElseThrow(() -> new ResourceNotFoundException(Assessor.class.getName(), "id",
-                        assessorId.toString()));
+                .orElseThrow(() -> new ResourceNotFoundException(Assessor.class.getName(), "id", assessorId.toString()));
     }
 
     private Warehouse fetchWarehouse(Integer warehouseId) {
         return warehouseRepository.findById(warehouseId)
-                .orElseThrow(() -> new ResourceNotFoundException(Warehouse.class.getName(), "id",
-                        warehouseId.toString()));
+                .orElseThrow(() -> new ResourceNotFoundException(Warehouse.class.getName(), "id", warehouseId.toString()));
     }
 
-    private Asset createNewAssetEntity(AssetDto assetDto, Integer sellerId, CategoryAsset category) {
+    private Asset createNewAssetEntity(AssetDto assetDto, CategoryAsset category) {
+        Integer sellerId = assetDto.getAccountId();
         validateNewAsset(assetDto, sellerId);
-        assetDto.setListingDate(LocalDateTime.now());
 
+        assetDto.setListingDate(LocalDateTime.now());
         Asset assetEntity = modelMapper.map(assetDto, Asset.class);
-        updateAssetFiles(assetDto, assetEntity);
+
         assetEntity.setCategoryAsset(category);
-        assetEntity.setLegalStatus("illegal");
+        assetEntity.setSeller(fetchAccount(sellerId));
+        assetEntity.setLegalStatus(assetDto.getUrls().size() == 2 ? "legal" : "illegal");
+        assetEntity.setAssetStatus("waiting");
+        createAssetFee(assetDto,assetEntity);
+        createAssetFiles(assetDto, assetEntity);
 
         return assetEntity;
     }
 
     private void validateNewAsset(AssetDto assetDto, Integer sellerId) {
         if (sellerId == null) {
-            throw new ComponentException("id seller not null", HttpStatus.BAD_REQUEST);
+            throw new ComponentException("Seller ID cannot be null", HttpStatus.BAD_REQUEST);
         }
 
-        AccountEntity accountSeller = fetchSeller(sellerId);
-        if (!isSeller(accountSeller)) {
-            throw new ComponentException("not the seller", HttpStatus.BAD_REQUEST);
+        AccountEntity accountSeller = fetchAccount(sellerId);
+        if (!hasRole(accountSeller, "seller")) {
+            throw new ComponentException("Account is not a seller", HttpStatus.BAD_REQUEST);
         }
 
         if (assetDto.getUrls().isEmpty()) {
-            throw new ComponentException("Must have photos of the asset", HttpStatus.BAD_REQUEST);
+            throw new ComponentException("Must have photos and legal documents", HttpStatus.BAD_REQUEST);
         }
     }
 
-    private Asset updateExistingAssetEntity(AssetDto assetDto, Integer assetId, Integer assessorId,
-            Integer warehouseId, CategoryAsset category) {
+
+    private Asset updateExistingAssetEntity(AssetDto assetDto, Integer assetId, CategoryAsset category) {
         Asset assetInDb = assetRepository.findById(assetId)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException(Asset.class.getName(), "id", assetId.toString()));
+                .orElseThrow(() -> new ResourceNotFoundException(Asset.class.getName(), "id", assetId.toString()));
 
-        if (assessorId != null) {
-            Assessor assessor = fetchAssessor(assessorId);
-            if (assetInDb.getAssessor() == null) {
-                assetInDb.setAssessor(assessor);
-            }
-        }
-
-        Warehouse warehouse = (warehouseId != null) ? fetchWarehouse(warehouseId) : null;
-        assetDto.setListingDate(assetInDb.getListingDate());
-
-        Asset assetEntity = modelMapper.map(assetDto, Asset.class);
-        if (!areUrlsEqual(assetInDb.getAssetFiles().stream().toList(), assetDto.getUrls())) {
-            assetFileRepository.deleteAll(assetInDb.getAssetFiles());
-            updateAssetFiles(assetDto, assetEntity);
+        if (isStaff(authService.getCurrentUser())) {
+            updateAssetForStaff(assetDto, assetInDb);
         } else {
-            assetEntity.setAssetFiles(assetInDb.getAssetFiles());
-        }
-        assetEntity.setCategoryAsset(category);
-        assetEntity.setAssessor(assetInDb.getAssessor());
-        assetEntity.setWarehouse(warehouse);
-        assetEntity.setLegalStatus(determineLegalStatus(assetDto, assessorId));
+            assetDto.setListingDate(assetInDb.getListingDate());
 
-        return assetEntity;
+            if (shouldUpdateAssetFiles(assetInDb.getAssetFiles(), assetDto.getUrls())) {
+                updateAssetFiles(assetDto, assetInDb);
+            }
+            assetDto.setAssetFiles(convertAssetFilesToDtos(assetInDb.getAssetFiles()));
+            assetDto.setSeller(modelMapper.map(assetInDb.getSeller(), AccountDto.class));
+            assetDto.setAssetStatus(assetInDb.getAssetStatus());
+            assetDto.setLegalStatus(assetInDb.getLegalStatus());
+            assetInDb = modelMapper.map(assetDto, Asset.class);
+            createAssetFee(assetDto,assetInDb);
+            assetInDb.setCategoryAsset(category);
+        }
+
+        return assetInDb;
+    }
+
+
+    private void updateAssetForStaff(AssetDto assetDto, Asset assetInDb) {
+        Assessor assessor = fetchAssessorOrThrow(assetDto.getAssessorId());
+        Warehouse warehouse = fetchWarehouseOrThrow(assetDto.getWarehouseId());
+
+        if (assetDto.getAssessmentReport() == null) {
+            throw new ComponentException("Please provide evaluation documents!", HttpStatus.BAD_REQUEST);
+        }
+        assetInDb.setAssessmentDate(LocalDateTime.now());
+        assetInDb.setAssessor(assessor);
+        assetInDb.setWarehouse(warehouse);
+        assetInDb.setAssessmentReport(assetDto.getAssessmentReport());
+        assetInDb.setAssetStatus(assetDto.getAssetStatus());
+    }
+
+    private Assessor fetchAssessorOrThrow(Integer assessorId) {
+        return Optional.ofNullable(assessorId)
+                .map(this::fetchAssessor)
+                .orElseThrow(() -> new ComponentException("Haven't chosen an appraiser yet", HttpStatus.BAD_REQUEST));
+    }
+
+    private Warehouse fetchWarehouseOrThrow(Integer warehouseId) {
+        return Optional.ofNullable(warehouseId)
+                .map(this::fetchWarehouse)
+                .orElseThrow(() -> new ComponentException("Haven't chosen a warehouse yet", HttpStatus.BAD_REQUEST));
+    }
+
+    private boolean shouldUpdateAssetFiles(List<AssetFile> assetFiles, List<String> urls) {
+        return !areUrlsEqual(assetFiles, urls) && urls.size() == 2;
     }
 
     private boolean areUrlsEqual(List<AssetFile> assetFiles, List<String> urls) {
         if (assetFiles.size() != urls.size()) {
             return false;
         }
-        List<String> assetFileUrls = assetFiles.stream()
+
+        Set<String> assetFileUrls = assetFiles.stream()
                 .map(AssetFile::getUrl)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
+
         return assetFileUrls.containsAll(urls);
     }
 
-    private void updateAssetFiles(AssetDto assetDto, Asset assetEntity) {
+    private void createAssetFiles(AssetDto assetDto, Asset assetEntity) {
         List<AssetFile> assetFileEntityList = assetDto.getUrls().stream()
                 .map(url -> createAssetFileEntity(url, assetEntity))
                 .collect(Collectors.toList());
-
         assetEntity.setAssetFiles(assetFileEntityList);
+    }
+
+    private void createAssetFee(AssetDto assetDto, Asset assetEntity){
+        List<AssetFee> assetFeeEntityList = assetDto.getAssetFees().stream()
+                .map(fee-> createAssetFeeEntity(fee,assetEntity))
+                .collect(Collectors.toList());
+        assetEntity.setAssetFees(assetFeeEntityList);
+    }
+
+    private void updateAssetFiles(AssetDto assetDto, Asset assetEntity) {
+        List<AssetFile> assetFiles = assetEntity.getAssetFiles();
+        for (int i = 0; i < assetFiles.size(); i++) {
+            assetFiles.get(i).setUrl(assetDto.getUrls().get(i));
+        }
+    }
+
+    private List<AssetFileDto> convertAssetFilesToDtos(List<AssetFile> assetFiles) {
+        return assetFiles.stream()
+                .map(assetFile -> modelMapper.map(assetFile, AssetFileDto.class))
+                .collect(Collectors.toList());
     }
 
     private AssetFile createAssetFileEntity(String url, Asset assetEntity) {
@@ -176,8 +237,30 @@ public class AssetServiceImp extends AbstractService<AssetDto, Asset> implements
         return assetFile;
     }
 
-    private String determineLegalStatus(AssetDto assetDto, Integer assessorId) {
-        return (assessorId != null) ? assetDto.getLegalStatus() : "illegal";
+    private AssetFee createAssetFeeEntity(AssetFeeDto assetFeeDto, Asset assetEntity){
+        AssetFee assetFee = new AssetFee();
+        // Initialize the composite key
+        AssetFeeId assetFeeId = new AssetFeeId();
+        assetFeeId.setAssetId(assetEntity.getAssetId());
+        assetFeeId.setFeeId(assetFeeDto.getFeeId());
+
+        // Set the composite key
+        assetFee.setId(assetFeeId);
+        assetFee.setAmount(assetFeeDto.getAmount());
+        assetFee.setAsset(assetEntity);
+        assetFee.setFee(fetchFeeOrThrow(assetFeeDto.getFeeId()));
+        return assetFee;
+    }
+
+    private Fee fetchFeeOrThrow(Integer idFee){
+        return Optional.ofNullable(idFee)
+                .map(this::fetchFee)
+                .orElseThrow(() -> new ComponentException("Haven't chosen a fee yet", HttpStatus.BAD_REQUEST));
+    }
+
+    private Fee fetchFee(Integer idFee) {
+        return feeRepository.findById(idFee)
+                .orElseThrow(() -> new ResourceNotFoundException(Fee.class.getName(), "id", idFee.toString()));
     }
 
 }

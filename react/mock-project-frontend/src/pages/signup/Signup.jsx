@@ -24,7 +24,7 @@ const Signup = () => {
 		if (repeatPassword === passWord) {
 			console.log(personalOrAgency, fullName, phone, email, passWord, roleIds);
 			try {
-				const response = await fetch("http://localhost:8888/api/authenticate/account/register", {
+				const response = await fetch("http://localhost:8888/api/account/register", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",

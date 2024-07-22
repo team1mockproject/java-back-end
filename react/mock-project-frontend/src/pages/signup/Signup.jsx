@@ -14,6 +14,7 @@ const Signup = () => {
 
 	const handleRoleChange = (checkedValues) => {
 		setRoles(checkedValues);
+		console.log("Selected roles:", checkedValues);
 	};
 
 	const handlePersonalOrAgencyChange = (e) => {
@@ -22,14 +23,14 @@ const Signup = () => {
 
 	const handleSignUp = async () => {
 		if (repeatPassword === passWord) {
-			console.log(personalOrAgency, fullName, phone, email, passWord, roleIds);
+			console.log(roleIds);
 			try {
 				const response = await fetch("http://localhost:8888/api/account/register", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
 					},
-					body: JSON.stringify({ personalOrAgency, fullName, phone, email, passWord, roleIds }),
+					body: JSON.stringify({ fullName, phone, email, passWord, roleIds }),
 				});
 
 				if (response.ok) {
@@ -210,8 +211,8 @@ const Signup = () => {
 									<Form.Item className="ml-1" label="You want to be?" name="role">
 										<Flex>
 											<Checkbox.Group onChange={handleRoleChange}>
-												<Checkbox value="buyer">Buyer</Checkbox>
-												<Checkbox value="seller">Seller</Checkbox>
+												<Checkbox value="2">Buyer</Checkbox>
+												<Checkbox value="2">Seller</Checkbox>
 											</Checkbox.Group>
 										</Flex>
 									</Form.Item>

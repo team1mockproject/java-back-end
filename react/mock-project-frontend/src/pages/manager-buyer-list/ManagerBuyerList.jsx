@@ -24,7 +24,7 @@ const ManagerBuyerList = () => {
 	const fetchData = async (page, pageSize) => {
 		setLoading(true);
 		try {
-			const response = await axios.get("http://localhost:8888/api/authenticate/account", {
+			const response = await axios.get("http://localhost:8888/api/account", {
 				params: {
 					page: page, // assuming your API uses 0-based page index
 					size: pageSize,

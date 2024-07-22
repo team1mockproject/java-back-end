@@ -2,6 +2,8 @@ package mock.auction.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
+import mock.auction.security.JwtRequestFilter;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -11,6 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -21,7 +24,7 @@ import java.util.Collections;
 @EnableWebSecurity
 @AllArgsConstructor
 public class SecurityConfig {
-    // private JwtRequestFilter jwtRequestFilter;
+    private JwtRequestFilter jwtRequestFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -32,7 +35,7 @@ public class SecurityConfig {
                         CorsConfiguration config = new CorsConfiguration();
                         config.setAllowedOrigins(Collections.singletonList("*"));
                         config.setAllowedMethods(Collections.singletonList("*"));
-                        // config.setAllowCredentials(true);
+                        config.setAllowCredentials(true);
                         config.setAllowedHeaders(Collections.singletonList("*"));
                         config.setExposedHeaders(Arrays.asList("Authorization"));
                         config.setMaxAge(3600L);
@@ -40,7 +43,7 @@ public class SecurityConfig {
                     }
                 }))
                 .csrf(csrf -> csrf.disable())
-                // .addFilterBefore(jwtRequestFilter, BasicAuthenticationFilter.class)
+                .addFilterBefore(jwtRequestFilter, BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(
                         authorize -> authorize.requestMatchers("/api/authenticate/**", "/api/account/**").permitAll())
                 .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())

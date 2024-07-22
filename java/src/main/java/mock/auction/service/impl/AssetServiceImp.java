@@ -6,15 +6,34 @@ import mock.auction.exception.ComponentException;
 import mock.auction.exception.ResourceNotFoundException;
 import mock.auction.model.asset.AssetDto;
 import mock.auction.repository.*;
+import mock.auction.request.AssetRequest;
+import mock.auction.response.AssetResponse;
 import mock.auction.service.AssetService;
 import mock.auction.utils.CloudinaryUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * AssetServiceImp
+ * 
+ * Version 1.0
+ * 
+ * Date: 22-07-2024
+ * 
+ * Copyright
+ * 
+ * Modification Logs:
+ * DATE         AUTHOR          DESCRIPTION
+ * ----------------------------------------
+ * 22-07-2024   kiet-kun-afk    Update
+ */
 @Service
 public class AssetServiceImp extends AbstractService<AssetDto, Asset> implements AssetService {
     private AssetRepository assetRepository;
@@ -26,6 +45,7 @@ public class AssetServiceImp extends AbstractService<AssetDto, Asset> implements
 
     private CategoryAssetRepository categoryAssetRepository;
     private AssetFileRepository assetFileRepository;
+    private FileService fileService;
 
     public AssetServiceImp(AssetRepository assetRepository,
             ModelMapper modelMapper,
@@ -45,6 +65,7 @@ public class AssetServiceImp extends AbstractService<AssetDto, Asset> implements
         this.cloudinaryUtil = cloudinaryUtil;
         this.categoryAssetRepository = categoryAssetRepository;
         this.assetFileRepository = assetFileRepository;
+        this.fileService = new FileService();
     }
 
     @Override
@@ -178,6 +199,77 @@ public class AssetServiceImp extends AbstractService<AssetDto, Asset> implements
 
     private String determineLegalStatus(AssetDto assetDto, Integer assessorId) {
         return (assessorId != null) ? assetDto.getLegalStatus() : "illegal";
+    }
+
+    @Transactional
+    public void deleteAllFilesById(Integer id) {
+        assetFileRepository.deleteByAssetId(id);
+    }
+
+    public List<AssetFile> getFiles(AssetRequest request, Asset asset) throws Exception {
+        List<AssetFile> files = new ArrayList<AssetFile>();
+        for (String fileName : fileService.uploadMulti(request.getImages())) {
+            AssetFile photo = new AssetFile();
+            photo.setAsset(asset);
+            photo.setUrl(fileName);
+            files.add(photo);
+        }
+        return files;
+    }
+
+    @Override
+    public AssetResponse create(AssetRequest request) throws Exception {
+        if (!categoryAssetRepository.existsById(request.getCategoryAssetId())) {
+            throw new Exception("Category not found: " + request.getCategoryAssetId());
+        }
+        if (!assessorRepository.existsById(request.getAssessorId())) {
+            throw new Exception("Assessor not found: " + request.getAssessorId());
+        }
+        if (!warehouseRepository.existsById(request.getWarehouseId())) {
+            throw new Exception("Warehouse not found: " + request.getWarehouseId());
+        }
+        if (request.getAssessmentReport() == null) {
+            throw new Exception("Assessment report is required");
+        }
+        if (request.getImages() == null) {
+            throw new Exception("Files is required");
+        }
+        Asset asset = new Asset();
+        asset.setCategoryAsset(categoryAssetRepository.findById(request.getCategoryAssetId()).get());
+        asset.setAssessor(assessorRepository.findById(request.getAssessorId()).get());
+        asset.setWarehouse(warehouseRepository.findById(request.getWarehouseId()).get());
+        asset.setAssessmentReport(fileService.upload(request.getAssessmentReport()));
+
+        asset.setAssetName(request.getAssetName());
+        asset.setDescription(request.getDescription());
+        asset.setOrigin(request.getOrigin());
+        asset.setMarketPrice(request.getMarketPrice());
+        asset.setLegalStatus(request.getLegalStatus());
+        asset.setListingDate(LocalDateTime.now());
+        asset.setDelFlag(false);
+        asset.setAssetStatus("available");
+
+        for (MultipartFile file : request.getImages()) {
+            if (fileService.isImageFile(file)) {
+                throw new Exception("Images must be image(.png or .jpg or .jfif)");
+            }
+        }
+        try {
+            assetRepository.save(asset);
+            List<AssetFile> files = getFiles(request, asset);
+            deleteAllFilesById(asset.getAssetId());
+            asset.setAssetFiles(files);
+            assetFileRepository.saveAll(files);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return AssetResponse.of(asset);
+    }
+
+    @Override
+    public List<AssetResponse> getAll() throws Exception {
+        List<Asset> assets = assetRepository.findAll();
+        return assets.stream().map(AssetResponse::of).toList();
     }
 
 }

@@ -1,8 +1,10 @@
 package mock.auction.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.*;
+import mock.auction.entity.AssetFile;
 import mock.auction.entity.Auction;
 
 @Data
@@ -13,6 +15,7 @@ public class AuctionResponse {
     private String assetName;
     private String categoryName;
     private String auctionTypeName;
+    List<String> files;
     private String img;
     private String conductor;
     private LocalDateTime startDate;
@@ -20,7 +23,6 @@ public class AuctionResponse {
     private Double startingPrice;
     private Double minPriceIncrease;
     private Double marketPrice;
-    private String period;
     private String auctionStatus;
     private Boolean delFlag;
 
@@ -29,6 +31,7 @@ public class AuctionResponse {
         this.eventName = auction.getAuctionEvent().getEventName();
         this.categoryName = auction.getAsset().getCategoryAsset().getName();
         this.assetName = auction.getAsset().getAssetName();
+        this.files = auction.getAsset().getAssetFiles().stream().map(AssetFile::getUrl).toList();
         this.img = auction.getAsset().getAssetFiles().isEmpty() ? null
                 : auction.getAsset().getAssetFiles().get(0).getUrl();
         this.auctionTypeName = auction.getAuctionType().getName();
@@ -38,7 +41,6 @@ public class AuctionResponse {
         this.startingPrice = auction.getStartingPrice();
         this.minPriceIncrease = auction.getMinPriceIncrease();
         this.marketPrice = auction.getAsset().getMarketPrice();
-        this.period = auction.getPeriod();
         this.auctionStatus = auction.getAuctionStatus();
         this.delFlag = auction.getDelFlag();
     }

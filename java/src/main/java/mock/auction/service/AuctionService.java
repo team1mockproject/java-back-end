@@ -1,6 +1,7 @@
 package mock.auction.service;
 
 import mock.auction.entity.Auction;
+import mock.auction.request.AuctionRequest;
 import mock.auction.response.AssetResponse;
 import mock.auction.response.AuctionResponse;
 
@@ -12,6 +13,8 @@ import org.springframework.data.domain.Page;
 public interface AuctionService {
 
 	public Auction createAuction(Auction auction);
+
+	public AuctionResponse createAuction(AuctionRequest request) throws Exception;
 
 	public Auction updateAuction(Integer id, Auction auction);
 

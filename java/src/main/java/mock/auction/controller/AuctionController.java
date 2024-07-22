@@ -6,10 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import mock.auction.entity.Auction;
 import mock.auction.model.BaseResponse;
+import mock.auction.model.ResponseObject;
+import mock.auction.request.AuctionRequest;
 import mock.auction.response.AssetResponse;
 import mock.auction.response.AuctionResponse;
 import mock.auction.service.AuctionService;
@@ -104,6 +108,33 @@ public class AuctionController {
             return ResponseEntity.badRequest().body(BaseResponse.builder()
                     .code(400)
                     .message("Search auction failed")
+                    .data(e.getMessage())
+                    .build());
+        }
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<ResponseObject> createAuction(@Valid @RequestBody AuctionRequest request,
+            BindingResult result) {
+        if (result.hasErrors()) {
+            List<String> errors = result.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
+            return ResponseEntity.badRequest().body(ResponseObject.builder()
+                    .status(400)
+                    .message("Create auction failed, validation")
+                    .data(errors)
+                    .build());
+        }
+        try {
+            AuctionResponse auction = auctionService.createAuction(request);
+            return ResponseEntity.ok(ResponseObject.builder()
+                    .status(200)
+                    .message("Create auction successfully")
+                    .data(auction)
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ResponseObject.builder()
+                    .status(400)
+                    .message("Create auction failed")
                     .data(e.getMessage())
                     .build());
         }

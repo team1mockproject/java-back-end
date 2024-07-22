@@ -40,4 +40,11 @@ public interface AuctionRepository extends JpaRepository<Auction, Integer>, JpaS
     Optional<Auction> findAuctionWithAssetById(@Param("auctionId") Integer auctionId);
 
     Page<Auction> findAllByDelFlagFalse(AuctionSpecification spec, Pageable pageable);
+
+    @Query("""
+            SELECT au FROM Auction au
+            JOIN au.asset a
+            WHERE a.assetId = :assetId
+            """)
+    List<Auction> findAuctionsByAssetId(@Param("assetId") Integer assetId);
 }

@@ -1,16 +1,17 @@
 package mock.auction.service.impl;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import mock.auction.entity.*;
 import mock.auction.exception.EntityNotFoundException;
 import mock.auction.exception.ResourceNotFoundException;
 import mock.auction.repository.*;
 import mock.auction.repository.specifications.AuctionSpecification;
+import mock.auction.request.AuctionRequest;
 import mock.auction.response.AssetResponse;
 import mock.auction.response.AuctionResponse;
 import mock.auction.service.AuctionService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -23,24 +24,31 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AuctionServiceImpl implements AuctionService {
-    private AuctionRepository auctionRepository;
-    private AssetRepository assetRepository;
-    private AuctionTypeRepository auctionTypeRepository;
-    private AccountRepository accountRepository;
-    @Autowired
-    private RegistParticipateAuctionRepository registParticipateAuctionRepository;
+    private final AuctionRepository auctionRepository;
+    private final AssetRepository assetRepository;
+    private final AuctionTypeRepository auctionTypeRepository;
+    private final AccountRepository accountRepository;
+    private final AuctionEventRepository auctionEventRepository;
+    private final RegistParticipateAuctionRepository registParticipateAuctionRepository;
+    // private AuctionRepository auctionRepository;
+    // private AssetRepository assetRepository;
+    // private AuctionTypeRepository auctionTypeRepository;
+    // private AccountRepository accountRepository;
+    // @Autowired
+    // private RegistParticipateAuctionRepository registParticipateAuctionRepository;
 
-    @Autowired
-    public AuctionServiceImpl(AuctionRepository auctionRepository, AssetRepository assetRepository,
-            AuctionTypeRepository auctionTypeRepository, AccountRepository accountRepository,
-            RegistParticipateAuctionRepository registParticipateAuctionRepository) {
-        this.auctionRepository = auctionRepository;
-        this.assetRepository = assetRepository;
-        this.auctionTypeRepository = auctionTypeRepository;
-        this.accountRepository = accountRepository;
-        this.registParticipateAuctionRepository = registParticipateAuctionRepository;
-    }
+    // @Autowired
+    // public AuctionServiceImpl(AuctionRepository auctionRepository, AssetRepository assetRepository,
+    //         AuctionTypeRepository auctionTypeRepository, AccountRepository accountRepository,
+    //         RegistParticipateAuctionRepository registParticipateAuctionRepository) {
+    //     this.auctionRepository = auctionRepository;
+    //     this.assetRepository = assetRepository;
+    //     this.auctionTypeRepository = auctionTypeRepository;
+    //     this.accountRepository = accountRepository;
+    //     this.registParticipateAuctionRepository = registParticipateAuctionRepository;
+    // }
 
     @Override
     @Transactional
@@ -212,5 +220,63 @@ public class AuctionServiceImpl implements AuctionService {
         }
 
         return spec;
+    }
+
+    private boolean isValidDate(LocalDateTime start, LocalDateTime end) {
+        return start.isBefore(end);
+    }
+
+    private boolean isValidAuction(Asset asset, LocalDateTime start, LocalDateTime end) {
+        List<Auction> auctions = auctionRepository.findAuctionsByAssetId(asset.getAssetId());
+        for (Auction auction : auctions) {
+            if (isDateOverlap(auction.getStartDate(), auction.getEndDate(), start, end)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isDateOverlap(LocalDateTime existingStart, LocalDateTime existingEnd, LocalDateTime newStart,
+            LocalDateTime newEnd) {
+        return !newStart.isAfter(existingEnd) && !newEnd.isBefore(existingStart);
+    }
+
+    @Override
+    public AuctionResponse createAuction(AuctionRequest request) throws Exception {
+        if (!isValidDate(request.getStartDate(), request.getEndDate())) {
+            throw new Exception("Start date must be before end date");
+        }
+        if (!auctionTypeRepository.existsById(request.getAuctionTypeId())) {
+            throw new Exception("Auction type not found" + request.getAuctionTypeId());
+        }
+        if (!assetRepository.existsById(request.getAssetId())) {
+            throw new Exception("Asset not found" + request.getAssetId());
+        }
+        AuctionEvent event;
+        if (request.getAuctionEventId() == null) {
+            event = null;
+        } else {
+            event = auctionEventRepository.findById(request.getAuctionEventId())
+                    .orElseThrow(() -> new Exception("Auction event not found: " + request.getAuctionEventId()));
+        }
+        Asset asset = assetRepository.findById(request.getAssetId()).get();
+        LocalDateTime startDate = request.getStartDate();
+        LocalDateTime endDate = request.getEndDate();
+        if (!isValidAuction(asset, startDate, endDate)) {
+            throw new Exception("This asset already has an auction scheduled for the specified time range.");
+        }
+        Auction auction = new Auction();
+        auction.setAuctionEvent(event);
+        auction.setAuctionType(auctionTypeRepository.findById(request.getAuctionTypeId()).get());
+        auction.setAsset(asset);
+        auction.setStartDate(startDate);
+        auction.setEndDate(endDate);
+        auction.setConductor(request.getConductor());
+        auction.setStartingPrice(request.getStartingPrice());
+        auction.setMinPriceIncrease(request.getMinPriceIncrease());
+        auction.setAuctionStatus("preparing");
+        auction.setDelFlag(false);
+        auctionRepository.save(auction);
+        return AuctionResponse.of(auction);
     }
 }

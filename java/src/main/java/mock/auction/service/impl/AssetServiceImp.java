@@ -250,7 +250,7 @@ public class AssetServiceImp extends AbstractService<AssetDto, Asset> implements
         asset.setAssetStatus("available");
 
         for (MultipartFile file : request.getImages()) {
-            if (fileService.isImageFile(file)) {
+            if (!fileService.isImageFile(file)) {
                 throw new Exception("Images must be image(.png or .jpg or .jfif)");
             }
         }

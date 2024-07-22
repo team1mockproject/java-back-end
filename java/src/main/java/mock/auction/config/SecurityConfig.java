@@ -18,13 +18,13 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @EnableWebSecurity
 @AllArgsConstructor
 public class SecurityConfig {
-    // private JwtRequestFilter jwtRequestFilter;
+    private JwtRequestFilter jwtRequestFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(csrf -> csrf.disable())
-                // .addFilterBefore(jwtRequestFilter, BasicAuthenticationFilter.class)
+                .addFilterBefore(jwtRequestFilter, BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(
                         authorize -> authorize.requestMatchers("/api/authenticate/**", "/api/account/**").permitAll())
                 .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())

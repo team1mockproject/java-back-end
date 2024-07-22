@@ -280,7 +280,7 @@ const ManagerAssetList = () => {
                                             onClick={() => {
                                                 form.resetFields()
                                                 form.setFieldValue('listingDate', `${String(new Date().getDate()).length === 1 ? '0' + String(new Date().getDate()) : String(new Date().getDate())}/${String(new Date().getMonth() + 1).length === 1 ? '0' + String(new Date().getMonth() + 1) : String(new Date().getMonth() + 1)}/${new Date().getFullYear()}`)
-                                                form.setFieldValue('key', dataAsset.length + 1)
+                                                form.setFieldValue('key', dataAsset?.length + 1)
                                                 setIsModalOpen(true)
                                                 setIsViewMode(false)
                                                 setModalState(true)

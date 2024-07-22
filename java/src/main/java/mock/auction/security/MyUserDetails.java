@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import mock.auction.constants.AppConstants;
 import mock.auction.entity.AccountEntity;
+import mock.auction.entity.RoleEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -31,9 +33,10 @@ public class MyUserDetails extends User {
     }
 
     public static UserDetails build(AccountEntity accountEntity) {
-        String role = accountEntity.getRoles().toString();
-        List<GrantedAuthority> authorities = List.of(
-                new SimpleGrantedAuthority(role));
+        Collection<RoleEntity> roles = accountEntity.getRoles();
+        List<GrantedAuthority> authorities = roles.stream()
+                .map(roleEntity -> new SimpleGrantedAuthority(roleEntity.getName()))
+                .collect(Collectors.toList());
         return new MyUserDetails(
                 accountEntity.getId(),
                 accountEntity.getEmail(),

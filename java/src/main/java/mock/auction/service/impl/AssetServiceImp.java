@@ -65,10 +65,9 @@ public class AssetServiceImp extends AbstractService<AssetDto, Asset> implements
     @Override
     public Asset transformDtoToEntity(AssetDto assetDto) {
         Integer assetId = assetDto.getAssetId();
-        CategoryAsset category = fetchCategory(assetDto.getCategoryAssetId());
 
-        return assetId == null ? createNewAssetEntity(assetDto, category)
-                : updateExistingAssetEntity(assetDto, assetId, category);
+        return assetId == null ? createNewAssetEntity(assetDto)
+                : updateExistingAssetEntity(assetDto, assetId);
     }
 
     private boolean hasRole(AccountEntity account, String role) {
@@ -78,6 +77,9 @@ public class AssetServiceImp extends AbstractService<AssetDto, Asset> implements
     }
 
     private boolean isStaff(UserDetails userDetails) {
+        String roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(", "));
         return userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch("Staff"::equalsIgnoreCase);
@@ -103,14 +105,14 @@ public class AssetServiceImp extends AbstractService<AssetDto, Asset> implements
                 .orElseThrow(() -> new ResourceNotFoundException(Warehouse.class.getName(), "id", warehouseId.toString()));
     }
 
-    private Asset createNewAssetEntity(AssetDto assetDto, CategoryAsset category) {
+    private Asset createNewAssetEntity(AssetDto assetDto) {
         Integer sellerId = assetDto.getAccountId();
         validateNewAsset(assetDto, sellerId);
 
         assetDto.setListingDate(LocalDateTime.now());
         Asset assetEntity = modelMapper.map(assetDto, Asset.class);
 
-        assetEntity.setCategoryAsset(category);
+        assetEntity.setCategoryAsset(fetchCategory(assetDto.getCategoryAssetId()));
         assetEntity.setSeller(fetchAccount(sellerId));
         assetEntity.setLegalStatus(assetDto.getUrls().size() == 2 ? "legal" : "illegal");
         assetEntity.setAssetStatus("waiting");
@@ -136,7 +138,7 @@ public class AssetServiceImp extends AbstractService<AssetDto, Asset> implements
     }
 
 
-    private Asset updateExistingAssetEntity(AssetDto assetDto, Integer assetId, CategoryAsset category) {
+    private Asset updateExistingAssetEntity(AssetDto assetDto, Integer assetId) {
         Asset assetInDb = assetRepository.findById(assetId)
                 .orElseThrow(() -> new ResourceNotFoundException(Asset.class.getName(), "id", assetId.toString()));
 
@@ -154,7 +156,7 @@ public class AssetServiceImp extends AbstractService<AssetDto, Asset> implements
             assetDto.setLegalStatus(assetInDb.getLegalStatus());
             assetInDb = modelMapper.map(assetDto, Asset.class);
             createAssetFee(assetDto,assetInDb);
-            assetInDb.setCategoryAsset(category);
+            assetInDb.setCategoryAsset(fetchCategory(assetDto.getCategoryAssetId()));
         }
 
         return assetInDb;

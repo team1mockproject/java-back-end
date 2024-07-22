@@ -1,7 +1,7 @@
 import { Button, Checkbox, Col, ConfigProvider, DatePicker, Flex, Form, Input, Radio, Row } from "antd";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
+import { toast } from "react-toastify";
 const Signup = () => {
 	const [personalOrAgency, setPersonalOrAgency] = useState(null);
 	const [email, setEmail] = useState("");

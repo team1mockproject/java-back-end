@@ -68,7 +68,4 @@ public class AccountEntity {
     @JsonIgnore
     @OneToMany(mappedBy = "staff")
     private List<CustomerSupport> staffSupports;
-    @JsonIgnore
-    @OneToMany(mappedBy = "account")
-    private List<RegistParticipateAuction> registParticipateAuctions;
 }

@@ -11,6 +11,7 @@ import mock.auction.request.AuctionRequest;
 import mock.auction.response.AssetResponse;
 import mock.auction.response.AuctionResponse;
 import mock.auction.service.AuctionService;
+import mock.auction.service.PublicHolidayChecker;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -32,6 +33,7 @@ public class AuctionServiceImpl implements AuctionService {
     private final AccountRepository accountRepository;
     private final AuctionEventRepository auctionEventRepository;
     private final RegistParticipateAuctionRepository registParticipateAuctionRepository;
+    private final PublicHolidayChecker publicHolidayChecker;
     // private AuctionRepository auctionRepository;
     // private AssetRepository assetRepository;
     // private AuctionTypeRepository auctionTypeRepository;
@@ -243,6 +245,7 @@ public class AuctionServiceImpl implements AuctionService {
 
     @Override
     public AuctionResponse createAuction(AuctionRequest request) throws Exception {
+        publicHolidayChecker.isPublicHoliday(null);
         if (!isValidDate(request.getStartDate(), request.getEndDate())) {
             throw new Exception("Start date must be before end date");
         }

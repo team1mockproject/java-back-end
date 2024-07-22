@@ -8,6 +8,9 @@ import mock.auction.repository.AccountRepository;
 import mock.auction.security.UserDetailsServiceImpl;
 import mock.auction.service.AuthService;
 import mock.auction.utils.JwtTokenUtil;
+
+import javax.security.auth.login.AccountNotFoundException;
+
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,10 +43,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AccountEntity getAuth() throws Exception {
+    public AccountEntity getAuth() throws AccountNotFoundException {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        AccountEntity account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new Exception("Couldn't find account: " + email));
-        return account;
+        return accountRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    return new AccountNotFoundException("Couldn't find account: " + email);
+                });
     }
 }

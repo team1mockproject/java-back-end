@@ -9,6 +9,7 @@ import mock.auction.repository.*;
 import mock.auction.request.AssetRequest;
 import mock.auction.response.AssetResponse;
 import mock.auction.service.AssetService;
+import mock.auction.service.PublicHolidayChecker;
 import mock.auction.utils.CloudinaryUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -46,6 +47,7 @@ public class AssetServiceImp extends AbstractService<AssetDto, Asset> implements
     private CategoryAssetRepository categoryAssetRepository;
     private AssetFileRepository assetFileRepository;
     private FileService fileService;
+    private PublicHolidayChecker publicHolidayChecker;
 
     public AssetServiceImp(AssetRepository assetRepository,
             ModelMapper modelMapper,
@@ -66,6 +68,7 @@ public class AssetServiceImp extends AbstractService<AssetDto, Asset> implements
         this.categoryAssetRepository = categoryAssetRepository;
         this.assetFileRepository = assetFileRepository;
         this.fileService = new FileService();
+        this.publicHolidayChecker = new PublicHolidayChecker();
     }
 
     @Override
@@ -219,6 +222,7 @@ public class AssetServiceImp extends AbstractService<AssetDto, Asset> implements
 
     @Override
     public AssetResponse create(AssetRequest request) throws Exception {
+        publicHolidayChecker.isPublicHoliday(null);
         if (!categoryAssetRepository.existsById(request.getCategoryAssetId())) {
             throw new Exception("Category not found: " + request.getCategoryAssetId());
         }

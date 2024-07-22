@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.List;
+
 import lombok.*;
 
 @Data
@@ -55,14 +56,4 @@ public class Auction {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auction_event_id")
     private AuctionEvent auctionEvent;
-
-    @OneToMany(mappedBy = "auction", fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<BidHistory> bidHistories;
-    @OneToMany(mappedBy = "auction", fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<RegistParticipateAuction> registParticipateAuctions;
-    @OneToMany(mappedBy = "auction", fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<AuctionFee> auctionFees;
 }

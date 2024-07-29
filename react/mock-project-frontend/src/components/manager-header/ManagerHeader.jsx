@@ -9,7 +9,7 @@ const ManagerHeader = (props) => {
     const [isHover, setIsHover] = useState(false)
     const { isMobile, isTablet, isDesktop } = useContext(ResponsiveContext)
     return (
-        <ul className="h-[70px] bg-[var(--color-primary)] flex justify-between items-center px-4">
+        <ul className="h-[70px] bg-[var(--color-primary)] flex justify-between items-center px-4 sticky top-0 z-10">
             {isDesktop &&
                 <>
                     <li>
